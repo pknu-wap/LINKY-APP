@@ -1,63 +1,86 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:std/widgets/select_category.dart';
+import 'package:std/widgets/test.dart';
 
-class CategoryPage extends StatefulWidget {
+const mainGreen = Color(0xff3fd966);
+
+class CategoryPage extends StatelessWidget {
   const CategoryPage({super.key});
 
   @override
-  State<CategoryPage> createState() => _CategoryPageState();
-}
-
-class _CategoryPageState extends State<CategoryPage> {
-  final List<Widget> _categories = [
-    const CategorySelect(categoryText: 'Text1'),
-    const SizedBox(width: 10),
-    const CategorySelect(categoryText: 'Text2'),
-    const SizedBox(width: 10),
-    const CategorySelect(categoryText: 'Text3'),
-    const SizedBox(width: 10),
-    const CategorySelect(categoryText: 'Text4'),
-  ];
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(),
-      ),
-      appBar: AppBar(
-        backgroundColor: Color(0xff058aff),
-        title: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(children: _categories),
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 41),
+              Padding(
+                padding: const EdgeInsets.only(left: 6),
+                child: SizedBox(
+                  width: 157,
+                  height: 34.43,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 34.43,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color(0xffffbff3),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Icon(
+                            Icons.account_circle,
+                            size: 25,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'Category',
+                        style: GoogleFonts.inter(fontSize: 24),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 13),
+
+              _categoryScroll(),
+
+              SizedBox(height: 13),
+
+              CustomPaint(
+                size: const Size(370, 400), // 원하는 카드 전체 크기 지정
+                painter: FolderShapePainter(),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class CategorySelect extends StatelessWidget {
-  final String categoryText;
-
-  const CategorySelect({
-    super.key,
-    required this.categoryText,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
-        ),
-        height: 40,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 40),
-          child: Center(child: Text(categoryText)),
-        ),
-      ),
-      onTap: () => print('$categoryText clicked'),
-    );
-  }
+Widget _categoryScroll() {
+  List<String> categories = ['Only Me', '두번째', '세번쨰', '다스엇번째'];
+  return SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+      children: categories
+          .map(
+            (m) => Padding(
+              padding: const EdgeInsets.only(right: 5),
+              child: SelectCategory(categoryCount: '개수', categoryTitle: m),
+            ),
+          )
+          .toList(),
+    ),
+  );
 }

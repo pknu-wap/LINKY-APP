@@ -107,7 +107,7 @@ class _MainScreenState extends State<MainScreen> {
               BottomNavigationBarItem(
                 icon: _buildCommonItem(
                   Icons.calendar_today_rounded,
-                  '나만보기',
+                  '리마인더',
                   false,
                 ),
                 activeIcon: _buildCommonItem(
@@ -120,12 +120,12 @@ class _MainScreenState extends State<MainScreen> {
               BottomNavigationBarItem(
                 icon: _buildCommonItem(
                   Icons.settings_outlined,
-                  '나만보기',
+                  '설정',
                   false,
                 ),
                 activeIcon: _buildCommonItem(
                   Icons.settings_outlined,
-                  '리마인더',
+                  '설정',
                   true,
                 ),
                 label: '',
