@@ -15,7 +15,7 @@ class PopupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
-      offset: const Offset(-10, 40),
+      offset: const Offset(-5, 30),
       menuPadding: EdgeInsets.symmetric(vertical: 3),
       // 메뉴 전체의 최대 너비 제한
       constraints: const BoxConstraints(
@@ -23,7 +23,6 @@ class PopupButton extends StatelessWidget {
       ),
 
       padding: EdgeInsets.zero,
-      icon: const Icon(Icons.more_vert),
 
       onSelected: (value) {
         if (value == 'edit') {
@@ -33,6 +32,7 @@ class PopupButton extends StatelessWidget {
             builder: (context) {
               return DialogPopup(
                 title: '해당 링크를 수정하시겠어요?',
+                boxType: Type.warning,
                 onConfirm: () {
                   showModalBottomSheet(
                     context: context,
@@ -55,6 +55,7 @@ class PopupButton extends StatelessWidget {
                 title: '해당 링크를 삭제하시겠어요?',
                 onConfirm: onActionDone,
                 confirmText: '삭제',
+                boxType: Type.warning,
               );
             },
           );
@@ -95,6 +96,7 @@ class PopupButton extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
+      child: SizedBox(width: 24, height: 24, child: Icon(Icons.more_vert)),
     );
   }
 }

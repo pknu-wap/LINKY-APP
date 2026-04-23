@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+enum Type { alert, warning }
+
 class DialogPopup extends StatelessWidget {
   final String title, confirmText;
   final VoidCallback onConfirm;
+  final Type boxType;
 
   const DialogPopup({
     super.key,
     required this.title,
     required this.onConfirm,
     required this.confirmText,
+    required this.boxType,
   });
 
   @override
@@ -41,50 +45,66 @@ class DialogPopup extends StatelessWidget {
               color: Colors.black,
             ),
 
-            Expanded(
-              child: Center(
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => Navigator.pop(context),
-                        child: Center(
-                          child: Text(
-                            '취소',
-                            style: GoogleFonts.inter(
-                              color: Colors.blue,
-                              fontSize: 20,
+            if (boxType == Type.warning)
+              Expanded(
+                child: Center(
+                  child: Row(
+                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () => Navigator.pop(context),
+                          child: Center(
+                            child: Text(
+                              '취소',
+                              style: GoogleFonts.inter(
+                                color: Colors.blue,
+                                fontSize: 20,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    VerticalDivider(
-                      thickness: 0.38,
-                      width: 1,
-                    ),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                          onConfirm();
-                        },
-                        child: Center(
-                          child: Text(
-                            confirmText,
-                            style: GoogleFonts.inter(
-                              color: Colors.red,
-                              fontSize: 20,
+                      VerticalDivider(
+                        thickness: 0.38,
+                        width: 1,
+                      ),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            onConfirm();
+                          },
+                          child: Center(
+                            child: Text(
+                              confirmText,
+                              style: GoogleFonts.inter(
+                                color: Colors.red,
+                                fontSize: 20,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
+            if (boxType == Type.alert)
+              Expanded(
+                child: InkWell(
+                  onTap: () => Navigator.pop(context),
+                  child: Center(
+                    child: Text(
+                      '확인',
+                      style: GoogleFonts.inter(
+                        color: Colors.blue,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

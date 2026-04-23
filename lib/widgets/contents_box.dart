@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:std/widgets/content_detail.dart';
 import 'package:std/widgets/popup_menu_button.dart';
 
 const mainGreen = Color(0xff3fd966);
@@ -49,7 +50,7 @@ class ContentsBox extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 21, right: 2),
+                  padding: const EdgeInsets.only(left: 21, right: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -100,7 +101,16 @@ class ContentsBox extends StatelessWidget {
         ),
       ),
       onTap: () {
-        print('clicked $titleText');
+        // print('clicked $titleText');
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
+          builder: (context) => TripleFolderBottomSheet(
+            contentTitle: titleText,
+            url: urlText,
+          ),
+        );
       },
     );
   }

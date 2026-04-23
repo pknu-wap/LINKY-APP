@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:std/services/auth_service_with_password.dart';
+import 'package:std/widgets/messagebox.dart';
 
 class SecretGuardWrapperPw extends StatefulWidget {
   final Widget child;
@@ -41,7 +42,18 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
     if (authenticated) {
       setState(() => _isLocked = false);
     } else {
-      print('Password did not matched');
+      showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return DialogPopup(
+            title: '잘못된 비밀번호입니다',
+            boxType: Type.alert,
+            onConfirm: () {},
+            confirmText: '확인',
+          );
+        },
+      );
     }
   }
 

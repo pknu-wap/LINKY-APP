@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:std/widgets/select_category.dart';
-import 'package:std/widgets/test.dart';
 
 const mainGreen = Color(0xff3fd966);
 
@@ -55,11 +54,6 @@ class CategoryPage extends StatelessWidget {
               _categoryScroll(),
 
               SizedBox(height: 13),
-
-              CustomPaint(
-                size: const Size(370, 400), // 원하는 카드 전체 크기 지정
-                painter: FolderShapePainter(),
-              ),
             ],
           ),
         ),
