@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:linkyapp/pages/calender.dart';
-import 'package:linkyapp/widgets/remindertask_widget.dart';
+import 'package:std/pages/calender.dart';
+import 'package:std/widgets/remindertask_widget.dart';
 
 class ReminderScreen extends StatefulWidget {
   const ReminderScreen({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linkyapp/pages/slidepage.dart';
+import 'package:std/pages/slidepage.dart';
 
 void main() {
   runApp(const MyApp());

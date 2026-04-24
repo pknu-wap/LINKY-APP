@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linkyapp/widgets/calender_widget.dart';
+import 'package:std/widgets/calender_widget.dart';
 
 class CalendarPage extends StatefulWidget {
   @override
