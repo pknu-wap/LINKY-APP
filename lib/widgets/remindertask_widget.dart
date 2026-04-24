@@ -1,0 +1,40 @@
+import 'package:flutter/material.dart';
+
+class RemindertaskWidget extends StatelessWidget {
+  final Color backgroundColor;
+  final VoidCallback? onMorePressed; // 더보기 버튼 클릭 시 실행할 함수
+  final OffsetTapCallback? onTapDown; // 팝업 메뉴 위치 계산을 위한 콜백
+
+  const RemindertaskWidget({
+    super.key,
+    required this.backgroundColor,
+    this.onMorePressed,
+    this.onTapDown,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Icon(Icons.calendar_today, size: 18, color: Colors.black54),
+          GestureDetector(
+            onTapDown: (details) {
+              if (onTapDown != null) onTapDown!(details);
+            },
+            child: const Icon(Icons.more_vert, color: Colors.black54),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 메뉴 위치를 잡기 위한 커스텀 콜백 타입 정의
+typedef OffsetTapCallback = void Function(TapDownDetails details);  
