@@ -13,10 +13,10 @@
 migrate_working_dir/
 
 # IntelliJ related
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/caches/
-.idea/libraries/
+*.iml
+*.ipr
+*.iws
+.idea/
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
