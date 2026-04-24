@@ -32,7 +32,7 @@ class PopupButton extends StatelessWidget {
             builder: (context) {
               return DialogPopup(
                 title: '해당 링크를 수정하시겠어요?',
-                boxType: Type.warning,
+                boxType: BoxType.warning,
                 onConfirm: () {
                   showModalBottomSheet(
                     context: context,
@@ -55,7 +55,7 @@ class PopupButton extends StatelessWidget {
                 title: '해당 링크를 삭제하시겠어요?',
                 onConfirm: onActionDone,
                 confirmText: '삭제',
-                boxType: Type.warning,
+                boxType: BoxType.warning,
               );
             },
           );

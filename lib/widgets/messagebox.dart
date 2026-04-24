@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-enum Type { alert, warning }
+enum BoxType { alert, warning }
 
 class DialogPopup extends StatelessWidget {
   final String title, confirmText;
   final VoidCallback onConfirm;
-  final Type boxType;
+  final BoxType boxType;
 
   const DialogPopup({
     super.key,
@@ -45,7 +45,7 @@ class DialogPopup extends StatelessWidget {
               color: Colors.black,
             ),
 
-            if (boxType == Type.warning)
+            if (boxType == BoxType.warning)
               Expanded(
                 child: Center(
                   child: Row(
@@ -90,7 +90,7 @@ class DialogPopup extends StatelessWidget {
                   ),
                 ),
               ),
-            if (boxType == Type.alert)
+            if (boxType == BoxType.alert)
               Expanded(
                 child: InkWell(
                   onTap: () => Navigator.pop(context),

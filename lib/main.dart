@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
-import 'package:std/widgets/secret_guard_wrapper_pw.dart';
+import 'package:std/widgets/secretpage_guard.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() {
