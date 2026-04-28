@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
+import 'package:std/pages/slidepage.dart';
 import 'package:std/widgets/secretpage_guard.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -38,7 +39,7 @@ class _MainScreenState extends State<MainScreen> {
     const CategoryPage(),
     const SecretGuardWrapperPw(child: PrivatePage()), // 커스텀 패스워드 (현재 0000)
     const Center(child: Text('추가(+) 페이지', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('리마인더 페이지', style: TextStyle(fontSize: 24))),
+    const Slidepage(),
     const Center(child: Text('설정 페이지', style: TextStyle(fontSize: 24))),
   ];
 
