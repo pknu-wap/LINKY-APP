@@ -1,6 +1,6 @@
 {
-    "name": "linky",
-    "short_name": "linky",
+    "name": "std",
+    "short_name": "std",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
