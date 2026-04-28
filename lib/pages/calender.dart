@@ -72,8 +72,9 @@ class _CalendarPageState extends State<CalendarPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey[400]!, width: 1.2),
       ),
       child: DropdownButtonHideUnderline(child: child),
     );
@@ -263,7 +264,7 @@ class _CalendarPageState extends State<CalendarPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
                     CalenderWidget(
                       focusedDay: _focusedDay,
                       selectedDay: _selectedDay,
