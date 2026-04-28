@@ -1,6 +1,6 @@
 {
-    "name": "linky_app",
-    "short_name": "linky_app",
+    "name": "std",
+    "short_name": "std",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
