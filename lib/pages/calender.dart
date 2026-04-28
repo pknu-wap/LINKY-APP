@@ -149,13 +149,13 @@ class _CalendarPageState extends State<CalendarPage> {
                         Container(
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: Colors.purple[100],
+                            color: const Color(0xFFFFBFF3),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
-                            Icons.calendar_month,
-                            color: Colors.purple,
-                            size: 24,
+                            Icons.calendar_today_outlined,
+                            color: Colors.black,
+                            size: 20,
                           ),
                         ),
                         const SizedBox(width: 10),
