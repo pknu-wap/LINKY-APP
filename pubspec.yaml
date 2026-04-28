@@ -39,6 +39,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  table_calendar: ^3.1.1 
+  intl: ^0.19.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -58,7 +60,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/images/category_icon.png
+    - assets/images/CategoryIcon.png
+    - assets/images/CalendarIcon.png
+    - assets/images/FavoriteIcon.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

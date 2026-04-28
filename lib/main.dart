@@ -20,6 +20,50 @@ class CategoryPage extends StatefulWidget {
   State<CategoryPage> createState() => _CategoryPageState();
 }
 
+class FilterButton extends StatelessWidget {
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const FilterButton({
+    super.key,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(30),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? Color(0xff3FD966) : Colors.white,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.white : Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text("갯수", style: TextStyle(color: Colors.black)),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              "카테고리 제목",
+              style: TextStyle(color: isSelected ? Colors.white : Colors.black),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _CategoryPageState extends State<CategoryPage> {
   int selectedIndex = 0;
 
@@ -64,7 +108,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Color(0xff3FD966),
                       shape: const CircleBorder(),
                       padding: const EdgeInsets.all(16),
                     ),
@@ -155,17 +199,17 @@ class _CategoryPageState extends State<CategoryPage> {
                   topRight: Radius.circular(16),
                 ),
                 child: Container(
-                  color: Colors.green,
+                  color: Color(0xff3FD966),
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
                     children: [
                       Expanded(
                         child: TextField(
                           controller: titleControllers[categoryIndex][index],
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.black),
                           decoration: const InputDecoration(
-                            hintText: "제목",
-                            hintStyle: TextStyle(color: Colors.white70),
+                            hintText: "  제목",
+                            hintStyle: TextStyle(color: Colors.black),
                             border: InputBorder.none,
                           ),
                         ),
@@ -187,6 +231,12 @@ class _CategoryPageState extends State<CategoryPage> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
                   ),
                 ),
               ),
@@ -194,10 +244,10 @@ class _CategoryPageState extends State<CategoryPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  children: const [
-                    Icon(Icons.star_border),
-                    SizedBox(width: 12),
-                    Icon(Icons.calendar_today),
+                  children: [
+                    Image.asset('assets/images/FavoriteIcon.png'),
+                    const SizedBox(width: 12),
+                    Image.asset('assets/images/CalendarIcon.png'),
                   ],
                 ),
               ),
@@ -211,8 +261,56 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Category")),
-      body: buildCategoryCards(selectedIndex),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset('assets/images/CategoryIcon.png', height: 24),
+            const SizedBox(width: 8),
+            const Text("Category"),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  FilterButton(
+                    isSelected: selectedIndex == 0,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 0;
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  FilterButton(
+                    isSelected: selectedIndex == 1,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 1;
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  FilterButton(
+                    isSelected: selectedIndex == 2,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = 2;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(child: buildCategoryCards(selectedIndex)),
+        ],
+      ),
     );
   }
 }
