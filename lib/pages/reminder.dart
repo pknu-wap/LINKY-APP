@@ -55,20 +55,14 @@ class Reminder extends State<ReminderScreen> {
           //좌측 초록색 사이드바 (페이지 전환 영역)
           Container(
             width: 30,
-            decoration: const BoxDecoration(
-              color: Color(0xFF3FD966),
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
-            ),
+            color: green,
             child: Center(
               child: Container(
                 width: 4,
-                height: 60,
+                height: 100,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.8),
-                  borderRadius: BorderRadius.circular(10),
+                  color: white,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
@@ -227,7 +221,7 @@ class Reminder extends State<ReminderScreen> {
       ),
     );
   }
-
+  
   // 타임라인 리스트
   Widget Timeline() {
     // 1. 현재 선택된 '년, 월, 일'을 기준으로 DateTime 객체 생성
@@ -271,6 +265,9 @@ class Reminder extends State<ReminderScreen> {
                     ? RemindertaskWidget(
                         backgroundColor: green1,
                         // 여기서는 첫 번째 이벤트의 제목을 전달하는 식으로 커스텀 가능
+                        onTapDown: (details) {
+                          showPopupMenu(context, details.globalPosition);
+                        },
                       )
                     : const SizedBox(height: 40), // 일정이 없을 때의 높이 확보
               ),
