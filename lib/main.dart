@@ -1,15 +1,15 @@
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:std/pages/calender.dart';
+import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
-import 'package:std/pages/setting.dart';
-import 'package:std/pages/slidepage.dart';
+import 'package:std/pages/setting_page.dart';
+import 'package:std/pages/slide_page.dart';
+import 'package:std/pages/plus_page.dart';
+import 'package:std/pages/login_page.dart';
 import 'package:std/services/alarm_service.dart';
-import 'package:std/std/pages/add_link_page.dart';
-//import 'package:std/std/pages/login.dart';
-import 'package:std/widgets/secretpage_guard.dart';
+import 'package:std/widgets/secret_page_guard.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -86,7 +86,10 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MainScreen(),
+      home: const LoginPage(),
+      routes: {
+        '/main': (context) => const MainScreen(),
+      },
     );
   }
 }
@@ -106,9 +109,9 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = [
     const CategoryPage(),
     const SecretGuardWrapperPw(child: PrivatePage()), // 커스텀 패스워드 (현재 0000)
-    const AddLinkPage(),
+    const PlusPage(),
     const Slidepage(),
-    const Setting(),
+    const SettingPage(),
   ];
 
   // 탭 클릭 시 인덱스 변경 함수

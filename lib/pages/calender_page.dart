@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:std/widgets/calender_widget.dart';
-import 'package:std/widgets/popup_menu_button.dart';
+import 'package:std/widgets/reminder_page_calender.dart';
+import 'package:std/widgets/public_popup_menu_button.dart';
 
 class CalendarPage extends StatefulWidget {
   @override

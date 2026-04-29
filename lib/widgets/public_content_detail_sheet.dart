@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:std/widgets/popup_menu_button.dart';
+import 'package:std/widgets/public_popup_menu_button.dart';
 
 class TripleFolderBottomSheet extends StatefulWidget {
   final String contentTitle, url;

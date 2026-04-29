@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:std/widgets/edit_content_sheet.dart';
-import 'package:std/widgets/messagebox.dart';
+import 'package:std/widgets/public_edit_content_sheet.dart';
+import 'package:std/widgets/public_messagebox.dart';
 
 class PopupButton extends StatelessWidget {
   const PopupButton({
