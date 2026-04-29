@@ -21,7 +21,7 @@ void alarmCallback(int id) async {
 
   // 2. 초기화 설정을 변수로 분리하여 확실히 적용
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('linkylogo'); // 앱 아이콘 사용
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -38,18 +38,20 @@ void alarmCallback(int id) async {
     // 3. 알림 상세 설정 (채널 ID를 매번 고유하게 가져가거나 아주 새로운 이름으로 변경)
     final AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-          'high_priority_alarm_channel_unique', // 🔴 에러 방지를 위해 기존과 다른 새 ID 사용
+          'high_priority_alarm_channel_unique',
           '실시간 일정 알림',
           channelDescription: '정해진 시간에 알림을 띄웁니다.',
           importance: Importance.max,
           priority: Priority.high,
           showWhen: true,
+          largeIcon: const DrawableResourceAndroidBitmap('linkylogo'),
+          styleInformation: const BigTextStyleInformation(''),
         );
 
     final NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
     );
-    
+
     // 4. 알림 표시
     await plugin.show(
       id,

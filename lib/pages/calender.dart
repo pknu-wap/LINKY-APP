@@ -356,9 +356,9 @@ final kEvents = {
   ],
   DateTime.utc(2026, 4, 24): [Event("운동하기", hour: 7, minute: 0)],
   DateTime.utc(2026, 4, 29): [
-    Event("운동하기", hour: 17, minute: 36),
-    Event("플러터 공부하기", hour: 17, minute: 38),
-    Event("팀 프로젝트 미팅", hour: 17, minute: 39),
+    Event("운동하기", hour: 20, minute: 35),
+    Event("플러터 공부하기", hour: 20, minute: 25),
+    Event("팀 프로젝트 미팅", hour: 20, minute: 26),
   ],
 };
 //데이터 하루 지나면 삭제 -> 만료시 색깔 변경
