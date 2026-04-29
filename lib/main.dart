@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting.dart';
@@ -8,6 +11,36 @@ import 'package:std/std/pages/add_link_page.dart';
 import 'package:std/widgets/secretpage_guard.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+@pragma('vm:entry-point')
+void alarmCallback(int id) async {
+  final plugin = FlutterLocalNotificationsPlugin();
+  
+  await plugin.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    ),
+    onDidReceiveNotificationResponse: (details) {},
+  );
+
+  final androidDetails = AndroidNotificationDetails(
+    'alarm_channel_id',
+    'Alarm Channel',
+    importance: Importance.max,
+    priority: Priority.high,
+    playSound: false,
+    enableVibration: true,
+    vibrationPattern: Int64List.fromList([0, 1000, 500, 1000]),
+  );
+
+  await plugin.show(
+    id,
+    'Manager+ Alarm',
+    '설정한 알람 시간입니다! (진동)',
+    NotificationDetails(android: androidDetails),
+  );
+}
+
 void main() {
   runApp(const MyApp());
 }
