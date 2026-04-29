@@ -10,7 +10,7 @@ import 'package:std/pages/plus_page.dart';
 import 'package:std/pages/login_page.dart';
 import 'package:std/services/alarm_service.dart';
 import 'package:std/widgets/secret_page_guard.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart'
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

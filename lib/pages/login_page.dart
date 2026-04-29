@@ -41,7 +41,7 @@ Future<void> handleKakaoLogin() async {
     final kakaoToken = await UserApi.instance.loginWithKakaoTalk();
     debugPrint('3. 카카오 로그인 성공');
 
-    await sendKakaoTokenToBackend(kakaoToken.accessToken);
+    await sendKakaoTokenToBackend(kakaoToken.accessToken); //테스트 진행시에는 이 코드 주석 처리하고 진행
     debugPrint('4. 백엔드 전송 성공');
 
     if (!mounted) return;
