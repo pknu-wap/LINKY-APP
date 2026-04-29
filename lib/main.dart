@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
+import 'package:std/pages/setting.dart';
 import 'package:std/pages/slidepage.dart';
 import 'package:std/std/pages/add_link_page.dart';
 import 'package:std/std/pages/login.dart';
@@ -11,7 +12,7 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget { 
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
@@ -45,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
     const SecretGuardWrapperPw(child: PrivatePage()), // 커스텀 패스워드 (현재 0000)
     const AddLinkPage(),
     const Slidepage(),
-    const Center(child: Text('설정 페이지', style: TextStyle(fontSize: 24))),
+    const Setting(),
   ];
 
   // 탭 클릭 시 인덱스 변경 함수
@@ -124,11 +125,7 @@ class _MainScreenState extends State<MainScreen> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: _buildCommonItem(
-                  Icons.settings_outlined,
-                  '설정',
-                  false,
-                ),
+                icon: _buildCommonItem(Icons.settings_outlined, '설정', false),
                 activeIcon: _buildCommonItem(
                   Icons.settings_outlined,
                   '설정',
