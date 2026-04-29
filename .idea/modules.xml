@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/linkyapp.iml" filepath="$PROJECT_DIR$/linkyapp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/linkyapp_android.iml" filepath="$PROJECT_DIR$/android/linkyapp_android.iml" />
+    </modules>
+  </component>
+</project>
