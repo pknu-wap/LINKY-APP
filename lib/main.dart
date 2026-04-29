@@ -1,11 +1,12 @@
-import 'dart:typed_data';
-
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:std/pages/calender.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting.dart';
 import 'package:std/pages/slidepage.dart';
+import 'package:std/services/alarm_service.dart';
 import 'package:std/std/pages/add_link_page.dart';
 //import 'package:std/std/pages/login.dart';
 import 'package:std/widgets/secretpage_guard.dart';
@@ -14,34 +15,67 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 @pragma('vm:entry-point')
 void alarmCallback(int id) async {
-  final plugin = FlutterLocalNotificationsPlugin();
-  
-  await plugin.initialize(
-    const InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-    ),
-    onDidReceiveNotificationResponse: (details) {},
+  print("🔥🔥 alarmCallback 시작됨! 전달받은 ID: $id");
+  // 1. 플러플 플러그인 인스턴스 생성
+  final FlutterLocalNotificationsPlugin plugin =
+      FlutterLocalNotificationsPlugin();
+
+  // 2. 초기화 설정을 변수로 분리하여 확실히 적용
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  // 만약 에뮬레이터라면 '@mipmap/ic_launcher' 대신 'app_icon' 혹은
+  // 안드로이드 프로젝트의 res/drawable에 있는 실제 파일명을 확장자 없이 써야 할 수도 있습니다.
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
   );
 
-  final androidDetails = AndroidNotificationDetails(
-    'alarm_channel_id',
-    'Alarm Channel',
-    importance: Importance.max,
-    priority: Priority.high,
-    playSound: false,
-    enableVibration: true,
-    vibrationPattern: Int64List.fromList([0, 1000, 500, 1000]),
-  );
+  try {
+    await plugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (details) {
+        // 알림 클릭 시 로직
+      },
+    );
 
-  await plugin.show(
-    id,
-    'Manager+ Alarm',
-    '설정한 알람 시간입니다! (진동)',
-    NotificationDetails(android: androidDetails),
-  );
+    // 3. 알림 상세 설정 (채널 ID를 매번 고유하게 가져가거나 아주 새로운 이름으로 변경)
+    final AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'high_priority_alarm_channel_unique', // 🔴 에러 방지를 위해 기존과 다른 새 ID 사용
+          '실시간 일정 알림',
+          channelDescription: '정해진 시간에 알림을 띄웁니다.',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: true,
+        );
+
+    final NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+    );
+    
+    // 4. 알림 표시
+    await plugin.show(
+      id,
+      '일정 리마인더',
+      '예약하신 일정이 지금 시작됩니다! (ID: $id)',
+      notificationDetails,
+    );
+    print("알림 표시 성공: ID $id");
+  } catch (e) {
+    print("알림 표시 중 에러 발생: $e");
+  }
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 1. 알람 매니저 초기화
+  await AndroidAlarmManager.initialize();
+
+  // 2. kEvents 데이터 자동 동기화 (앱 실행 시마다 수행)
+  // 데이터가 있는 위치에 맞춰 kEvents를 넣어주세요.
+  await AlarmService.syncEventsWithAlarms(kEvents);
+
   runApp(const MyApp());
 }
 
