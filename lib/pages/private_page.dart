@@ -6,20 +6,8 @@ import 'package:std/widgets/public_select_category.dart';
 const mainGreen = Color(0xff3fd966);
 
 List<String> contentsTitle = [
-  'Title1',
-  '제목2',
-  'Title3',
-  '제목4',
-  'Title5',
-  '제목6',
 ];
 List<String> contentsURL = [
-  'URL1',
-  'URL2',
-  'URL3',
-  'URL4',
-  'URL5',
-  'URL6',
 ];
 
 class PrivatePage extends StatefulWidget {

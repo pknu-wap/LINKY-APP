@@ -72,7 +72,11 @@ void main() async {
 
   // 2. kEvents 데이터 자동 동기화 (앱 실행 시마다 수행)
   // 데이터가 있는 위치에 맞춰 kEvents를 넣어주세요.
-  await AlarmService.syncEventsWithAlarms(kEvents);
+  if (kEvents.isNotEmpty) {
+    await AlarmService.syncEventsWithAlarms(kEvents.cast<DateTime, List<dynamic>>());
+  } else {
+    print("앱 실행 시 kEvents 데이터가 비어 있습니다.");
+  }
 
   runApp(const MyApp());
 }
