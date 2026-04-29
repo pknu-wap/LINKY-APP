@@ -10,6 +10,7 @@ import 'package:std/pages/plus_page.dart';
 import 'package:std/pages/login_page.dart';
 import 'package:std/services/alarm_service.dart';
 import 'package:std/widgets/secret_page_guard.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart'
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -66,6 +67,10 @@ void alarmCallback(int id) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  KakaoSdk.init(
+    nativeAppKey: '82e41c6f8193caa43b268cd5c33fe23a',
+  );
 
   // 1. 알람 매니저 초기화
   await AndroidAlarmManager.initialize();

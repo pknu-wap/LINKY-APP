@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,10 +14,81 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool keepLogin = false;
+  final dio = Dio(
+    BaseOptions(
+    connectTimeout: const Duration(seconds: 5),
+    receiveTimeout: const Duration(seconds: 5),
+    sendTimeout: const Duration(seconds: 5),
+  ),
+  );
+  final storage = const FlutterSecureStorage();
 
-  void handleKakaoLogin() {
+Future<void> handleKakaoLogin() async {
+  try {
+    debugPrint('1. 카카오 로그인 버튼 클릭');
+
+    final installed = await isKakaoTalkInstalled();
+    debugPrint('2. 카카오톡 설치 여부: $installed');
+
+    if (!installed) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('카카오톡이 설치되어 있지 않습니다.')),
+      );
+      return;
+    }
+
+    final kakaoToken = await UserApi.instance.loginWithKakaoTalk();
+    debugPrint('3. 카카오 로그인 성공');
+
+    await sendKakaoTokenToBackend(kakaoToken.accessToken);
+    debugPrint('4. 백엔드 전송 성공');
+
+    if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/main');
+    debugPrint('5. 메인 이동');
+  } catch (error) {
+    debugPrint('카카오 로그인/백엔드 전송 실패: $error');
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('카카오 로그인 실패: $error')),
+    );
   }
+}
+
+Future<void> sendKakaoTokenToBackend(String kakaoAccessToken) async {
+  try {
+    debugPrint('백엔드 요청 시작');
+
+    final response = await dio.post(
+      'http://172.20.10.2:8081/auth/kakao',
+      data: {
+        'accessToken': kakaoAccessToken,
+      },
+    );
+
+    final responseData = response.data;
+
+    // ApiResponse로 감싸져 있으면 data 안에 token이 있음
+    final token = responseData['data']?['token'] ?? responseData['token'];
+
+    if (token == null) {
+      throw Exception('백엔드 응답에 token이 없습니다: $responseData');
+    }
+
+    await storage.write(key: 'accessToken', value: token);
+  } on DioException catch (e) {
+    debugPrint('백엔드 요청 실패');
+    debugPrint('상태 코드: ${e.response?.statusCode}');
+    debugPrint('응답 데이터: ${e.response?.data}');
+    debugPrint('에러 메시지: ${e.message}');
+    rethrow;
+  } catch (e){
+    debugPrint('백엔드 응답 처리 실패: $e');
+    rethrow;
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 16),
           
           socialButton(
-            label: '카카오로 로그인하기',
+            label: '카카오로 계속하기',
             onPressed: handleKakaoLogin,
           ),
           

@@ -42,6 +42,12 @@ dependencies:
   flutter_local_notifications: ^17.2.3
   permission_handler: ^12.0.1
 
+  url_launcher:
+  app_links:
+  dio:
+  flutter_secure_storage:
+  kakao_flutter_sdk_user: 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
