@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:std/widgets/contents_box.dart';
-import 'package:std/widgets/select_category.dart';
+import 'package:std/widgets/public_contents_box.dart';
+import 'package:std/widgets/public_select_category.dart';
 
 const mainGreen = Color(0xff3fd966);
 
