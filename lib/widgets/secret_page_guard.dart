@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:std/services/auth_service.dart';
-import 'package:std/widgets/messagebox.dart';
+import 'package:std/widgets/public_messagebox.dart';
 
 class SecretGuardWrapperPw extends StatefulWidget {
   final Widget child;

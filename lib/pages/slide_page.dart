@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:std/pages/calender.dart';
-import 'package:std/pages/reminder.dart';
+import 'package:std/pages/calender_page.dart';
+import 'package:std/pages/reminder_page.dart';
 
 class Slidepage extends StatefulWidget {
   const Slidepage({super.key});
