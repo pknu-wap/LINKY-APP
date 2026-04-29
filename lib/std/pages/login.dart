@@ -16,10 +16,6 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.pushReplacementNamed(context, '/main');
   }
 
-  void handleKakaoSignUp() {
-    print("카카오 회원가입 시도");
-  }
-
   @override
   Widget build(BuildContext context) {
     final topInset = MediaQuery.of(context).padding.top;
@@ -114,21 +110,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
           
           const SizedBox(height: 24),
-          
-          Text(
-            '계정이 없으신가요?',
-            style: GoogleFonts.inter(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 16),
-          
-          socialButton(
-            label: '카카오로 회원가입하기',
-            onPressed: handleKakaoSignUp,
-          ),
         ],
       ),
     );
