@@ -39,6 +39,11 @@ dependencies:
   table_calendar: ^3.2.0
   google_fonts: ^8.0.2
 
+  url_launcher:
+  app_links:
+  dio:
+  flutter_secure_storage:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

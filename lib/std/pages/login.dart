@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,10 +13,21 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool keepLogin = false;
 
-  void handleKakaoLogin() {
-    Navigator.pushReplacementNamed(context, '/main');
-  }
+Future<void> handleKakaoLogin() async{
+  final uri = Uri.parse(
+      'https://kauth.kakao.com/oauth/authorize?client_id=c0e19f94497d0034f9e58642f0d3b49a&redirect_uri=http://10.0.2.2:8081/auth/kakao&response_type=code'
+    );
 
+    final success = await launchUrl(uri,
+    mode: LaunchMode.externalApplication, 
+    );
+
+    if(!success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('카카오 로그인 페이지를 열 수 없습니다')),
+      );
+    }
+}
   @override
   Widget build(BuildContext context) {
     final topInset = MediaQuery.of(context).padding.top;
@@ -105,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 16),
           
           socialButton(
-            label: '카카오로 로그인하기',
+            label: '카카오로 계속하기',
             onPressed: handleKakaoLogin,
           ),
           
