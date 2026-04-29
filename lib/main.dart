@@ -15,7 +15,6 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 @pragma('vm:entry-point')
 void alarmCallback(int id) async {
-  print("🔥🔥 alarmCallback 시작됨! 전달받은 ID: $id");
   // 1. 플러플 플러그인 인스턴스 생성
   final FlutterLocalNotificationsPlugin plugin =
       FlutterLocalNotificationsPlugin();
@@ -23,8 +22,6 @@ void alarmCallback(int id) async {
   // 2. 초기화 설정을 변수로 분리하여 확실히 적용
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
-  // 만약 에뮬레이터라면 '@mipmap/ic_launcher' 대신 'app_icon' 혹은
-  // 안드로이드 프로젝트의 res/drawable에 있는 실제 파일명을 확장자 없이 써야 할 수도 있습니다.
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -60,7 +57,6 @@ void alarmCallback(int id) async {
       '예약하신 일정이 지금 시작됩니다! (ID: $id)',
       notificationDetails,
     );
-    print("알림 표시 성공: ID $id");
   } catch (e) {
     print("알림 표시 중 에러 발생: $e");
   }
