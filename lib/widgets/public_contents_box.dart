@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:std/widgets/content_detail_sheet.dart';
-import 'package:std/widgets/popup_menu_button.dart';
+import 'package:std/widgets/public_content_detail_sheet.dart';
+import 'package:std/widgets/public_popup_menu_button.dart';
 
 const mainGreen = Color(0xff3fd966);
 

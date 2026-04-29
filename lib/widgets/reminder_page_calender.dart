@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:std/pages/calender.dart';
+import 'package:std/pages/calender_page.dart';
 
 class CalenderWidget extends StatelessWidget {
   final DateTime focusedDay;
@@ -29,7 +29,7 @@ class CalenderWidget extends StatelessWidget {
       onDaySelected: onDaySelected,
       onPageChanged: onPageChanged,
       eventLoader: eventLoader,
-      
+
       calendarStyle: const CalendarStyle(
         todayDecoration: BoxDecoration(
           color: Color(0xFF3FD966),
@@ -44,7 +44,7 @@ class CalenderWidget extends StatelessWidget {
           shape: BoxShape.circle,
         ),
       ),
-      
+
       calendarBuilders: CalendarBuilders(
         // 선택된 날짜 커스텀 스타일
         selectedBuilder: (context, day, focusedDay) {

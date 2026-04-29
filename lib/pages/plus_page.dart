@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import '../widgets/calendar.dart';
-import '../widgets/category.dart';
+import '../widgets/plus_page_calendar.dart';
+import '../widgets/plus_page_category.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AddLinkPage extends StatefulWidget {
-  const AddLinkPage({super.key});
+class PlusPage extends StatefulWidget {
+  const PlusPage({super.key});
 
   @override
-  State<AddLinkPage> createState() => _AddLinkPageState();
+  State<PlusPage> createState() => _PlusPageState();
 }
 
-class _AddLinkPageState extends State<AddLinkPage> {
+class _PlusPageState extends State<PlusPage> {
   final TextEditingController urlController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
 

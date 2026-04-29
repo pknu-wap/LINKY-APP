@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
-import 'package:std/pages/setting.dart';
-import 'package:std/pages/slidepage.dart';
-import 'package:std/pages/add_link_page.dart';
-import 'package:std/pages/login.dart';
-import 'package:std/widgets/secretpage_guard.dart';
+import 'package:std/pages/setting_page.dart';
+import 'package:std/pages/slide_page.dart';
+import 'package:std/pages/plus_page.dart';
+import 'package:std/pages/login_page.dart';
+import 'package:std/widgets/secret_page_guard.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() {
@@ -44,9 +44,9 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = [
     const CategoryPage(),
     const SecretGuardWrapperPw(child: PrivatePage()), // 커스텀 패스워드 (현재 0000)
-    const AddLinkPage(),
+    const PlusPage(),
     const Slidepage(),
-    const Setting(),
+    const SettingPage(),
   ];
 
   // 탭 클릭 시 인덱스 변경 함수

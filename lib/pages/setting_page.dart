@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Setting extends StatefulWidget {
-  const Setting({super.key});
+class SettingPage extends StatefulWidget {
+  const SettingPage({super.key});
 
   @override
-  State<Setting> createState() => SettingState();
+  State<SettingPage> createState() => SettingPageState();
 }
-class SettingState extends State<Setting> {
 
+class SettingPageState extends State<SettingPage> {
   // 입력창 스타일을 위한 공통 함수
   InputDecoration inputBox(String hint) {
     return InputDecoration(
