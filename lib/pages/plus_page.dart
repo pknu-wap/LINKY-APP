@@ -14,7 +14,7 @@ class _PlusPageState extends State<PlusPage> {
   final TextEditingController urlController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
 
-  String? selectedCategory;
+  String selectedCategory = '카테고리';
   bool isPrivate = false;
   DateTime? selectedDate;
 
@@ -99,7 +99,7 @@ class _PlusPageState extends State<PlusPage> {
     setState(() {
       urlController.clear();
       titleController.clear();
-      selectedCategory = null;
+      selectedCategory = '카테고리';
       isPrivate = false;
       selectedDate = null;
     });
@@ -181,15 +181,7 @@ class _PlusPageState extends State<PlusPage> {
                   ),
                   const SizedBox(height: 10),
 
-                  CategoryWidget(
-                    selectedCategory: selectedCategory,
-                    categories: categories,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCategory = value;
-                      });
-                    },
-                  ),
+                  selectCategoryCont(),
                   const SizedBox(height: 8),
 
                   Row(
@@ -249,6 +241,37 @@ class _PlusPageState extends State<PlusPage> {
             );
           },
         ),
+      ),
+    );
+  }
+
+  Container selectCategoryCont() {
+    return Container(
+      alignment: Alignment.centerLeft,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.black, width: 0.8),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      width: double.infinity,
+      padding: EdgeInsets.only(left: 13, right: 12),
+      height: 57,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            selectedCategory,
+            style: GoogleFonts.inter(fontSize: 16, color: Colors.grey.shade800),
+          ),
+          CategoryButton(
+            categories: categories,
+            onCategorySelected: (value) {
+              setState(() {
+                selectedCategory = value; // 여기서 main의 변수를 업데이트!
+              });
+            },
+          ),
+        ],
       ),
     );
   }
