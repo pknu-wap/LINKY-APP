@@ -39,8 +39,7 @@ class _PrivatePageState extends State<PrivatePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         backgroundColor: Color(0xFFf0f2f6),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -90,8 +89,7 @@ class _PrivatePageState extends State<PrivatePage> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _contentsScroll() {
