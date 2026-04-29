@@ -53,7 +53,7 @@ class _AddLinkPageState extends State<AddLinkPage> {
       return;
     }
 
-    if(RegExp(r'\s').hasMatch(url)) {
+    if (RegExp(r'\s').hasMatch(url)) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('공백 불가')));
@@ -66,23 +66,25 @@ class _AddLinkPageState extends State<AddLinkPage> {
     );
 
     if (blockedScheme.hasMatch(url)) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('http 또는 https 링크만 입력할 수 있어요.')));
-    return;
-  }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(
+        const SnackBar(content: Text('http 또는 https 링크만 입력할 수 있어요.')),
+      );
+      return;
+    }
 
     final uri = Uri.tryParse(url);
 
-    if(uri == null || uri.scheme != 'http' && uri.scheme != 'https' ||
-    uri.host.isEmpty || uri.userInfo.isNotEmpty) {
+    if (uri == null ||
+        uri.scheme != 'http' && uri.scheme != 'https' ||
+        uri.host.isEmpty ||
+        uri.userInfo.isNotEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('유효한 URL을 입력하세요.')));
       return;
     }
-
-    
 
     ScaffoldMessenger.of(
       context,

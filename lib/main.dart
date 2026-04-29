@@ -3,8 +3,8 @@ import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting.dart';
 import 'package:std/pages/slidepage.dart';
-import 'package:std/std/pages/add_link_page.dart';
-import 'package:std/std/pages/login.dart';
+import 'package:std/pages/add_link_page.dart';
+import 'package:std/pages/login.dart';
 import 'package:std/widgets/secretpage_guard.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
