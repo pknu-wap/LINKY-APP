@@ -4,7 +4,7 @@ import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting.dart';
 import 'package:std/pages/slidepage.dart';
 import 'package:std/std/pages/add_link_page.dart';
-//import 'package:std/std/pages/login.dart';
+import 'package:std/std/pages/login.dart';
 import 'package:std/widgets/secretpage_guard.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -21,7 +21,10 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MainScreen(),
+      home: const LoginPage(),
+      routes: {
+        '/main': (context) => const MainScreen(),
+      },
     );
   }
 }
