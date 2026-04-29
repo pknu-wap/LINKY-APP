@@ -41,7 +41,7 @@ Future<void> handleKakaoLogin() async {
     final kakaoToken = await UserApi.instance.loginWithKakaoTalk();
     debugPrint('3. 카카오 로그인 성공');
 
-    await sendKakaoTokenToBackend(kakaoToken.accessToken); //테스트 진행시에는 이 코드 주석 처리하고 진행
+    //await sendKakaoTokenToBackend(kakaoToken.accessToken); //테스트 진행시에는 이 코드 주석 처리하고 진행
     debugPrint('4. 백엔드 전송 성공');
 
     if (!mounted) return;
@@ -213,29 +213,6 @@ Future<void> sendKakaoTokenToBackend(String kakaoAccessToken) async {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildKeepLoginOption() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Transform.scale(
-          scale: 0.7,
-          child: Checkbox(
-            value: keepLogin,
-            onChanged: (value) => setState(() => keepLogin = value ?? false),
-            fillColor: WidgetStateProperty.all(Colors.white),
-            checkColor: const Color(0xFF2CD456),
-            side: const BorderSide(color: Colors.white, width: 1.5),  
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          ),
-        ),
-        Text(
-          '로그인 유지하기',
-          style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
-        ),
-      ],
     );
   }
 }
