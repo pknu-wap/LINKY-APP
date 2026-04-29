@@ -6,9 +6,16 @@ import 'package:std/pages/slidepage.dart';
 import 'package:std/std/pages/add_link_page.dart';
 import 'package:std/std/pages/login.dart';
 import 'package:std/widgets/secretpage_guard.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  KakaoSdk.init(
+    nativeAppKey: '82e41c6f8193caa43b268cd5c33fe23a',
+  );
+
   runApp(const MyApp());
 }
 

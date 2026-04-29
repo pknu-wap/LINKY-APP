@@ -43,6 +43,7 @@ dependencies:
   app_links:
   dio:
   flutter_secure_storage:
+  kakao_flutter_sdk_user: 
 
 dev_dependencies:
   flutter_test:
