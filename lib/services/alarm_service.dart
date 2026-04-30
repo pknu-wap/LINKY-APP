@@ -7,24 +7,19 @@ class AlarmService {
   static Future<void> syncEventsWithAlarms(
     Map<DateTime, List<dynamic>> events,
   ) async {
-    await Permission.notification.request();
-
-    // 2. 정확한 알람 권한 요청 (Android 12+ 필수)
-    // 이 권한이 없으면 exact: true 옵션 사용 시 에러가 납니다.
-    var status = await Permission.scheduleExactAlarm.status;
-    if (status.isDenied) {
-      // 권한 요청 페이지로 보내거나 요청을 시도합니다.
+    if (!(await Permission.notification.isGranted)) {
+      await Permission.notification.request();
+    }
+    if (await Permission.scheduleExactAlarm.isDenied) {
       await Permission.scheduleExactAlarm.request();
     }
 
-    int alarmId = 0; // 고유 ID 생성을 위한 변수
+    int baseId = 0; // 고유 ID를 위한 기반 변수
 
     for (var entry in events.entries) {
       DateTime date = entry.key;
-      List<dynamic> eventList = entry.value;
-
-      for (var event in eventList) {
-        // 날짜(date)와 이벤트의 시간/분을 합침
+      for (var event in entry.value) {
+        // 정시(정각) 시간 계산
         final scheduledTime = DateTime(
           date.year,
           date.month,
@@ -33,19 +28,36 @@ class AlarmService {
           event.minute,
         );
 
-        // 현재보다 미래인 일정만 알람 등록
-        if (scheduledTime.isAfter(DateTime.now())) {
+        // 30분 전 시간 계산
+        final earlyTime = scheduledTime.subtract(const Duration(minutes: 30));
+
+        // 1. [30분 전 알람] 예약 (ID: baseId * 2)
+        if (earlyTime.isAfter(DateTime.now())) {
           await AndroidAlarmManager.oneShotAt(
-            scheduledTime,
-            alarmId,
+            earlyTime,
+            baseId * 2, // 30분 전 알람용 고유 ID
             alarmCallback,
             exact: true,
             wakeup: true,
             rescheduleOnReboot: true,
           );
-          print("자동 알람 예약: ${event.title} at $scheduledTime (ID: $alarmId)");
+          print("30분 전 알람 예약: ${event.title} at $earlyTime");
         }
-        alarmId++; // 각 이벤트마다 고유 ID 부여
+
+        // 2. [정시 알람] 예약 (ID: baseId * 2 + 1)
+        if (scheduledTime.isAfter(DateTime.now())) {
+          await AndroidAlarmManager.oneShotAt(
+            scheduledTime,
+            baseId * 2 + 1, // 정시 알람용 고유 ID
+            alarmCallback,
+            exact: true,
+            wakeup: true,
+            rescheduleOnReboot: true,
+          );
+          print("정시 알람 예약: ${event.title} at $scheduledTime");
+        }
+
+        baseId++; // 다음 이벤트를 위해 ID 증가
       }
     }
   }

@@ -15,53 +15,33 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 @pragma('vm:entry-point')
 void alarmCallback(int id) async {
-  // 1. 플러플 플러그인 인스턴스 생성
-  final FlutterLocalNotificationsPlugin plugin =
-      FlutterLocalNotificationsPlugin();
-
-  // 2. 초기화 설정을 변수로 분리하여 확실히 적용
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('linkylogo'); // 앱 아이콘 사용
-
-  const InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
+  final plugin = FlutterLocalNotificationsPlugin();
+  await plugin.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings('linkylogo'),
+    ),
   );
 
-  try {
-    await plugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (details) {
-        // 알림 클릭 시 로직
-      },
-    );
+  // ID를 통해 30분 전인지 정시인지 판별
+  bool isEarlyAlarm = (id % 2 == 0);
+  String message = isEarlyAlarm
+      ? "일정 시작 30분 전입니다! 준비하세요."
+      : "설정하신 일정 시간이 되었습니다!";
 
-    // 3. 알림 상세 설정 (채널 ID를 매번 고유하게 가져가거나 아주 새로운 이름으로 변경)
-    final AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'high_priority_alarm_channel_unique',
-          '실시간 일정 알림',
-          channelDescription: '정해진 시간에 알림을 띄웁니다.',
-          importance: Importance.max,
-          priority: Priority.high,
-          showWhen: true,
-          largeIcon: const DrawableResourceAndroidBitmap('linkylogo'),
-          styleInformation: const BigTextStyleInformation(''),
-        );
+  final androidDetails = AndroidNotificationDetails(
+    'high_priority_alarm_channel_unique',
+    '실시간 일정 알림',
+    importance: Importance.max,
+    priority: Priority.high,
+    largeIcon: const DrawableResourceAndroidBitmap('linkylogo'),
+  );
 
-    final NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-    );
-
-    // 4. 알림 표시
-    await plugin.show(
-      id,
-      '일정 리마인더',
-      '예약하신 일정이 지금 시작됩니다! (ID: $id)',
-      notificationDetails,
-    );
-  } catch (e) {
-    print("알림 표시 중 에러 발생: $e");
-  }
+  await plugin.show(
+    id,
+    isEarlyAlarm ? '[사전 알림]' : '[일정 알림]',
+    message,
+    NotificationDetails(android: androidDetails),
+  );
 }
 
 void main() async {
@@ -73,7 +53,9 @@ void main() async {
   // 2. kEvents 데이터 자동 동기화 (앱 실행 시마다 수행)
   // 데이터가 있는 위치에 맞춰 kEvents를 넣어주세요.
   if (kEvents.isNotEmpty) {
-    await AlarmService.syncEventsWithAlarms(kEvents.cast<DateTime, List<dynamic>>());
+    await AlarmService.syncEventsWithAlarms(
+      kEvents.cast<DateTime, List<dynamic>>(),
+    );
   } else {
     print("앱 실행 시 kEvents 데이터가 비어 있습니다.");
   }

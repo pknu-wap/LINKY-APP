@@ -9,7 +9,7 @@ class CalendarPage extends StatefulWidget {
 
 class _CalendarPageState extends State<CalendarPage> {
   late final ValueNotifier<List<Event>> _selectedEvents;
-  DateTime _focusedDay = DateTime(2026, 4, 1);
+  DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   int startYear = 2026;
   int endYear = 2099;
@@ -349,7 +349,6 @@ class Event {
   const Event(this.title, {this.hour = 9, this.minute = 0});
 }
 
-final kEvents = {
-};
+final Map<DateTime, List<Event>> kEvents = {}; // -> 알림 30분 전에 한번 울리고 정시간에 한번 더 울림
 //데이터 하루 지나면 삭제 -> 만료시 색깔 변경
 //년도 2099년
