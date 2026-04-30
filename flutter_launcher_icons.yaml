@@ -1,0 +1,7 @@
+# flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/linky_logo.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true

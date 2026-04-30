@@ -41,7 +41,7 @@ Future<void> handleKakaoLogin() async {
     final kakaoToken = await UserApi.instance.loginWithKakaoTalk();
     debugPrint('3. 카카오 로그인 성공');
 
-    //await sendKakaoTokenToBackend(kakaoToken.accessToken); //테스트 진행시에는 이 코드 주석 처리하고 진행
+    await sendKakaoTokenToBackend(kakaoToken.accessToken); //테스트 진행시에는 이 코드 주석 처리하고 진행
     debugPrint('4. 백엔드 전송 성공');
 
     if (!mounted) return;
@@ -70,14 +70,18 @@ Future<void> sendKakaoTokenToBackend(String kakaoAccessToken) async {
 
     final responseData = response.data;
 
-    // ApiResponse로 감싸져 있으면 data 안에 token이 있음
-    final token = responseData['data']?['token'] ?? responseData['token'];
+    final accessToken = responseData['data']?['accessToken'] ?? responseData['accessToken'];
+    final refreshToken = responseData['data']?['refreshToken'] ?? responseData['refreshToken'];
 
-    if (token == null) {
-      throw Exception('백엔드 응답에 token이 없습니다: $responseData');
+    if (accessToken == null) {
+      throw Exception('백엔드 응답에 accesstoken이 없습니다: $responseData');
     }
 
-    await storage.write(key: 'accessToken', value: token);
+    await storage.write(key: 'accessToken', value: accessToken);
+
+    if(refreshToken != null) {
+      await storage.write(key: 'refreshToken', value: refreshToken);
+    }
   } on DioException catch (e) {
     debugPrint('백엔드 요청 실패');
     debugPrint('상태 코드: ${e.response?.statusCode}');
