@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
+import 'package:std/pages/login_page.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting_page.dart';
 import 'package:std/pages/slide_page.dart';
 import 'package:std/pages/plus_page.dart';
-import 'package:std/pages/login_page.dart';
 import 'package:std/services/alarm_service.dart';
 import 'package:std/widgets/secret_page_guard.dart';
 
