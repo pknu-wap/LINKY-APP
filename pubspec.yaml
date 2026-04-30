@@ -41,6 +41,7 @@ dependencies:
   android_alarm_manager_plus: ^5.0.0
   flutter_local_notifications: ^17.2.3
   permission_handler: ^12.0.1
+  mysql_client: ^0.0.27
 
   url_launcher:
   app_links:

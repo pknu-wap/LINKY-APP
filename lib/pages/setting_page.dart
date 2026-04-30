@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:std/pages/plus_page.dart';
+import 'package:std/widgets/public_select_category.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -8,6 +10,7 @@ class SettingPage extends StatefulWidget {
 }
 
 class SettingPageState extends State<SettingPage> {
+  final TextEditingController _categoryController = TextEditingController();
   // 입력창 스타일을 위한 공통 함수
   InputDecoration inputBox(String hint) {
     return InputDecoration(
@@ -29,6 +32,12 @@ class SettingPageState extends State<SettingPage> {
         borderSide: const BorderSide(color: Color(0xFF3FD966)),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _categoryController.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,20 +76,59 @@ class SettingPageState extends State<SettingPage> {
 
               // 카테고리 추가 섹션
               Row(
-                children: const [
+                children: [
                   Icon(Icons.add, color: Color(0xFF3FD966), size: 28),
                   SizedBox(width: 8),
                   Text(
                     "카테고리 추가",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
+                  const SizedBox(width: 150),
+                  ElevatedButton(
+                    onPressed: () {
+                      String categoryValue = _categoryController.text.trim();
+
+                      SelectCategory(
+                        categoryCount: categoryValue.length.toString(),
+                        categoryTitle: categoryValue,
+                      );
+
+                      if (categoryValue.isNotEmpty) {
+                        if (categories.contains(categoryValue)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('이미 존재하는 카테고리입니다.')),
+                          );
+                          return;
+                        }
+
+                        setState(() {
+                          categories.add(categoryValue);
+                        });
+
+                        _categoryController.clear(); // 입력창 비우기
+                        FocusScope.of(context).unfocus(); // 키보드 닫기
+
+                        print("카테고리 추가 완료: $categories");
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    child: const Text("확인"),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
-              TextField(decoration: inputBox("제목")),
-
+              TextField(
+                controller: _categoryController,
+                decoration: inputBox("카테고리 입력해주세요."),
+              ),
               const SizedBox(height: 35),
-
               // 비밀번호 설정 섹션
               Row(
                 children: const [

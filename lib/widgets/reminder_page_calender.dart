@@ -30,28 +30,13 @@ class CalenderWidget extends StatelessWidget {
       onPageChanged: onPageChanged,
       eventLoader: eventLoader,
 
-      calendarStyle: const CalendarStyle(
-        todayDecoration: BoxDecoration(
-          color: Color(0xFF3FD966),
-          shape: BoxShape.circle,
-        ),
-        selectedDecoration: BoxDecoration(
-          color: Colors.blue,
-          shape: BoxShape.circle,
-        ),
-        markerDecoration: BoxDecoration(
-          color: Colors.red,
-          shape: BoxShape.circle,
-        ),
-      ),
-
       calendarBuilders: CalendarBuilders(
         // 선택된 날짜 커스텀 스타일
         selectedBuilder: (context, day, focusedDay) {
           return Container(
             margin: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Colors.lightBlue,
+              color: Colors.lightBlue.withOpacity(0.5),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
