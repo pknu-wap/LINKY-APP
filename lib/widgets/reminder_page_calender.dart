@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:std/constants.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:std/pages/calender_page.dart';
 
@@ -52,7 +53,7 @@ class CalenderWidget extends StatelessWidget {
           return Container(
             margin: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: const Color(0xFF3FD966),
+              color: AppColors.mainGreen,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:std/constants.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 
 class TripleFolderBottomSheet extends StatefulWidget {
@@ -94,7 +95,7 @@ class _TripleFolderBottomSheetState extends State<TripleFolderBottomSheet> {
               urlLink: widget.url,
               showContent: true,
               subWidth: 0,
-              color: Color(0xff3fd966),
+              color: AppColors.mainGreen,
             ),
           ),
         ],

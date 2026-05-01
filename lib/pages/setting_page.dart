@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:std/constants.dart';
 import 'package:std/pages/plus_page.dart';
 import 'package:std/widgets/public_select_category.dart';
 
@@ -29,7 +30,7 @@ class SettingPageState extends State<SettingPage> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(20),
-        borderSide: const BorderSide(color: Color(0xFF3FD966)),
+        borderSide: const BorderSide(color: AppColors.mainGreen),
       ),
     );
   }
@@ -77,7 +78,7 @@ class SettingPageState extends State<SettingPage> {
               // 카테고리 추가 섹션
               Row(
                 children: [
-                  Icon(Icons.add, color: Color(0xFF3FD966), size: 28),
+                  Icon(Icons.add, color: AppColors.mainGreen, size: 28),
                   SizedBox(width: 8),
                   Text(
                     "카테고리 추가",
@@ -134,7 +135,7 @@ class SettingPageState extends State<SettingPage> {
                 children: const [
                   Icon(
                     Icons.account_circle,
-                    color: Color(0xFF3FD966),
+                    color: AppColors.mainGreen,
                     size: 28,
                   ),
                   SizedBox(width: 8),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:std/constants.dart';
 
 class CalendarWidget extends StatelessWidget {
   final DateTime? selectedDate;
@@ -17,7 +18,7 @@ class CalendarWidget extends StatelessWidget {
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor: Color(0xFF3FD966),
+          backgroundColor: AppColors.mainGreen,
           foregroundColor: Color(0xFF000000),
           side: BorderSide(color: Colors.black),
           shape: RoundedRectangleBorder(

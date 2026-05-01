@@ -13,6 +13,8 @@ import 'package:std/widgets/secret_page_guard.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter/services.dart';
 
+import 'constants.dart';
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 @pragma('vm:entry-point')
@@ -170,7 +172,7 @@ class _MainScreenState extends State<MainScreen> {
               type: BottomNavigationBarType.fixed,
               currentIndex: _selectedIndex,
               onTap: _onItemTapped,
-              selectedItemColor: Color(0xff3fd966),
+              selectedItemColor: AppColors.mainGreen,
               unselectedItemColor: Colors.black,
               items: [
                 BottomNavigationBarItem(
@@ -197,7 +199,7 @@ class _MainScreenState extends State<MainScreen> {
                     child: const Center(
                       child: Icon(
                         Icons.add,
-                        color: Color(0xff3fd966),
+                        color: AppColors.mainGreen,
                         size: 45,
                       ),
                     ),
@@ -240,14 +242,14 @@ class _MainScreenState extends State<MainScreen> {
       children: [
         Icon(
           icon,
-          color: isSelected ? const Color(0xff3fd966) : Colors.black,
+          color: isSelected ? AppColors.mainGreen : Colors.black,
           size: 25,
         ),
         const SizedBox(height: 6),
         Text(
           label,
           style: TextStyle(
-            color: isSelected ? const Color(0xff3fd966) : Colors.black,
+            color: isSelected ? AppColors.mainGreen : Colors.black,
             fontSize: 11,
           ),
         ),

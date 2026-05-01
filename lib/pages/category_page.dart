@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:std/constants.dart';
 
 class Linky extends StatelessWidget {
   const Linky({super.key});
@@ -35,7 +36,7 @@ class FilterButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? Color(0xff3FD966) : Colors.white,
+          color: isSelected ? AppColors.mainGreen : Colors.white,
           borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
@@ -105,7 +106,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xff3FD966),
+                      backgroundColor: AppColors.mainGreen,
                       shape: const CircleBorder(),
                       padding: const EdgeInsets.all(16),
                     ),
@@ -196,7 +197,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   topRight: Radius.circular(16),
                 ),
                 child: Container(
-                  color: Color(0xff3FD966),
+                  color: AppColors.mainGreen,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
                     children: [

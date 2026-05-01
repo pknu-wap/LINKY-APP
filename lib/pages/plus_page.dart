@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/private_page.dart';
 // import 'package:mysql_client/mysql_client.dart';
@@ -149,7 +150,7 @@ class _PlusPageState extends State<PlusPage> {
       ).showSnackBar(const SnackBar(content: Text('유효한 URL을 입력하세요.')));
       return;
     }
-    
+
     if (isPrivate == true) {
       contentsTitle.add(title);
       contentsURL.add(url);
@@ -331,7 +332,7 @@ class _PlusPageState extends State<PlusPage> {
                     child: OutlinedButton(
                       onPressed: saveLink,
                       style: OutlinedButton.styleFrom(
-                        backgroundColor: Color(0xFF3FD966),
+                        backgroundColor: AppColors.mainGreen,
                         foregroundColor: Color(0xFF000000),
                         side: BorderSide(color: Colors.black),
                         shape: RoundedRectangleBorder(

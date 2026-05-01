@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:std/widgets/public_content_detail_sheet.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
-
-const mainGreen = Color(0xff3fd966);
+import 'package:std/constants.dart';
 
 class ContentsBox extends StatelessWidget {
   final String titleText, urlText;
@@ -46,7 +45,7 @@ class ContentsBox extends StatelessWidget {
                 width: 357,
                 height: 53,
                 decoration: BoxDecoration(
-                  color: mainGreen,
+                  color: AppColors.mainGreen,
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Padding(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:std/constants.dart';
 import 'package:std/widgets/reminder_page_calender.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 
@@ -95,7 +96,7 @@ class _CalendarPageState extends State<CalendarPage> {
             width: 6,
             height: 45,
             decoration: BoxDecoration(
-              color: const Color(0xFF3FD966),
+              color: AppColors.mainGreen,
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -319,7 +320,7 @@ class _CalendarPageState extends State<CalendarPage> {
           Container(
             width: 30,
             decoration: const BoxDecoration(
-              color: Color(0xFF3FD966),
+              color: AppColors.mainGreen,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20),
                 bottomLeft: Radius.circular(20),
@@ -349,6 +350,7 @@ class Event {
   const Event(this.title, {this.hour = 9, this.minute = 0});
 }
 
-final Map<DateTime, List<Event>> kEvents = {}; // -> 알림 30분 전에 한번 울리고 정시간에 한번 더 울림
+final Map<DateTime, List<Event>> kEvents =
+    {}; // -> 알림 30분 전에 한번 울리고 정시간에 한번 더 울림
 //데이터 하루 지나면 삭제 -> 만료시 색깔 변경
 //년도 2099년

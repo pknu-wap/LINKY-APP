@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/widgets/reminder_page_remindertask.dart';
 
@@ -15,7 +16,6 @@ class Reminder extends State<ReminderScreen> {
   int day_count = 0;
 
   final Color green = const Color(0xFF2CD456);
-  final Color green1 = const Color(0xFF3FD966);
   final Color white = const Color(0xFFFFFFFF);
   final Color grey = const Color(0xFFDEDEDE);
   final Color pink = const Color(0xFFFFBFF3);
@@ -56,7 +56,7 @@ class Reminder extends State<ReminderScreen> {
           Container(
             width: 30,
             decoration: const BoxDecoration(
-              color: Color(0xFF3FD966),
+              color: AppColors.mainGreen,
               borderRadius: BorderRadius.only(
                 topRight: Radius.circular(20),
                 bottomRight: Radius.circular(20),
@@ -269,7 +269,7 @@ class Reminder extends State<ReminderScreen> {
               Expanded(
                 child: hourEvents.isNotEmpty
                     ? RemindertaskWidget(
-                        backgroundColor: green1,
+                        backgroundColor: AppColors.mainGreen,
                         // 여기서는 첫 번째 이벤트의 제목을 전달하는 식으로 커스텀 가능
                       )
                     : const SizedBox(height: 40), // 일정이 없을 때의 높이 확보

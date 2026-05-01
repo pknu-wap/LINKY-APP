@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:std/constants.dart';
 
 class SelectCategory extends StatelessWidget {
   final String categoryCount, categoryTitle;
@@ -15,7 +16,7 @@ class SelectCategory extends StatelessWidget {
     return Container(
       width: 120,
       decoration: BoxDecoration(
-        color: Color(0xff3fd966),
+        color: AppColors.mainGreen,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.black),
       ),
