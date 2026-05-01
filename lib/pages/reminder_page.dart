@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:std/pages/calender.dart';
-import 'package:std/widgets/remindertask_widget.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:std/constants.dart';
+import 'package:std/pages/calender_page.dart';
+import 'package:std/widgets/reminder_page_remindertask.dart';
 
 class ReminderScreen extends StatefulWidget {
   const ReminderScreen({super.key});
@@ -13,13 +15,6 @@ class Reminder extends State<ReminderScreen> {
   int selectedMonth = 0;
   int selectedDay = 0;
   int day_count = 0;
-
-  final Color green = const Color(0xFF2CD456);
-  final Color green1 = const Color(0xFF3FD966);
-  final Color white = const Color(0xFFFFFFFF);
-  final Color grey = const Color(0xFFDEDEDE);
-  final Color pink = const Color(0xFFFFBFF3);
-  final Color black = const Color(0xFF000000);
 
   final List<String> months = [
     'January',
@@ -48,21 +43,27 @@ class Reminder extends State<ReminderScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: white,
+      color: AppColors.white,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           //좌측 초록색 사이드바 (페이지 전환 영역)
           Container(
             width: 30,
-            color: green,
+            decoration: const BoxDecoration(
+              color: AppColors.mainGreen,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
+            ),
             child: Center(
               child: Container(
                 width: 4,
-                height: 100,
+                height: 60,
                 decoration: BoxDecoration(
-                  color: white,
-                  borderRadius: BorderRadius.circular(2),
+                  color: AppColors.white.withValues(alpha: 0.8),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
@@ -83,12 +84,12 @@ class Reminder extends State<ReminderScreen> {
                         Container(
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: pink,
+                            color: AppColors.mainPink,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
                             Icons.calendar_today_outlined,
-                            color: Colors.black,
+                            color: AppColors.black,
                             size: 20,
                           ),
                         ),
@@ -150,14 +151,16 @@ class Reminder extends State<ReminderScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 // 선택되었을 때 회색, 아닐 때 흰색 배경
-                color: isSelected ? grey : white,
+                color: isSelected ? AppColors.popupBackGrey : AppColors.white,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: grey),
+                border: Border.all(color: AppColors.popupBackGrey),
               ),
               child: Text(
                 months[index],
                 style: TextStyle(
-                  color: isSelected ? Colors.black : Colors.black54,
+                  color: isSelected
+                      ? AppColors.black
+                      : AppColors.black.withValues(alpha: 0.541),
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
@@ -191,15 +194,17 @@ class Reminder extends State<ReminderScreen> {
               margin: const EdgeInsets.only(right: 10),
               decoration: BoxDecoration(
                 // 선택되었을 때 초록색, 아닐 때 흰색
-                color: isSelected ? green : Colors.white,
+                color: isSelected ? AppColors.darkGreen : AppColors.white,
                 borderRadius: BorderRadius.circular(25),
                 border: Border.all(
-                  color: isSelected ? Colors.transparent : Colors.grey[200]!,
+                  color: isSelected
+                      ? AppColors.transparent
+                      : AppColors.lightGrey,
                 ),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: green.withOpacity(0.3),
+                          color: AppColors.darkGreen.withValues(alpha: 0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -211,7 +216,7 @@ class Reminder extends State<ReminderScreen> {
                   '${index + 1}',
                   style: TextStyle(
                     fontSize: 18,
-                    color: isSelected ? white : black,
+                    color: isSelected ? AppColors.white : AppColors.black,
                   ),
                 ),
               ),
@@ -221,7 +226,7 @@ class Reminder extends State<ReminderScreen> {
       ),
     );
   }
-  
+
   // 타임라인 리스트
   Widget Timeline() {
     // 1. 현재 선택된 '년, 월, 일'을 기준으로 DateTime 객체 생성
@@ -256,18 +261,18 @@ class Reminder extends State<ReminderScreen> {
                 width: 50,
                 child: Text(
                   timeStr,
-                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  style: GoogleFonts.inter(
+                    color: AppColors.textGrey,
+                    fontSize: 12,
+                  ),
                 ),
               ),
               // 4. 핵심 로직: 일정이 있으면 위젯을 보여주고, 없으면 투명한 빈 칸을 보여줌
               Expanded(
                 child: hourEvents.isNotEmpty
                     ? RemindertaskWidget(
-                        backgroundColor: green1,
+                        backgroundColor: AppColors.mainGreen,
                         // 여기서는 첫 번째 이벤트의 제목을 전달하는 식으로 커스텀 가능
-                        onTapDown: (details) {
-                          showPopupMenu(context, details.globalPosition);
-                        },
                       )
                     : const SizedBox(height: 40), // 일정이 없을 때의 높이 확보
               ),
@@ -278,138 +283,20 @@ class Reminder extends State<ReminderScreen> {
     );
   }
 
-  void showPopupMenu(BuildContext context, Offset position) async {
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
-
-    await showMenu(
-      context: context,
-      items: [
-        const PopupMenuItem(value: '수정', child: Text('수정')),
-        const PopupMenuItem(value: '삭제', child: Text('삭제')),
-      ],
-      position: RelativeRect.fromRect(
-        position & const Size(40, 40), // 메뉴가 나타날 위치
-        Offset.zero & overlay.size, // 전체 화면 크기
-      ),
-    ).then((value) {
-      if (value == '수정') {
-        showEditConfirmDialog(context);
-      } else if (value == '삭제') {
-        // 삭제 로직 구현
-      }
-    });
-  }
-
-  void showEditConfirmDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        titlePadding: const EdgeInsets.only(top: 30, bottom: 20),
-        contentPadding: EdgeInsets.zero,
-        title: const Text(
-          '해당 링크를 수정하시겠어요?',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Divider(height: 1),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      '아니오',
-                      style: TextStyle(color: Colors.blue, fontSize: 18),
-                    ),
-                  ),
-                ),
-                Container(width: 1, height: 50, color: Colors.grey[300]),
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pop(context); // 다이얼로그 닫기
-                      EditSheet(context); // 바텀시트 열기
-                    },
-                    child: const Text(
-                      '수정',
-                      style: TextStyle(color: Colors.red, fontSize: 18),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void EditSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.9,
-        decoration: const BoxDecoration(
-          color: Color(0xFFF2F4F7), // 이미지 3의 배경색 느낌
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.cancel_outlined,
-                      color: Colors.red,
-                      size: 30,
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.check_circle_outline,
-                      color: Colors.green,
-                      size: 30,
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-            ),
-            buildEditField('제목 수정', Icons.cancel),
-            buildEditField('URL 수정', Icons.cancel),
-            const SizedBox(height: 20),
-            buildEditField('날짜 수정', Icons.calendar_today_outlined),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget buildEditField(String hint, IconData suffixIcon) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       decoration: BoxDecoration(
-        color: white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextField(
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: Colors.grey),
+          hintStyle: const TextStyle(color: AppColors.textGrey),
           border: InputBorder.none,
-          suffixIcon: Icon(suffixIcon, color: Colors.grey[400], size: 20),
+          suffixIcon: Icon(suffixIcon, color: AppColors.outlineGrey, size: 20),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:std/constants.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:std/pages/calender.dart';
+import 'package:std/pages/calender_page.dart';
 
 class CalenderWidget extends StatelessWidget {
   final DateTime focusedDay;
@@ -10,13 +11,13 @@ class CalenderWidget extends StatelessWidget {
   final List<Event> Function(DateTime day) eventLoader;
 
   const CalenderWidget({
-    Key? key,
+    super.key,
     required this.focusedDay,
     required this.selectedDay,
     required this.onDaySelected,
     required this.onPageChanged,
     required this.eventLoader,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,35 +30,20 @@ class CalenderWidget extends StatelessWidget {
       onDaySelected: onDaySelected,
       onPageChanged: onPageChanged,
       eventLoader: eventLoader,
-      
-      calendarStyle: const CalendarStyle(
-        todayDecoration: BoxDecoration(
-          color: Color(0xFF3FD966),
-          shape: BoxShape.circle,
-        ),
-        selectedDecoration: BoxDecoration(
-          color: Colors.blue,
-          shape: BoxShape.circle,
-        ),
-        markerDecoration: BoxDecoration(
-          color: Colors.red,
-          shape: BoxShape.circle,
-        ),
-      ),
-      
+
       calendarBuilders: CalendarBuilders(
         // 선택된 날짜 커스텀 스타일
         selectedBuilder: (context, day, focusedDay) {
           return Container(
             margin: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Colors.lightBlue,
+              color: AppColors.calendarBlue.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
               child: Text(
                 '${day.day}',
-                style: const TextStyle(color: Colors.black),
+                style: const TextStyle(color: AppColors.black),
               ),
             ),
           );
@@ -67,13 +53,13 @@ class CalenderWidget extends StatelessWidget {
           return Container(
             margin: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: const Color(0xFF3FD966),
+              color: AppColors.mainGreen,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
               child: Text(
                 '${day.day}',
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: AppColors.white),
               ),
             ),
           );

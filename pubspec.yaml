@@ -30,12 +30,25 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  local_auth: ^3.0.1 # 생체 인식
+  screen_protector: ^1.5.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   table_calendar: ^3.2.0
   google_fonts: ^8.0.2
+  android_alarm_manager_plus: ^5.0.0
+  flutter_local_notifications: ^17.2.3
+  permission_handler: ^12.0.1
+  mysql_client: ^0.0.27
+
+  url_launcher:
+  app_links:
+  dio:
+  flutter_secure_storage:
+  kakao_flutter_sdk_user: 
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:

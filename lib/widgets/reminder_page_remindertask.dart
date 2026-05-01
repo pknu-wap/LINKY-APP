@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:std/widgets/public_popup_menu_button.dart';
+import 'package:std/constants.dart';
 
 class RemindertaskWidget extends StatelessWidget {
   final Color backgroundColor;
@@ -23,12 +25,14 @@ class RemindertaskWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Icon(Icons.calendar_today, size: 18, color: Colors.black54),
-          GestureDetector(
-            onTapDown: (details) {
-              if (onTapDown != null) onTapDown!(details);
-            },
-            child: const Icon(Icons.more_vert, color: Colors.black54),
+          Icon(
+            Icons.calendar_today,
+            size: 18,
+            color: AppColors.black.withValues(alpha: 0.541),
+          ),
+          PopupButton(
+            onActionDone: () => print('삭제 버튼 클릭됨'),
+            context: context,
           ),
         ],
       ),
@@ -37,4 +41,4 @@ class RemindertaskWidget extends StatelessWidget {
 }
 
 // 메뉴 위치를 잡기 위한 커스텀 콜백 타입 정의
-typedef OffsetTapCallback = void Function(TapDownDetails details);  
+typedef OffsetTapCallback = void Function(TapDownDetails details);

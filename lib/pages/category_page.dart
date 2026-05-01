@@ -3,7 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:std/widgets/select_category_categorypage.dart';
 import 'package:std/widgets/popup_menu_button_categorypage.dart';
 
-const mainGreen = Color(0xff3fd966);
+class Linky extends StatelessWidget {
+  const Linky({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(title: 'Linky', home: const CategoryPage());
+  }
+}
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
