@@ -7,7 +7,6 @@ class AppColors {
   static const Color white = Colors.white;
   static const Color black = Colors.black;
   static const Color bottNavTextGrey = Color(0xFF49454F);
-  static const Color plusBackGrey = Color(0xFFF0F2F6);
   static const Color mainBackGrey = Color(0xFFF0F2F6);
   static const Color popupBackGrey = Color(0xFFD9D9D9);
   static const Color textGrey = Color(0xFF7E7E7E);
