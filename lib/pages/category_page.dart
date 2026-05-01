@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:std/constants.dart';
 import 'package:std/widgets/select_category_categorypage.dart';
 import 'package:std/widgets/popup_menu_button_categorypage.dart';
 
@@ -123,7 +124,7 @@ class _CategoryPageState extends State<CategoryPage> {
                       child: SelectCategoryHome(
                         categoryCount: cat["count"]!,
                         categoryTitle: cat["title"]!,
-                        backgroundColor: isSelected ? mainGreen : Colors.white,
+                        backgroundColor: isSelected ? AppColors.mainGreen : Colors.white,
                         countBackgroundColor: isSelected
                             ? const Color(0xffffffff)
                             : const Color(0xFFC5C5C5),
@@ -167,7 +168,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             child: Container(
                               height: 53,
                               decoration: BoxDecoration(
-                                color: mainGreen,
+                                color: AppColors.mainGreen,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: Padding(
