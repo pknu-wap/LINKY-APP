@@ -22,12 +22,12 @@ class ContentsBox extends StatelessWidget {
         width: 375,
         height: 138,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(23),
-          border: BoxBorder.all(color: Colors.black, width: 1),
+          border: BoxBorder.all(color: AppColors.black, width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.25),
+              color: AppColors.black.withValues(alpha: 0.25),
               spreadRadius: 0,
               blurRadius: 4,
               offset: Offset(0, 4), // changes position of shadow
@@ -56,7 +56,7 @@ class ContentsBox extends StatelessWidget {
                       Text(
                         titleText,
                         style: GoogleFonts.inter(
-                          color: Colors.black,
+                          color: AppColors.black,
                           fontSize: 16,
                         ),
                       ),
@@ -80,7 +80,7 @@ class ContentsBox extends StatelessWidget {
                   urlText,
                   style: GoogleFonts.inter(
                     fontSize: 13,
-                    color: Color(0xff7E7E7E),
+                    color: AppColors.textGrey,
                   ),
                 ),
               ),
@@ -104,7 +104,7 @@ class ContentsBox extends StatelessWidget {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
-          backgroundColor: Colors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
+          backgroundColor: AppColors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
           builder: (context) => TripleFolderBottomSheet(
             contentTitle: titleText,
             url: urlText,

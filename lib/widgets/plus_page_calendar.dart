@@ -19,8 +19,8 @@ class CalendarWidget extends StatelessWidget {
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           backgroundColor: AppColors.mainGreen,
-          foregroundColor: Color(0xFF000000),
-          side: BorderSide(color: Colors.black),
+          foregroundColor: AppColors.black,
+          side: BorderSide(color: AppColors.black),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(23),
           ),
@@ -34,7 +34,7 @@ class CalendarWidget extends StatelessWidget {
                   ? '만료일 선택'
                   : '만료일: ${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}',
             ),
-            const Icon(Icons.arrow_drop_down, color: Colors.black, size: 30),
+            const Icon(Icons.arrow_drop_down, color: AppColors.black, size: 30),
           ],
         ),
       ),

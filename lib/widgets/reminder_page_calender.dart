@@ -11,13 +11,13 @@ class CalenderWidget extends StatelessWidget {
   final List<Event> Function(DateTime day) eventLoader;
 
   const CalenderWidget({
-    Key? key,
+    super.key,
     required this.focusedDay,
     required this.selectedDay,
     required this.onDaySelected,
     required this.onPageChanged,
     required this.eventLoader,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +37,13 @@ class CalenderWidget extends StatelessWidget {
           return Container(
             margin: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Colors.lightBlue.withOpacity(0.5),
+              color: AppColors.calendarBlue.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
               child: Text(
                 '${day.day}',
-                style: const TextStyle(color: Colors.black),
+                style: const TextStyle(color: AppColors.black),
               ),
             ),
           );
@@ -59,7 +59,7 @@ class CalenderWidget extends StatelessWidget {
             child: Center(
               child: Text(
                 '${day.day}',
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: AppColors.white),
               ),
             ),
           );

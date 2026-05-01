@@ -212,7 +212,7 @@ class _PlusPageState extends State<PlusPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F2F6),
+      backgroundColor: AppColors.mainBackGrey,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -236,7 +236,7 @@ class _PlusPageState extends State<PlusPage> {
                           style: GoogleFonts.inter(
                             fontSize: 60,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF232323),
+                            color: AppColors.black,
                           ),
                         ),
                       ],
@@ -249,7 +249,7 @@ class _PlusPageState extends State<PlusPage> {
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFF232323),
+                      color: AppColors.black,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -263,7 +263,7 @@ class _PlusPageState extends State<PlusPage> {
                       hintText: 'https://example.com',
                       //counterText: '',
                       filled: true,
-                      fillColor: const Color(0xFFFFFFFF),
+                      fillColor: AppColors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -277,7 +277,7 @@ class _PlusPageState extends State<PlusPage> {
                     decoration: InputDecoration(
                       labelText: '제목',
                       filled: true,
-                      fillColor: const Color(0xFFFFFFFF),
+                      fillColor: AppColors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -303,7 +303,7 @@ class _PlusPageState extends State<PlusPage> {
                         '나만 보기로 저장',
                         style: GoogleFonts.inter(
                           fontSize: 15,
-                          color: Color(0xff7F7F7F),
+                          color: AppColors.textGrey,
                         ),
                       ),
                       Transform.scale(
@@ -333,8 +333,8 @@ class _PlusPageState extends State<PlusPage> {
                       onPressed: saveLink,
                       style: OutlinedButton.styleFrom(
                         backgroundColor: AppColors.mainGreen,
-                        foregroundColor: Color(0xFF000000),
-                        side: BorderSide(color: Colors.black),
+                        foregroundColor: AppColors.black,
+                        side: BorderSide(color: AppColors.black),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(23),
                         ),

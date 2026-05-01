@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:std/constants.dart';
 import 'package:std/widgets/public_contents_box.dart';
 import 'package:std/widgets/public_select_category.dart';
 
@@ -24,7 +25,7 @@ class _PrivatePageState extends State<PrivatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFf0f2f6),
+      backgroundColor: AppColors.mainBackGrey,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -44,7 +45,7 @@ class _PrivatePageState extends State<PrivatePage> {
                       height: 34.43,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: Color(0xffffbff3),
+                        color: AppColors.mainPink,
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(2),

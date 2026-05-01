@@ -65,7 +65,7 @@ class _TripleFolderBottomSheetState extends State<TripleFolderBottomSheet> {
                 urlLink: widget.url,
                 showContent: false,
                 subWidth: 80,
-                color: Color(0xffeaeaea),
+                color: AppColors.lightGrey,
               ),
             ),
           ),
@@ -81,7 +81,7 @@ class _TripleFolderBottomSheetState extends State<TripleFolderBottomSheet> {
                 urlLink: widget.url,
                 showContent: false,
                 subWidth: 33,
-                color: Color(0xffC8C8C8),
+                color: AppColors.outlineGrey,
               ),
             ),
           ),
@@ -126,7 +126,7 @@ class ContentDetailSheet extends StatelessWidget {
     double folderHeight = screenSize.height - 260;
 
     return Material(
-      color: Colors.transparent, // InkWell 에러 방지용 투명 Material
+      color: AppColors.transparent, // InkWell 에러 방지용 투명 Material
       child: SizedBox(
         width: folderWidth,
         height: folderHeight,
@@ -151,7 +151,7 @@ class ContentDetailSheet extends StatelessWidget {
                             Text(
                               '제목',
                               style: GoogleFonts.inter(
-                                color: Colors.black,
+                                color: AppColors.black,
                                 decoration: TextDecoration.none,
                                 fontSize: 20,
                                 fontWeight: FontWeight.normal,
@@ -161,7 +161,7 @@ class ContentDetailSheet extends StatelessWidget {
                             Text(
                               title,
                               style: GoogleFonts.inter(
-                                color: Colors.black,
+                                color: AppColors.black,
                                 decoration: TextDecoration.none,
                                 fontSize: 20,
                                 fontWeight: FontWeight.normal,
@@ -177,7 +177,7 @@ class ContentDetailSheet extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    const Divider(thickness: 1, color: Colors.black),
+                    const Divider(thickness: 1, color: AppColors.black),
                     const SizedBox(height: 5),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -187,7 +187,7 @@ class ContentDetailSheet extends StatelessWidget {
                             Text(
                               'URL',
                               style: GoogleFonts.inter(
-                                color: Colors.black,
+                                color: AppColors.black,
                                 decoration: TextDecoration.none,
                                 fontSize: 20,
                                 fontWeight: FontWeight.normal,
@@ -197,7 +197,7 @@ class ContentDetailSheet extends StatelessWidget {
                             Text(
                               urlLink,
                               style: GoogleFonts.inter(
-                                color: Colors.black,
+                                color: AppColors.black,
                                 decoration: TextDecoration.none,
                                 fontSize: 20,
                                 fontWeight: FontWeight.normal,
@@ -214,13 +214,13 @@ class ContentDetailSheet extends StatelessWidget {
                             height: 39,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(24),
-                              color: Colors.white,
+                              color: AppColors.white,
                             ),
                             child: Center(
                               child: Text(
                                 '이동',
                                 style: GoogleFonts.inter(
-                                  color: Colors.black,
+                                  color: AppColors.black,
                                   fontSize: 15,
                                   fontWeight: FontWeight.normal,
                                 ),
@@ -231,12 +231,12 @@ class ContentDetailSheet extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 5),
-                    const Divider(thickness: 1, color: Colors.black),
+                    const Divider(thickness: 1, color: AppColors.black),
                     const SizedBox(height: 10),
                     Text(
                       '요약',
                       style: GoogleFonts.inter(
-                        color: Colors.black,
+                        color: AppColors.black,
                         decoration: TextDecoration.none,
                         fontSize: 20,
                         fontWeight: FontWeight.normal,

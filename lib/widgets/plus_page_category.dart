@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:std/constants.dart';
 
 class CategoryWidget extends StatelessWidget {
   final String? selectedCategory;
@@ -19,26 +20,26 @@ class CategoryWidget extends StatelessWidget {
       decoration: InputDecoration(
         hintText: '카테고리',
         filled: true,
-        fillColor: const Color(0xFFFFFFFF),
+        fillColor: AppColors.white,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 18,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Colors.black),
+          borderSide: const BorderSide(color: AppColors.black),
         ),
       ),
 
-      dropdownColor: const Color(0xffFFFFFF),
+      dropdownColor: AppColors.white,
       borderRadius: BorderRadius.circular(14),
-      icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
+      icon: const Icon(Icons.arrow_drop_down, color: AppColors.black),
       items: categories.map((category) {
         return DropdownMenuItem<String>(
           value: category,
           child: Text(
             category,
-            style: const TextStyle(fontSize: 16, color: Colors.black),
+            style: const TextStyle(fontSize: 16, color: AppColors.black),
           ),
         );
       }).toList(),

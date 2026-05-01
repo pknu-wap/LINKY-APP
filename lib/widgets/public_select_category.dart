@@ -18,7 +18,7 @@ class SelectCategory extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.mainGreen,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black),
+        border: Border.all(color: AppColors.black),
       ),
       child: Row(
         children: [
@@ -34,7 +34,7 @@ class SelectCategory extends StatelessWidget {
             width: 39,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(13),
-              color: Colors.white,
+              color: AppColors.white,
             ),
             child: SizedBox(
               width: 30,
@@ -56,7 +56,7 @@ class SelectCategory extends StatelessWidget {
               categoryTitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                color: Colors.white,
+                color: AppColors.white,
                 fontSize: 14,
               ),
             ),

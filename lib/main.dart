@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const LoginPage(),
+      home: const MainScreen(),
       routes: {
         '/main': (context) => const MainScreen(),
       },
@@ -159,7 +159,7 @@ class _MainScreenState extends State<MainScreen> {
               topRight: Radius.circular(19),
               topLeft: Radius.circular(19),
             ),
-            border: Border.all(color: Color(0xffC4C4C4), width: 1),
+            border: Border.all(color: AppColors.outlineGrey, width: 1),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.only(
@@ -173,7 +173,7 @@ class _MainScreenState extends State<MainScreen> {
               currentIndex: _selectedIndex,
               onTap: _onItemTapped,
               selectedItemColor: AppColors.mainGreen,
-              unselectedItemColor: Colors.black,
+              unselectedItemColor: AppColors.black,
               items: [
                 BottomNavigationBarItem(
                   icon: _buildCommonItem(Icons.reorder, '카테고리', false),
@@ -242,14 +242,14 @@ class _MainScreenState extends State<MainScreen> {
       children: [
         Icon(
           icon,
-          color: isSelected ? AppColors.mainGreen : Colors.black,
+          color: isSelected ? AppColors.mainGreen : AppColors.black,
           size: 25,
         ),
         const SizedBox(height: 6),
         Text(
           label,
           style: TextStyle(
-            color: isSelected ? AppColors.mainGreen : Colors.black,
+            color: isSelected ? AppColors.mainGreen : AppColors.black,
             fontSize: 11,
           ),
         ),

@@ -16,17 +16,17 @@ class SettingPageState extends State<SettingPage> {
   InputDecoration inputBox(String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+      hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 14),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: AppColors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: AppColors.outlineGrey),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: AppColors.outlineGrey),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(20),
@@ -44,7 +44,7 @@ class SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F2F5), // 연한 그레이 배경색
+      backgroundColor: AppColors.mainBackGrey, // 연한 그레이 배경색
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -57,12 +57,12 @@ class SettingPageState extends State<SettingPage> {
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFBFF3),
+                      color: AppColors.mainPink,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
                       Icons.settings_outlined,
-                      color: Colors.black,
+                      color: AppColors.black,
                       size: 24,
                     ),
                   ),
@@ -113,8 +113,8 @@ class SettingPageState extends State<SettingPage> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
+                      backgroundColor: AppColors.white,
+                      foregroundColor: AppColors.black,
                       textStyle: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -163,15 +163,15 @@ class SettingPageState extends State<SettingPage> {
                   height: 60,
                   margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.white,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.grey.shade200),
+                    border: Border.all(color: AppColors.lightGrey),
                   ),
                   child: Center(
                     child: Text(
                       "로그아웃",
                       style: TextStyle(
-                        color: Colors.redAccent,
+                        color: AppColors.mainRed,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -206,7 +206,7 @@ class SettingPageState extends State<SettingPage> {
                 ),
               ),
               // 하단 버튼 영역 구분선
-              Container(height: 1, color: Colors.grey[200]),
+              Container(height: 1, color: AppColors.lightGrey),
               Row(
                 children: [
                   // 취소 버튼
@@ -215,12 +215,15 @@ class SettingPageState extends State<SettingPage> {
                       onPressed: () => Navigator.pop(context),
                       child: const Text(
                         "취소",
-                        style: TextStyle(color: Colors.blue, fontSize: 16),
+                        style: TextStyle(
+                          color: AppColors.mainBlue,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
                   // 가로 구분선
-                  Container(width: 1, height: 50, color: Colors.grey[200]),
+                  Container(width: 1, height: 50, color: AppColors.lightGrey),
                   // 로그아웃 버튼
                   Expanded(
                     child: TextButton(
@@ -231,7 +234,10 @@ class SettingPageState extends State<SettingPage> {
                       },
                       child: const Text(
                         "로그아웃",
-                        style: TextStyle(color: Colors.red, fontSize: 16),
+                        style: TextStyle(
+                          color: AppColors.mainRed,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),

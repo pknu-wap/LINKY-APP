@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:std/constants.dart';
 
 class EditContentSheet extends StatelessWidget {
   const EditContentSheet({super.key});
@@ -11,7 +12,7 @@ class EditContentSheet extends StatelessWidget {
       height: screenSize.height * 0.9,
       width: screenSize.width,
       decoration: BoxDecoration(
-        color: Color(0xfff0f2f6),
+        color: AppColors.popupBackGrey,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(30),
           topRight: Radius.circular(30),
@@ -28,12 +29,12 @@ class EditContentSheet extends StatelessWidget {
             children: [
               _circleButton(
                 Icons.close_rounded,
-                Colors.red,
+                AppColors.mainRed,
                 () => Navigator.pop(context),
               ),
               _circleButton(
                 Icons.check_rounded,
-                Colors.green,
+                AppColors.mainGreen,
                 () => Navigator.pop(context),
               ),
             ],
@@ -43,7 +44,7 @@ class EditContentSheet extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(21),
-              color: Colors.white,
+              color: AppColors.white,
             ),
             height: 101,
             width: screenSize.width * 0.86,
@@ -64,8 +65,8 @@ class EditContentSheet extends StatelessWidget {
         height: 55,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white,
-          border: Border.all(width: 0.33, color: Color(0xffC4C4C4)),
+          color: AppColors.white,
+          border: Border.all(width: 0.33, color: AppColors.outlineGrey),
         ),
         child: Center(
           child: Icon(
