@@ -44,6 +44,7 @@ import 'package:google_fonts/google_fonts.dart';
 //   }
 // }
 final List<String> categories = ['공부', '쇼핑', '취미', '검색', '설문'];
+final String selectedCategory = '카테고리';
 
 void addEventToMap(String title, DateTime selectedDate) {
   // 날짜 정규화 (시간/분/초를 제외한 날짜만)
@@ -259,6 +260,7 @@ class _PlusPageState extends State<PlusPage> {
                     maxLength: 1024,
                     //maxLength: 2048,
                     decoration: InputDecoration(
+                      labelStyle: GoogleFonts.inter(color: AppColors.textGrey),
                       labelText: '링크 URL',
                       hintText: 'https://example.com',
                       //counterText: '',
@@ -275,6 +277,7 @@ class _PlusPageState extends State<PlusPage> {
                     controller: titleController,
                     maxLength: 50,
                     decoration: InputDecoration(
+                      labelStyle: GoogleFonts.inter(color: AppColors.textGrey),
                       labelText: '제목',
                       filled: true,
                       fillColor: AppColors.white,
@@ -285,15 +288,45 @@ class _PlusPageState extends State<PlusPage> {
                   ),
                   const SizedBox(height: 10),
 
-                  CategoryWidget(
-                    selectedCategory: selectedCategory,
-                    categories: categories,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCategory = value;
-                      });
-                    },
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: AppColors.bottNavTextGrey,
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    width: double.infinity,
+                    padding: EdgeInsets.only(left: 13, right: 12),
+                    height: 56,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          selectedCategory ?? '카테고리',
+                          style: GoogleFonts.inter(
+                            color:
+                                selectedCategory == '카테고리' ||
+                                    selectedCategory == null
+                                ? AppColors.textGrey
+                                : AppColors.black,
+                            fontSize: 16,
+                          ),
+                        ),
+                        CategoryWidget(
+                          categories: categories,
+                          onCategorySelected: (value) {
+                            setState(() {
+                              selectedCategory = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                   ),
+
                   const SizedBox(height: 8),
 
                   Row(
