@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
+import 'package:std/constants.dart';
 
 class RemindertaskWidget extends StatelessWidget {
   final Color backgroundColor;
@@ -24,7 +25,11 @@ class RemindertaskWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Icon(Icons.calendar_today, size: 18, color: Colors.black54),
+          Icon(
+            Icons.calendar_today,
+            size: 18,
+            color: AppColors.black.withValues(alpha: 0.541),
+          ),
           PopupButton(
             onActionDone: () => print('삭제 버튼 클릭됨'),
             context: context,

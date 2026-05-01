@@ -13,6 +13,8 @@ import 'package:std/widgets/secret_page_guard.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter/services.dart';
 
+import 'constants.dart';
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 @pragma('vm:entry-point')
@@ -78,7 +80,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const LoginPage(),
+      home: const MainScreen(),
       routes: {
         '/main': (context) => const MainScreen(),
       },
@@ -157,7 +159,7 @@ class _MainScreenState extends State<MainScreen> {
               topRight: Radius.circular(19),
               topLeft: Radius.circular(19),
             ),
-            border: Border.all(color: Color(0xffC4C4C4), width: 1),
+            border: Border.all(color: AppColors.outlineGrey, width: 1),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.only(
@@ -170,8 +172,8 @@ class _MainScreenState extends State<MainScreen> {
               type: BottomNavigationBarType.fixed,
               currentIndex: _selectedIndex,
               onTap: _onItemTapped,
-              selectedItemColor: Color(0xff3fd966),
-              unselectedItemColor: Colors.black,
+              selectedItemColor: AppColors.mainGreen,
+              unselectedItemColor: AppColors.black,
               items: [
                 BottomNavigationBarItem(
                   icon: _buildCommonItem(Icons.reorder, '카테고리', false),
@@ -197,7 +199,7 @@ class _MainScreenState extends State<MainScreen> {
                     child: const Center(
                       child: Icon(
                         Icons.add,
-                        color: Color(0xff3fd966),
+                        color: AppColors.mainGreen,
                         size: 45,
                       ),
                     ),
@@ -240,14 +242,14 @@ class _MainScreenState extends State<MainScreen> {
       children: [
         Icon(
           icon,
-          color: isSelected ? const Color(0xff3fd966) : Colors.black,
+          color: isSelected ? AppColors.mainGreen : AppColors.black,
           size: 25,
         ),
         const SizedBox(height: 6),
         Text(
           label,
           style: TextStyle(
-            color: isSelected ? const Color(0xff3fd966) : Colors.black,
+            color: isSelected ? AppColors.mainGreen : AppColors.black,
             fontSize: 11,
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:std/constants.dart';
 
 class Linky extends StatelessWidget {
   const Linky({super.key});
@@ -35,7 +36,7 @@ class FilterButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? Color(0xff3FD966) : Colors.white,
+          color: isSelected ? AppColors.mainGreen : AppColors.white,
           borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
@@ -44,15 +45,17 @@ class FilterButton extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.white : Colors.white,
+                color: isSelected ? AppColors.white : AppColors.white,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text("갯수", style: TextStyle(color: Colors.black)),
+              child: const Text("갯수", style: TextStyle(color: AppColors.black)),
             ),
             const SizedBox(width: 8),
             Text(
               "카테고리 제목",
-              style: TextStyle(color: isSelected ? Colors.white : Colors.black),
+              style: TextStyle(
+                color: isSelected ? AppColors.white : AppColors.black,
+              ),
             ),
           ],
         ),
@@ -96,21 +99,21 @@ class _CategoryPageState extends State<CategoryPage> {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor: AppColors.mainRed,
                       shape: const CircleBorder(),
                       padding: const EdgeInsets.all(16),
                     ),
                     onPressed: () => Navigator.pop(context),
-                    child: const Icon(Icons.close, color: Colors.white),
+                    child: const Icon(Icons.close, color: AppColors.white),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xff3FD966),
+                      backgroundColor: AppColors.mainGreen,
                       shape: const CircleBorder(),
                       padding: const EdgeInsets.all(16),
                     ),
                     onPressed: () => Navigator.pop(context),
-                    child: const Icon(Icons.check, color: Colors.white),
+                    child: const Icon(Icons.check, color: AppColors.white),
                   ),
                 ],
               ),
@@ -196,23 +199,26 @@ class _CategoryPageState extends State<CategoryPage> {
                   topRight: Radius.circular(16),
                 ),
                 child: Container(
-                  color: Color(0xff3FD966),
+                  color: AppColors.mainGreen,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
                     children: [
                       Expanded(
                         child: TextField(
                           controller: titleControllers[categoryIndex][index],
-                          style: const TextStyle(color: Colors.black),
+                          style: const TextStyle(color: AppColors.black),
                           decoration: const InputDecoration(
                             hintText: "  제목",
-                            hintStyle: TextStyle(color: Colors.black),
+                            hintStyle: TextStyle(color: AppColors.black),
                             border: InputBorder.none,
                           ),
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.more_vert, color: Colors.white),
+                        icon: const Icon(
+                          Icons.more_vert,
+                          color: AppColors.white,
+                        ),
                         onPressed: () => _openEditSheet(categoryIndex, index),
                       ),
                     ],
@@ -229,10 +235,10 @@ class _CategoryPageState extends State<CategoryPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
+                      borderSide: BorderSide(color: AppColors.white),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
+                      borderSide: BorderSide(color: AppColors.white),
                     ),
                   ),
                 ),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:std/constants.dart';
 import 'package:std/widgets/reminder_page_calender.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 
 class CalendarPage extends StatefulWidget {
+  const CalendarPage({super.key});
+
   @override
   _CalendarPageState createState() => _CalendarPageState();
 }
@@ -72,9 +75,9 @@ class _CalendarPageState extends State<CalendarPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey[400]!, width: 1.2),
+        border: Border.all(color: AppColors.outlineGrey, width: 1.2),
       ),
       child: DropdownButtonHideUnderline(child: child),
     );
@@ -85,9 +88,9 @@ class _CalendarPageState extends State<CalendarPage> {
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100], // 배경색을 조금 더 밝게 조정
+        color: AppColors.mainBackGrey,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey[300]!, width: 1), // 외곽선 추가
+        border: Border.all(color: AppColors.outlineGrey, width: 1), // 외곽선 추가
       ),
       child: Row(
         children: [
@@ -95,7 +98,7 @@ class _CalendarPageState extends State<CalendarPage> {
             width: 6,
             height: 45,
             decoration: BoxDecoration(
-              color: const Color(0xFF3FD966),
+              color: AppColors.mainGreen,
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -115,7 +118,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 const Icon(
                   Icons.calendar_today_outlined,
                   size: 18,
-                  color: Colors.black54,
+                  color: AppColors.black,
                 ),
               ],
             ),
@@ -129,7 +132,7 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: Row(
         children: [
           Expanded(
@@ -146,12 +149,12 @@ class _CalendarPageState extends State<CalendarPage> {
                         Container(
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFBFF3),
+                            color: AppColors.mainPink,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
                             Icons.calendar_today_outlined,
-                            color: Colors.black,
+                            color: AppColors.black,
                             size: 20,
                           ),
                         ),
@@ -171,7 +174,7 @@ class _CalendarPageState extends State<CalendarPage> {
                       "${_focusedDay.year}",
                       style: TextStyle(
                         fontSize: 28,
-                        color: Colors.black,
+                        color: AppColors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -295,7 +298,7 @@ class _CalendarPageState extends State<CalendarPage> {
                               child: Text(
                                 "등록된 일정이 없습니다.",
                                 style: TextStyle(
-                                  color: Colors.grey[400],
+                                  color: AppColors.outlineGrey,
                                   fontSize: 16,
                                 ),
                               ),
@@ -319,7 +322,7 @@ class _CalendarPageState extends State<CalendarPage> {
           Container(
             width: 30,
             decoration: const BoxDecoration(
-              color: Color(0xFF3FD966),
+              color: AppColors.mainGreen,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20),
                 bottomLeft: Radius.circular(20),
@@ -330,7 +333,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 width: 4,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.8),
+                  color: AppColors.white.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -349,6 +352,7 @@ class Event {
   const Event(this.title, {this.hour = 9, this.minute = 0});
 }
 
-final Map<DateTime, List<Event>> kEvents = {}; // -> 알림 30분 전에 한번 울리고 정시간에 한번 더 울림
+final Map<DateTime, List<Event>> kEvents =
+    {}; // -> 알림 30분 전에 한번 울리고 정시간에 한번 더 울림
 //데이터 하루 지나면 삭제 -> 만료시 색깔 변경
 //년도 2099년
