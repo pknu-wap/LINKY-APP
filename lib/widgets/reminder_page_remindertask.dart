@@ -31,6 +31,8 @@ class RemindertaskWidget extends StatelessWidget {
             color: AppColors.black.withValues(alpha: 0.541),
           ),
           PopupButton(
+            titleValue: '',
+            urlValue: '',
             onActionDone: () => print('삭제 버튼 클릭됨'),
             context: context,
           ),

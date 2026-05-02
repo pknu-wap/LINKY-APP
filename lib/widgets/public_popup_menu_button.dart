@@ -6,10 +6,14 @@ import 'package:std/widgets/public_messagebox.dart';
 class PopupButton extends StatelessWidget {
   const PopupButton({
     super.key,
+    required this.titleValue,
+    required this.urlValue,
     required this.onActionDone,
     required this.context,
   });
 
+  final String titleValue;
+  final String urlValue;
   final VoidCallback onActionDone;
   final BuildContext context;
 
@@ -40,7 +44,7 @@ class PopupButton extends StatelessWidget {
                     isScrollControlled: true,
                     backgroundColor:
                         AppColors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
-                    builder: (context) => const EditContentSheet(),
+                    builder: (context) => EditContentSheet(category_page_title: titleValue, category_page_url: urlValue),
                   );
                 },
                 confirmText: '수정',

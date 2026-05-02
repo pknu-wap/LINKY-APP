@@ -61,6 +61,8 @@ class ContentsBox extends StatelessWidget {
                         ),
                       ),
                       PopupButton(
+                        titleValue: '',
+                        urlValue: '',
                         onActionDone: onActionDone,
                         context: context,
                       ),

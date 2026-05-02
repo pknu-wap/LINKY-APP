@@ -171,6 +171,8 @@ class ContentDetailSheet extends StatelessWidget {
                         ),
 
                         PopupButton(
+                          titleValue: '',
+                          urlValue: '',
                           onActionDone: () => print('삭제 버튼 클릭됨'),
                           context: context,
                         ),
