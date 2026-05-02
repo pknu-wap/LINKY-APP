@@ -87,8 +87,6 @@ class SettingPageState extends State<SettingPage> {
                   ElevatedButton(
                     onPressed: () {
                       String categoryValue = _categoryController.text.trim();
-                      categoryNames.add(categoryValue);
-
                       if (categoryValue.isNotEmpty) {
                         if (categoryNames.contains(categoryValue)) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -106,6 +104,7 @@ class SettingPageState extends State<SettingPage> {
 
                         print("카테고리 추가 완료: $categoryNames");
                       }
+
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.white,

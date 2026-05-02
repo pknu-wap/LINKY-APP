@@ -69,18 +69,6 @@ class _CalendarPageState extends State<CalendarPage> {
     return kEvents[dateOnly] ?? [];
   }
 
-  Widget _buildDropdownContainer({required Widget child}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.outlineGrey, width: 1.2),
-      ),
-      child: DropdownButtonHideUnderline(child: child),
-    );
-  }
-
   Widget today_reminder(BuildContext context, String title) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),

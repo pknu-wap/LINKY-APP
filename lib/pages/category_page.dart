@@ -20,7 +20,7 @@ class CategoryPage extends StatefulWidget {
   State<CategoryPage> createState() => _CategoryPageState();
 }
 
-List<String> categoryNames = ['All','Favorites'];
+List<String> categoryNames = ['전체','즐겨찾기'];
 List<String> categories_contentsTitle = [];
 List<String> categories_contentsURL = [];
 
