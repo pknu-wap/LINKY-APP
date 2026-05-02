@@ -160,7 +160,10 @@ class _PlusPageState extends State<PlusPage> {
       categories_contentsTitle.add(title);
       categories_contentsURL.add(url);
     }
-    addEventToMap(title, selectedDate ?? DateTime.now()); //리마인더에 이벤트 추가
+
+    if (selectedDate != null) {
+      addEventToMap(title, selectedDate ?? DateTime.now()); //리마인더에 이벤트 추가
+    }
 
     print('url: $url');
     print('title: $title');
