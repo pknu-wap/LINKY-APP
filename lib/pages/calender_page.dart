@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:std/constants.dart';
+import 'package:std/pages/category_page.dart';
 import 'package:std/widgets/puablic_dropdown_menu.dart';
 import 'package:std/widgets/reminder_page_calender.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
@@ -40,6 +41,31 @@ class _CalendarPageState extends State<CalendarPage> {
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
   }
 
+  void _updatePage(int index) {
+    if (_selectedDay == null) return;
+
+    //  날짜를 키로 사용하기 위해 시간 정보를 제거한 DateTime 생성
+    final dateOnly = DateTime.utc(
+      _selectedDay!.year,
+      _selectedDay!.month,
+      _selectedDay!.day,
+    );
+
+    setState(() {
+      //원본 데이터(kEvents)에서 삭제
+      if (kEvents.containsKey(dateOnly)) {
+        kEvents[dateOnly]!.removeAt(index);
+
+        // 만약 해당 날짜에 이벤트가 하나도 남지 않았다면 키 자체를 삭제
+        if (kEvents[dateOnly]!.isEmpty) {
+          kEvents.remove(dateOnly);
+        }
+      }
+
+      _selectedEvents.value = List.from(_getEventsForDay(_selectedDay!));
+    });
+  }
+
   @override
   void dispose() {
     _selectedEvents.dispose();
@@ -69,7 +95,7 @@ class _CalendarPageState extends State<CalendarPage> {
     return kEvents[dateOnly] ?? [];
   }
 
-  Widget today_reminder(BuildContext context, String title) {
+  Widget today_reminder(BuildContext context, String title, String categories, int index) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(16),
@@ -110,9 +136,9 @@ class _CalendarPageState extends State<CalendarPage> {
             ),
           ),
           PopupButton(
-            titleValue: '',
-            urlValue: '',
-            onActionDone: () => print('삭제 버튼 클릭됨'),
+            titleValue: title,
+            urlValue: categories_contentsURL[index],
+            onActionDone: () => _updatePage(index),
             context: context,
           ),
         ],
@@ -317,8 +343,12 @@ class _CalendarPageState extends State<CalendarPage> {
                           return ListView.builder(
                             padding: EdgeInsets.zero,
                             itemCount: events.length,
-                            itemBuilder: (context, index) =>
-                                today_reminder(context, events[index].title),
+                            itemBuilder: (context, index) => today_reminder(
+                              context,
+                              events[index].title,
+                              categories_contentsURL[index],
+                              index,
+                            ),
                           );
                         },
                       ),
