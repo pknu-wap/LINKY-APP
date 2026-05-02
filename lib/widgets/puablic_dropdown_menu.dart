@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:std/constants.dart';
 
-class CategoryWidget extends StatefulWidget {
-  const CategoryWidget({
+class DropdownWidget extends StatefulWidget {
+  const DropdownWidget({
     super.key,
     required this.onCategorySelected, // 값이 바뀌었을 때 실행할 콜백
-    required this.categories,
+    required this.itemsList,
+    required this.menuWidget,
   });
 
   final Function(String) onCategorySelected;
-  final List<String> categories;
+  final List<String> itemsList;
+  final Widget menuWidget;
 
   @override
-  State<CategoryWidget> createState() => _CategoryWidgetState();
+  State<DropdownWidget> createState() => _DropdownWidgetState();
 }
 
-class _CategoryWidgetState extends State<CategoryWidget> {
+class _DropdownWidgetState extends State<DropdownWidget> {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
@@ -45,16 +47,16 @@ class _CategoryWidgetState extends State<CategoryWidget> {
       },
       itemBuilder: (BuildContext context) {
         List<PopupMenuEntry<String>> menuList = [];
-        for (int i = 0; i < widget.categories.length; i++) {
+        for (int i = 0; i < widget.itemsList.length; i++) {
           menuList.add(
             PopupMenuItem<String>(
               padding: EdgeInsets.symmetric(horizontal: 40),
-              value: widget.categories[i],
+              value: widget.itemsList[i],
               child: Container(
                 width: double.infinity,
                 alignment: Alignment.center,
                 child: Text(
-                  widget.categories[i],
+                  widget.itemsList[i],
                   style: const TextStyle(
                     fontSize: 16,
                     color: AppColors.mainBlue,
@@ -63,13 +65,13 @@ class _CategoryWidgetState extends State<CategoryWidget> {
               ),
             ),
           );
-          if (i < widget.categories.length - 1) {
+          if (i < widget.itemsList.length - 1) {
             menuList.add(const PopupMenuDivider(height: 1));
           }
         }
         return menuList;
       },
-      child: const Icon(Icons.arrow_drop_down_outlined),
+      child: widget.menuWidget,
     );
   }
 }

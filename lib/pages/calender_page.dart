@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:std/constants.dart';
-import 'package:std/widgets/plus_page_category.dart';
+import 'package:std/widgets/puablic_dropdown_menu.dart';
 import 'package:std/widgets/reminder_page_calender.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 
@@ -207,38 +208,65 @@ class _CalendarPageState extends State<CalendarPage> {
                           }),
                         ),
                         const SizedBox(width: 25),
-                        CategoryWidget(
-                          categories: months,
-                          onCategorySelected: (value) {
-                            setState(
-                              () => _focusedDay = DateTime(
-                                _focusedDay.year,
-                                months.indexOf(value) + 1,
-                              ),
-                            );
-                          },
+                        Container(
+                          width: 87,
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.outlineGrey),
+                          ),
+                          child: DropdownWidget(
+                            itemsList: months,
+                            onCategorySelected: (value) {
+                              setState(
+                                () => _focusedDay = DateTime(
+                                  _focusedDay.year,
+                                  months.indexOf(value) + 1,
+                                ),
+                              );
+                            },
+                            menuWidget: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  months[_focusedDay.month - 1],
+                                  style: GoogleFonts.inter(fontSize: 16),
+                                ),
+                                const Icon(Icons.arrow_drop_down_outlined),
+                              ],
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 25),
-                        _buildDropdownContainer(
-                          child: DropdownButton<int>(
-                            value: _focusedDay.year.clamp(startYear, endYear),
-                            items:
-                                List.generate(
-                                      endYear - startYear + 1,
-                                      (index) => startYear + index,
-                                    )
-                                    .map(
-                                      (year) => DropdownMenuItem(
-                                        value: year,
-                                        child: Text(year.toString()),
-                                      ),
-                                    )
-                                    .toList(),
-                            onChanged: (year) => setState(
-                              () => _focusedDay = DateTime(
-                                year!,
-                                _focusedDay.month,
-                              ),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 87,
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.outlineGrey),
+                          ),
+                          child: DropdownWidget(
+                            itemsList: List.generate(
+                              endYear - startYear + 1,
+                              (index) => (startYear + index).toString(),
+                            ),
+                            onCategorySelected: (value) {
+                              setState(
+                                () => _focusedDay = DateTime(
+                                  int.parse(value),
+                                  _focusedDay.month,
+                                ),
+                              );
+                            },
+                            menuWidget: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  _focusedDay.year.toString(),
+                                  style: GoogleFonts.inter(fontSize: 16),
+                                ),
+                                const Icon(Icons.arrow_drop_down_outlined),
+                              ],
                             ),
                           ),
                         ),

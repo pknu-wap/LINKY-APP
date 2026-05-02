@@ -3,9 +3,9 @@ import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
+import 'package:std/widgets/puablic_dropdown_menu.dart';
 // import 'package:mysql_client/mysql_client.dart';
 import '../widgets/plus_page_calendar.dart';
-import '../widgets/plus_page_category.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // Future<void> dbConnector({
@@ -156,7 +156,7 @@ class _PlusPageState extends State<PlusPage> {
       private_contentsTitle.add(title);
       private_contentsURL.add(url);
     }
-    if(!isPrivate) {
+    if (!isPrivate) {
       categories_contentsTitle.add(title);
       categories_contentsURL.add(url);
     }
@@ -305,29 +305,30 @@ class _PlusPageState extends State<PlusPage> {
                     width: double.infinity,
                     padding: EdgeInsets.only(left: 13, right: 12),
                     height: 56,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          selectedCategory ?? '카테고리',
-                          style: GoogleFonts.inter(
-                            color:
-                                selectedCategory == '카테고리' ||
-                                    selectedCategory == null
-                                ? AppColors.textGrey
-                                : AppColors.black,
-                            fontSize: 16,
+                    child: DropdownWidget(
+                      itemsList: categoryNames,
+                      onCategorySelected: (value) {
+                        setState(() {
+                          selectedCategory = value;
+                        });
+                      },
+                      menuWidget: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            selectedCategory ?? '카테고리',
+                            style: GoogleFonts.inter(
+                              color:
+                                  selectedCategory == '카테고리' ||
+                                      selectedCategory == null
+                                  ? AppColors.textGrey
+                                  : AppColors.black,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                        CategoryWidget(
-                          categories: categoryNames,
-                          onCategorySelected: (value) {
-                            setState(() {
-                              selectedCategory = value;
-                            });
-                          },
-                        ),
-                      ],
+                          const Icon(Icons.arrow_drop_down_outlined),
+                        ],
+                      ),
                     ),
                   ),
 

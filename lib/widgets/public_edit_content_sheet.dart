@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/plus_page.dart';
-import 'package:std/widgets/plus_page_category.dart';
+import 'package:std/widgets/puablic_dropdown_menu.dart';
 import 'package:std/widgets/reminder_page_calender.dart';
 
 class EditContentSheet extends StatefulWidget {
@@ -236,26 +236,27 @@ class _EditContentSheetState extends State<EditContentSheet> {
 
           _WhiteContainer(
             screenSize: screenSize,
-            insideWidget: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '카테고리 수정',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      color: AppColors.textGrey,
+            insideWidget: DropdownWidget(
+              itemsList: categoryNames,
+              onCategorySelected: (value) {
+                setState(() {
+                  selectedCategory = value;
+                });
+              },
+              menuWidget: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '카테고리 수정',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        color: AppColors.textGrey,
+                      ),
                     ),
                   ),
-                ),
-                CategoryWidget(
-                  categories: categoryNames,
-                  onCategorySelected: (value) {
-                    setState(() {
-                      selectedCategory = value;
-                    });
-                  },
-                ),
-              ],
+                  const Icon(Icons.arrow_drop_down_outlined),
+                ],
+              ),
             ),
           ),
 
