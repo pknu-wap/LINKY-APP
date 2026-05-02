@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:std/constants.dart';
-import 'package:std/pages/plus_page.dart';
-import 'package:std/widgets/public_select_category.dart';
+import 'package:std/pages/category_page.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -88,14 +87,10 @@ class SettingPageState extends State<SettingPage> {
                   ElevatedButton(
                     onPressed: () {
                       String categoryValue = _categoryController.text.trim();
-
-                      SelectCategory(
-                        categoryCount: categoryValue.length.toString(),
-                        categoryTitle: categoryValue,
-                      );
+                      categoryNames.add(categoryValue);
 
                       if (categoryValue.isNotEmpty) {
-                        if (categories.contains(categoryValue)) {
+                        if (categoryNames.contains(categoryValue)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('이미 존재하는 카테고리입니다.')),
                           );
@@ -103,13 +98,13 @@ class SettingPageState extends State<SettingPage> {
                         }
 
                         setState(() {
-                          categories.add(categoryValue);
+                          categoryNames.add(categoryValue);
                         });
 
                         _categoryController.clear(); // 입력창 비우기
                         FocusScope.of(context).unfocus(); // 키보드 닫기
 
-                        print("카테고리 추가 완료: $categories");
+                        print("카테고리 추가 완료: $categoryNames");
                       }
                     },
                     style: ElevatedButton.styleFrom(

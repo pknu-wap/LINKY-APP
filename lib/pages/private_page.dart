@@ -4,8 +4,8 @@ import 'package:std/constants.dart';
 import 'package:std/widgets/public_contents_box.dart';
 import 'package:std/widgets/public_select_category.dart';
 
-List<String> contentsTitle = [];
-List<String> contentsURL = [];
+List<String> private_contentsTitle = [];
+List<String> private_contentsURL = [];
 
 class PrivatePage extends StatefulWidget {
   const PrivatePage({super.key});
@@ -17,8 +17,8 @@ class PrivatePage extends StatefulWidget {
 class _PrivatePageState extends State<PrivatePage> {
   void _updatePage(int listIndex) {
     setState(() {
-      contentsTitle.remove(contentsTitle[listIndex]);
-      contentsURL.remove(contentsURL[listIndex]);
+      private_contentsTitle.remove(private_contentsTitle[listIndex]);
+      private_contentsURL.remove(private_contentsURL[listIndex]);
     });
   }
 
@@ -65,7 +65,7 @@ class _PrivatePageState extends State<PrivatePage> {
             ),
             SizedBox(height: 13),
             SelectCategory(
-              categoryCount: contentsTitle.length.toString(),
+              categoryCount: private_contentsTitle.length.toString(),
               categoryTitle: 'Only me',
             ),
             SizedBox(height: 13),
@@ -81,12 +81,12 @@ class _PrivatePageState extends State<PrivatePage> {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
-        children: List.generate(contentsTitle.length, (index) {
+        children: List.generate(private_contentsTitle.length, (index) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 13),
             child: ContentsBox(
-              titleText: contentsTitle[index],
-              urlText: contentsURL[index],
+              titleText: private_contentsTitle[index],
+              urlText: private_contentsURL[index],
               onActionDone: () => _updatePage(index),
             ),
           );

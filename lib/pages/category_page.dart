@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:std/constants.dart';
-import 'package:std/widgets/select_category_categorypage.dart';
-import 'package:std/widgets/popup_menu_button_categorypage.dart';
+import 'package:std/widgets/category_page_select_category.dart';
+import 'package:std/widgets/public_popup_menu_button.dart';
 
 class Linky extends StatelessWidget {
   const Linky({super.key});
@@ -20,27 +20,23 @@ class CategoryPage extends StatefulWidget {
   State<CategoryPage> createState() => _CategoryPageState();
 }
 
+List<String> categoryNames = ['All','Favorites'];
+List<String> categories_contentsTitle = [];
+List<String> categories_contentsURL = [];
+
 class _CategoryPageState extends State<CategoryPage> {
-  List<String> contentsTitle = ['Title1', '제목2', 'Title3', '제목4', 'Title5'];
-  List<String> contentsURL = ['URL1', 'URL2', 'URL3', 'URL4', 'URL5'];
-  final List<String> categoryNames = [
-    'All',
-    'Favorites',
-    'Category1',
-    'Category2',
-  ];
   String selectedCategory = 'All';
 
   void _updatePage(int index) {
     setState(() {
-      contentsTitle.removeAt(index);
-      contentsURL.removeAt(index);
+      categories_contentsTitle.removeAt(index);
+      categories_contentsURL.removeAt(index);
       contentsFavorite.removeAt(index);
     });
   }
 
   late List<bool> contentsFavorite = List.generate(
-    contentsTitle.length,
+    categories_contentsTitle.length,
     (index) => false,
   );
 
@@ -48,14 +44,14 @@ class _CategoryPageState extends State<CategoryPage> {
   Widget build(BuildContext context) {
     // [1] 필터링 로직 정리
     List<int> filteredIndices = [];
-    for (int i = 0; i < contentsTitle.length; i++) {
+    for (int i = 0; i < categories_contentsTitle.length; i++) {
       if (selectedCategory == 'All') {
         filteredIndices.add(i);
       } else if (selectedCategory == 'Favorites') {
         if (contentsFavorite[i]) filteredIndices.add(i);
       } else {
         // 나머지 카테고리는 제목에 카테고리명이 포함되어 있는지 확인
-        if (contentsTitle[i].contains(selectedCategory)) {
+        if (categories_contentsTitle[i].contains(selectedCategory)) {
           filteredIndices.add(i);
         }
       }
@@ -66,11 +62,11 @@ class _CategoryPageState extends State<CategoryPage> {
     ) {
       String count;
       if (name == 'All') {
-        count = contentsTitle.length.toString(); //
+        count = categories_contentsTitle.length.toString(); //
       } else if (name == 'Favorites') {
         count = contentsFavorite.where((e) => e).length.toString(); //
       } else {
-        count = contentsTitle
+        count = categories_contentsTitle
             .where((title) => title.contains(name))
             .length
             .toString();
@@ -124,7 +120,9 @@ class _CategoryPageState extends State<CategoryPage> {
                       child: SelectCategoryHome(
                         categoryCount: cat["count"]!,
                         categoryTitle: cat["title"]!,
-                        backgroundColor: isSelected ? AppColors.mainGreen : Colors.white,
+                        backgroundColor: isSelected
+                            ? AppColors.mainGreen
+                            : Colors.white,
                         countBackgroundColor: isSelected
                             ? const Color(0xffffffff)
                             : const Color(0xFFC5C5C5),
@@ -181,13 +179,15 @@ class _CategoryPageState extends State<CategoryPage> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      contentsTitle[targetIdx],
+                                      categories_contentsTitle[targetIdx],
                                       style: GoogleFonts.inter(
                                         color: Colors.black,
                                         fontSize: 16,
                                       ),
                                     ),
-                                    PopupButtonHome(
+                                    PopupButton(
+                                      titleValue: categories_contentsTitle[targetIdx],
+                                      urlValue: categories_contentsURL[targetIdx],
                                       onActionDone: () =>
                                           _updatePage(targetIdx),
                                       context: context,
@@ -201,7 +201,7 @@ class _CategoryPageState extends State<CategoryPage> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 25),
                             child: Text(
-                              contentsURL[targetIdx], // targetIdx로 수정 완료
+                              categories_contentsURL[targetIdx], // targetIdx로 수정 완료
                               style: GoogleFonts.inter(
                                 fontSize: 13,
                                 color: const Color(0xff7E7E7E),

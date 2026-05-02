@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
+import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
 // import 'package:mysql_client/mysql_client.dart';
 import '../widgets/plus_page_calendar.dart';
@@ -43,8 +44,7 @@ import 'package:google_fonts/google_fonts.dart';
 //     throw e; // 에러를 위로 던져서 UI에서 처리하게 함
 //   }
 // }
-final List<String> categories = ['공부', '쇼핑', '취미', '검색', '설문'];
-final String selectedCategory = '카테고리';
+String selectedCategory = '카테고리';
 
 void addEventToMap(String title, DateTime selectedDate) {
   // 날짜 정규화 (시간/분/초를 제외한 날짜만)
@@ -153,8 +153,12 @@ class _PlusPageState extends State<PlusPage> {
     }
 
     if (isPrivate == true) {
-      contentsTitle.add(title);
-      contentsURL.add(url);
+      private_contentsTitle.add(title);
+      private_contentsURL.add(url);
+    }
+    if(!isPrivate) {
+      categories_contentsTitle.add(title);
+      categories_contentsURL.add(url);
     }
     addEventToMap(title, selectedDate ?? DateTime.now()); //리마인더에 이벤트 추가
 
@@ -316,7 +320,7 @@ class _PlusPageState extends State<PlusPage> {
                           ),
                         ),
                         CategoryWidget(
-                          categories: categories,
+                          categories: categoryNames,
                           onCategorySelected: (value) {
                             setState(() {
                               selectedCategory = value;

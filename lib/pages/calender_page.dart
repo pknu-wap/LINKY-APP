@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:std/constants.dart';
+import 'package:std/widgets/plus_page_category.dart';
 import 'package:std/widgets/reminder_page_calender.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 
@@ -16,6 +17,20 @@ class _CalendarPageState extends State<CalendarPage> {
   DateTime? _selectedDay;
   int startYear = 2026;
   int endYear = 2099;
+  List<String> months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   @override
   void initState() {
@@ -28,24 +43,6 @@ class _CalendarPageState extends State<CalendarPage> {
   void dispose() {
     _selectedEvents.dispose();
     super.dispose();
-  }
-
-  String _getMonthName(int month) {
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    return months[month - 1];
   }
 
   String getMonthName(int month) {
@@ -123,7 +120,12 @@ class _CalendarPageState extends State<CalendarPage> {
               ],
             ),
           ),
-          PopupButton(onActionDone: () => print('삭제 버튼 클릭됨'), context: context),
+          PopupButton(
+            titleValue: '',
+            urlValue: '',
+            onActionDone: () => print('삭제 버튼 클릭됨'),
+            context: context,
+          ),
         ],
       ),
     );
@@ -205,24 +207,16 @@ class _CalendarPageState extends State<CalendarPage> {
                           }),
                         ),
                         const SizedBox(width: 25),
-                        _buildDropdownContainer(
-                          child: DropdownButton<int>(
-                            value: _focusedDay.month,
-                            items: List.generate(12, (index) => index + 1)
-                                .map(
-                                  (month) => DropdownMenuItem(
-                                    value: month,
-                                    child: Text(_getMonthName(month)),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (month) => setState(
+                        CategoryWidget(
+                          categories: months,
+                          onCategorySelected: (value) {
+                            setState(
                               () => _focusedDay = DateTime(
                                 _focusedDay.year,
-                                month!,
+                                months.indexOf(value) + 1,
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
                         const SizedBox(width: 25),
                         _buildDropdownContainer(
