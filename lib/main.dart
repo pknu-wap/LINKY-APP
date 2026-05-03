@@ -54,21 +54,24 @@ void main() async {
   KakaoSdk.init(
     nativeAppKey: '82e41c6f8193caa43b268cd5c33fe23a',
   );
-
   // 1. 알람 매니저 초기화
   await AndroidAlarmManager.initialize();
+
+  runApp(const MyApp());
 
   // 2. kEvents 데이터 자동 동기화 (앱 실행 시마다 수행)
   // 데이터가 있는 위치에 맞춰 kEvents를 넣어주세요.
   if (kEvents.isNotEmpty) {
-    await AlarmService.syncEventsWithAlarms(
+    AlarmService.syncEventsWithAlarms(
       kEvents.cast<DateTime, List<dynamic>>(),
-    );
+    ).then((_) {
+      print("알람 동기화 완료");
+    }).catchError((e) {
+      print("알람 동기화 중 에러 발생: $e");
+    });
   } else {
     print("앱 실행 시 kEvents 데이터가 비어 있습니다.");
   }
-
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

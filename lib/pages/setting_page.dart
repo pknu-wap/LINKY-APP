@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/category_page.dart';
+import 'package:std/pages/plus_page.dart';
+import 'package:std/widgets/puablic_dropdown_menu.dart';
+
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -41,6 +45,7 @@ class SettingPageState extends State<SettingPage> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey, // 연한 그레이 배경색
@@ -77,13 +82,13 @@ class SettingPageState extends State<SettingPage> {
               // 카테고리 추가 섹션
               Row(
                 children: [
-                  Icon(Icons.add, color: AppColors.mainGreen, size: 28),
-                  SizedBox(width: 8),
-                  Text(
+                  const Icon(Icons.add, color: AppColors.mainGreen, size: 28),
+                  const SizedBox(width: 8),
+                  const Text(
                     "카테고리 추가",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(width: 150),
+                  const Spacer(), // 고정 width(150) 대신 Spacer를 사용하는 것이 반응형에 좋습니다.
                   ElevatedButton(
                     onPressed: () {
                       String categoryValue = _categoryController.text.trim();
@@ -101,10 +106,8 @@ class SettingPageState extends State<SettingPage> {
 
                         _categoryController.clear(); // 입력창 비우기
                         FocusScope.of(context).unfocus(); // 키보드 닫기
-
                         print("카테고리 추가 완료: $categoryNames");
                       }
-
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.white,
@@ -123,7 +126,107 @@ class SettingPageState extends State<SettingPage> {
                 controller: _categoryController,
                 decoration: inputBox("카테고리 입력해주세요."),
               ),
-              const SizedBox(height: 35),
+              const SizedBox(height: 20),
+
+              // 카테고리 선택 드롭다운 박스
+              // 1. 라벨 및 확인 버튼 섹션
+              Row(
+                children: [
+                  const Icon(
+                    Icons.remove,
+                    color: AppColors.mainGreen,
+                    size: 28,
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    "카테고리 삭제", // TextField를 없앴으므로 '추가' 대신 '선택' 혹은 '설정'이 적절합니다.
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const Spacer(),
+                  ElevatedButton(
+                    onPressed: () {
+                      // 확인 버튼 클릭 시 로직
+                      if (selectedCategory != null &&
+                          selectedCategory != '카테고리' &&
+                          selectedCategory != '전체' &&
+                          selectedCategory != '즐겨찾기') {
+                        //카테고리 삭제
+                        categoryNames.remove(selectedCategory);
+                        setState(() {
+                          selectedCategory = '카테고리'; // 선택 초기화
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('카테고리를 먼저 선택해주세요. (전체, 즐겨찾기 제외)'),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.white,
+                      foregroundColor: AppColors.black,
+                      elevation: 0, // 입체감을 줄이려면 0, 원하시면 유지
+                      side: BorderSide(
+                        color: AppColors.lightGrey,
+                        width: 1,
+                      ), // 테두리 추가 가능
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    child: const Text("확인"),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              Container(
+                width: double.infinity,
+                height: 56, // 일반적인 TextField의 기본 높이
+                padding: const EdgeInsets.symmetric(horizontal: 16), // 내부 여백
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(
+                    22,
+                  ),
+                  border: Border.all(
+                    color: AppColors.lightGrey, // TextField 테두리 색상
+                    width: 1.3,
+                  ),
+                ),
+                child: DropdownWidget(
+                  itemsList: categoryNames,
+                  onCategorySelected: (value) {
+                    setState(() {
+                      selectedCategory = value;
+                    });
+                  },
+                  menuWidget: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        selectedCategory ?? '카테고리를 선택하세요',
+                        style: GoogleFonts.inter(
+                          color:
+                              selectedCategory == null ||
+                                  selectedCategory == '카테고리' ||
+                                  selectedCategory == '전체' ||
+                                  selectedCategory == '즐겨찾기'
+                              ? AppColors.textGrey
+                              : AppColors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const Icon(Icons.arrow_drop_down_outlined),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
               // 비밀번호 설정 섹션
               Row(
                 children: const [
@@ -149,12 +252,12 @@ class SettingPageState extends State<SettingPage> {
               // 로그아웃 버튼
               GestureDetector(
                 onTap: () {
-                  _showLogoutDialog(context);
+                  _showActionDialog(context, "로그아웃");
                   print("로그아웃 버튼 클릭");
                 },
                 child: Container(
                   width: double.infinity,
-                  height: 60,
+                  height: 54,
                   margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
                     color: AppColors.white,
@@ -167,7 +270,37 @@ class SettingPageState extends State<SettingPage> {
                       style: TextStyle(
                         color: AppColors.mainRed,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              GestureDetector(
+                onTap: () {
+                  _showActionDialog(context, "탈퇴");
+                  print("탈퇴 버튼 클릭");
+                },
+                child: AnimatedContainer(
+                  // 부드러운 색상 변화를 위해 Animated 사용
+                  duration: const Duration(milliseconds: 100),
+                  width: double.infinity,
+                  height: 54,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    // 클릭 상태에 따라 배경색 변경
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppColors.lightGrey,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "탈퇴",
+                      style: TextStyle(
+                        color: AppColors.mainRed,
+                        fontSize: 18,
                       ),
                     ),
                   ),
@@ -181,7 +314,7 @@ class SettingPageState extends State<SettingPage> {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showActionDialog(BuildContext context, String actionText) {
     showDialog(
       context: context,
       builder: (context) {
@@ -192,11 +325,14 @@ class SettingPageState extends State<SettingPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 30),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30),
                 child: Text(
-                  "로그아웃 하시겠어요?",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  "$actionText 하시겠어요?", // 예: "탈퇴 하시겠어요?"
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               // 하단 버튼 영역 구분선
@@ -216,19 +352,20 @@ class SettingPageState extends State<SettingPage> {
                       ),
                     ),
                   ),
-                  // 가로 구분선
+                  // 세로 구분선
                   Container(width: 1, height: 50, color: AppColors.lightGrey),
-                  // 로그아웃 버튼
+                  // 액션 버튼 (전달받은 텍스트 사용)
                   Expanded(
                     child: TextButton(
                       onPressed: () {
-                        // 실제 로그아웃 로직 실행 부분
-                        print("로그아웃 완료");
+                        // 여기서 actionText에 따라 분기 로직을 짤 수도 있고,
+                        // 콜백 함수를 따로 넘겨받을 수도 있습니다.
+                        print("$actionText 완료");
                         Navigator.pop(context);
                       },
-                      child: const Text(
-                        "로그아웃",
-                        style: TextStyle(
+                      child: Text(
+                        actionText,
+                        style: const TextStyle(
                           color: AppColors.mainRed,
                           fontSize: 16,
                         ),
