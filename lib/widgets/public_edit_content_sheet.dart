@@ -178,10 +178,14 @@ class _EditContentSheetState extends State<EditContentSheet> {
               children: [
                 // 선택된 날짜 텍스트 (없으면 '날짜 수정')
                 Text(
-                  _dateController.text.isEmpty ? '날짜 수정' : _dateController.text,
+                  _dateController.text.isEmpty || _dateController.text == 'null'
+                      ? '날짜 수정'
+                      : _dateController.text,
                   style: GoogleFonts.inter(
                     fontSize: 16,
-                    color: _dateController.text.isEmpty
+                    color:
+                        _dateController.text.isEmpty ||
+                            _dateController.text == 'null'
                         ? AppColors.textGrey
                         : AppColors.black,
                   ),

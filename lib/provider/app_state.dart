@@ -106,6 +106,12 @@ class AppState extends ChangeNotifier {
   }
 
   void removeContent(int id) {
+    kEvents.forEach((date, eventList) {
+      eventList.removeWhere((event) => event.contentID == id);
+    });
+
+    kEvents.removeWhere((date, eventList) => eventList.isEmpty);
+
     _contents.removeWhere((item) => item.id == id);
     notifyListeners();
   }
