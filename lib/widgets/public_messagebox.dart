@@ -34,6 +34,7 @@ class DialogPopup extends StatelessWidget {
             Expanded(
               child: Center(
                 child: Text(
+                  textAlign: TextAlign.center,
                   title,
                   style: GoogleFonts.inter(fontSize: 20),
                 ),

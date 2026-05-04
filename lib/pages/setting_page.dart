@@ -6,6 +6,7 @@ import 'package:std/pages/category_page.dart';
 import 'package:std/pages/plus_page.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
+import 'package:std/widgets/public_messagebox.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -260,8 +261,18 @@ class SettingPageState extends State<SettingPage> {
               // 로그아웃 버튼
               GestureDetector(
                 onTap: () {
-                  _showActionDialog(context, "로그아웃");
-                  print("로그아웃 버튼 클릭");
+                  showDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    builder: (context) {
+                      return DialogPopup(
+                        title: '로그아웃 하시겠어요?',
+                        boxType: BoxType.warning,
+                        onConfirm: () => print('로그아웃 완료'),
+                        confirmText: '로그아웃',
+                      );
+                    },
+                  );
                 },
                 child: Container(
                   width: double.infinity,
@@ -286,12 +297,31 @@ class SettingPageState extends State<SettingPage> {
 
               GestureDetector(
                 onTap: () {
-                  _showActionDialog(context, "탈퇴");
-                  print("탈퇴 버튼 클릭");
+                  // _showActionDialog(context, "탈퇴");
+                  showDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    builder: (context) {
+                      return DialogPopup(
+                        title: '탈퇴 하시겠어요?',
+                        boxType: BoxType.warning,
+                        onConfirm: () => showDialog(
+                          context: context,
+                          builder: (context) {
+                            return DialogPopup(
+                              title: "탈퇴시 LINLKY에 저장된\n모든 정보는 삭제됩니다.",
+                              onConfirm: () => print('탈퇴 완료'),
+                              confirmText: '탈퇴',
+                              boxType: BoxType.warning,
+                            );
+                          },
+                        ),
+                        confirmText: '예',
+                      );
+                    },
+                  );
                 },
-                child: AnimatedContainer(
-                  // 부드러운 색상 변화를 위해 Animated 사용
-                  duration: const Duration(milliseconds: 100),
+                child: Container(
                   width: double.infinity,
                   height: 54,
                   margin: const EdgeInsets.only(bottom: 20),
