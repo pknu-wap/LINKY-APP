@@ -95,7 +95,7 @@ class _CalendarPageState extends State<CalendarPage> {
     return kEvents[dateOnly] ?? [];
   }
 
-  Widget today_reminder(BuildContext context, String title, String categories, int index) {
+  Widget today_reminder(BuildContext context, Event event, int index) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(16),
@@ -120,7 +120,7 @@ class _CalendarPageState extends State<CalendarPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  event.title,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -135,12 +135,18 @@ class _CalendarPageState extends State<CalendarPage> {
               ],
             ),
           ),
-          PopupButton(
-            titleValue: title,
-            urlValue: categories_contentsURL[index],
-            onActionDone: () => _updatePage(index),
-            context: context,
-          ),
+          if (event.url.isNotEmpty)
+            PopupButton(
+              titleValue: event.title,
+              urlValue: event.url,
+              onActionDone: () => _updatePage(index),
+              context: context,
+            )
+          else
+            IconButton(
+              onPressed: () => _updatePage(index),
+              icon: const Icon(Icons.more_vert),
+            ),
         ],
       ),
     );
@@ -345,8 +351,7 @@ class _CalendarPageState extends State<CalendarPage> {
                             itemCount: events.length,
                             itemBuilder: (context, index) => today_reminder(
                               context,
-                              events[index].title,
-                              categories_contentsURL[index],
+                              events[index],
                               index,
                             ),
                           );
@@ -387,9 +392,10 @@ class _CalendarPageState extends State<CalendarPage> {
 
 class Event {
   final String title;
+  final String url;
   final int hour;
   final int minute;
-  const Event(this.title, {this.hour = 9, this.minute = 0});
+  const Event(this.title, {this.url = '', this.hour = 9, this.minute = 0});
 }
 
 final Map<DateTime, List<Event>> kEvents =

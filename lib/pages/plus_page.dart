@@ -46,7 +46,7 @@ import 'package:google_fonts/google_fonts.dart';
 // }
 String selectedCategory = '카테고리';
 
-void addEventToMap(String title, DateTime selectedDate) {
+void addEventToMap(String title, String url, DateTime selectedDate) {
   // 날짜 정규화 (시간/분/초를 제외한 날짜만)
   final dateKey = DateTime.utc(
     selectedDate.year,
@@ -56,6 +56,7 @@ void addEventToMap(String title, DateTime selectedDate) {
   // 이벤트 생성 (전달받은 selectedDate의 시, 분 활용)
   final newEvent = Event(
     title,
+    url: url,
     hour: selectedDate.hour,
     minute: selectedDate.minute,
   );
@@ -93,21 +94,6 @@ class _PlusPageState extends State<PlusPage> {
     super.dispose();
   }
 
-  Future<void> pickDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
-    );
-
-    if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
-
   void saveLink() {
     final url = urlController.text.trim();
     final title = titleController.text.trim();
@@ -127,7 +113,7 @@ class _PlusPageState extends State<PlusPage> {
     }
 
     final blockedScheme = RegExp(
-      r'^(javacript|data|file|ftp|mailto):',
+      r'^(javascript|data|file|ftp|mailto):',
       caseSensitive: false,
     );
 
@@ -162,7 +148,7 @@ class _PlusPageState extends State<PlusPage> {
     }
 
     if (selectedDate != null) {
-      addEventToMap(title, selectedDate ?? DateTime.now()); //리마인더에 이벤트 추가
+      addEventToMap(title, url, selectedDate!); //리마인더에 이벤트 추가
     }
 
     print('url: $url');
@@ -364,7 +350,11 @@ class _PlusPageState extends State<PlusPage> {
 
                   CalendarWidget(
                     selectedDate: selectedDate,
-                    onPressed: pickDate,
+                    onChanged: (date) {
+                      setState(() {
+                        selectedDate = date;
+                      });
+                    }
                   ),
                   const SizedBox(height: 15),
 
