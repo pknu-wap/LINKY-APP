@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
+import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/reminder_page_remindertask.dart';
 
 class ReminderScreen extends StatefulWidget {
@@ -229,6 +231,7 @@ class Reminder extends State<ReminderScreen> {
 
   // 타임라인 리스트
   Widget Timeline() {
+    final appState = context.watch<AppState>();
     // 1. 현재 선택된 '년, 월, 일'을 기준으로 DateTime 객체 생성
     // selectedMonth, selectedDay는 0부터 시작하므로 +1 해줍니다.
     final selectedDate = DateTime.utc(
@@ -238,7 +241,7 @@ class Reminder extends State<ReminderScreen> {
     );
 
     // 2. 해당 날짜에 저장된 이벤트 리스트 가져오기
-    final List<Event> dayEvents = kEvents[selectedDate] ?? [];
+    final List<Event> dayEvents = appState.getEventsForDay(selectedDate);
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -275,6 +278,7 @@ class Reminder extends State<ReminderScreen> {
                         // 여기서는 첫 번째 이벤트의 제목을 전달하는 식으로 커스텀 가능
                         contentID:
                             hourEvents.first.contentID, // 고유 id 가져오는 로직 추가 필요
+                        eventDate: selectedDate,
                       )
                     : const SizedBox(height: 40), // 일정이 없을 때의 높이 확보
               ),
