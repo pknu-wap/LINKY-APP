@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
-import 'package:std/pages/category_page.dart';
-import 'package:std/pages/private_page.dart';
 import 'package:mysql_client/mysql_client.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
-// import 'package:mysql_client/mysql_client.dart';
 import '../widgets/plus_page_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -23,12 +19,14 @@ Future<void> dbConnector({
   try {
     // MySQL 접속 설정
     final conn = await MySQLConnection.createConnection(
-      host: 'your host name',
-      port: 0808,
-      userName: 'your user name',
-      password: 'your password',
-      databaseName: 'your database name', // optional
+      host: '',
+      port: 3306,
+      userName: 'linky_user',
+      password: '',
+      databaseName: 'linky_db', // optional
     );
+
+    await conn.connect();
 
     await conn.execute(
       "INSERT INTO links (url, title, category, is_private, selected_date) VALUES (:url, :title, :category, :is_private, :date)",
