@@ -10,11 +10,13 @@ class RemindertaskWidget extends StatelessWidget {
   final VoidCallback? onMorePressed; // 더보기 버튼 클릭 시 실행할 함수
   final OffsetTapCallback? onTapDown; // 팝업 메뉴 위치 계산을 위한 콜백
   final int contentID;
+  final DateTime eventDate;
 
   const RemindertaskWidget({
     super.key,
     required this.backgroundColor,
     required this.contentID,
+    required this.eventDate,
     this.onMorePressed,
     this.onTapDown,
   });
@@ -51,7 +53,7 @@ class RemindertaskWidget extends StatelessWidget {
           PopupButton(
             contentID: contentID,
             onActionDone: () =>
-                context.read<AppState>().removeContent(contentID),
+                context.read<AppState>().removeEvent(eventDate, contentID),
             context: context,
           ),
 

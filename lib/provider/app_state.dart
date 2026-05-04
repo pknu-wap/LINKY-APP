@@ -147,23 +147,28 @@ class AppState extends ChangeNotifier {
   // 일정 관리 로직
 
   List<Event> getEventsForDay(DateTime day) {
-    final dateOnly = DateTime.utc(day.year, day.month, day.day);
-    return kEvents[dateOnly] ?? [];
+    return kEvents[day] ?? [];
   }
 
-  void removeEvent(DateTime day, int index) {
+  void removeEvent(DateTime day, int contentID) {
     final dateOnly = DateTime.utc(day.year, day.month, day.day);
 
     if (kEvents.containsKey(dateOnly)) {
-      // 전역 변수인 kEvents에서 해당 항목 삭제
-      kEvents[dateOnly]!.removeAt(index);
+      // 1. 전역 변수 kEvents에서 해당 contentID를 가진 이벤트만 찾아서 삭제 (안전한 방식)
+      kEvents[dateOnly]!.removeWhere((event) => event.contentID == contentID);
 
       // 만약 해당 날짜에 데이터가 없으면 키 삭제
       if (kEvents[dateOnly]!.isEmpty) {
         kEvents.remove(dateOnly);
       }
-
-      notifyListeners();
     }
+
+    // 2. 아예 삭제하지 않고, contents 리스트에서 해당 아이템의 time만 null로 변경!
+    int index = _contents.indexWhere((item) => item.id == contentID);
+    if (index != -1) {
+      _contents[index].time = null;
+    }
+
+    notifyListeners();
   }
 }
