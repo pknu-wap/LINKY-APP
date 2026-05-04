@@ -5,48 +5,49 @@ import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
+import 'package:mysql_client/mysql_client.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
 // import 'package:mysql_client/mysql_client.dart';
 import '../widgets/plus_page_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// Future<void> dbConnector({
-//   required String url,
-//   required String title,
-//   required String? category,
-//   required bool isPrivate,
-//   required DateTime? selectedDate,
-// }) async {
-//   print("Connecting to mysql server...");
-//   try {
-//     // MySQL 접속 설정
-//     final conn = await MySQLConnection.createConnection(
-//       host: 'your host name',
-//       port: 0808,
-//       userName: 'your user name',
-//       password: 'your password',
-//       databaseName: 'your database name', // optional
-//     );
+Future<void> dbConnector({
+  required String url,
+  required String title,
+  required String? category,
+  required bool isPrivate,
+  required DateTime? selectedDate,
+}) async {
+  print("Connecting to mysql server...");
+  try {
+    // MySQL 접속 설정
+    final conn = await MySQLConnection.createConnection(
+      host: 'your host name',
+      port: 0808,
+      userName: 'your user name',
+      password: 'your password',
+      databaseName: 'your database name', // optional
+    );
 
-//     await conn.execute(
-//       "INSERT INTO links (url, title, category, is_private, selected_date) VALUES (:url, :title, :category, :is_private, :date)",
-//       {
-//         "url": url,
-//         "title": title,
-//         "category": category ?? "미분류",
-//         "is_private": isPrivate ? 1 : 0,
-//         "date": selectedDate?.toIso8601String(), // 날짜를 문자열로 변환
-//       },
-//     );
+    await conn.execute(
+      "INSERT INTO links (url, title, category, is_private, selected_date) VALUES (:url, :title, :category, :is_private, :date)",
+      {
+        "url": url,
+        "title": title,
+        "category": category ?? "미분류",
+        "is_private": isPrivate ? 1 : 0,
+        "date": selectedDate?.toIso8601String(), // 날짜를 문자열로 변환
+      },
+    );
 
-//     print("DB 저장 완료!");
-//     await conn.close();
-//   } catch (e) {
-//     print("DB 저장 실패: $e");
-//     throw e; // 에러를 위로 던져서 UI에서 처리하게 함
-//   }
-// }
+    print("DB 저장 완료!");
+    await conn.close();
+  } catch (e) {
+    print("DB 저장 실패: $e");
+    throw e; // 에러를 위로 던져서 UI에서 처리하게 함
+  }
+}
 String? selectedCategory;
 
 void addEventToMap(int contentID, String title, DateTime selectedDate) {
@@ -163,42 +164,42 @@ class _PlusPageState extends State<PlusPage> {
     print('isPrivate: $isPrivate');
     print('selectedDate: $selectedDate');
 
-    // showDialog(
-    //   context: context,
-    //   barrierDismissible: false,
-    //   builder: (context) => const Center(child: CircularProgressIndicator()),
-    // );
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
 
-    // try {
-    //   // DB 저장 실행
-    //   dbConnector(
-    //     url: url,
-    //     title: title,
-    //     category: selectedCategory,
-    //     isPrivate: isPrivate,
-    //     selectedDate: selectedDate,
-    //   );
+    try {
+      // DB 저장 실행
+      dbConnector(
+        url: url,
+        title: title,
+        category: selectedCategory,
+        isPrivate: isPrivate,
+        selectedDate: selectedDate,
+      );
 
-    //   Navigator.pop(context); // 로딩 닫기
+      Navigator.pop(context); // 로딩 닫기
 
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(content: Text('링크가 성공적으로 DB에 저장되었습니다!')),
-    //   );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('링크가 성공적으로 DB에 저장되었습니다!')),
+      );
 
-    //   // 필드 초기화
-    //   setState(() {
-    //     urlController.clear();
-    //     titleController.clear();
-    //     selectedCategory = null;
-    //     isPrivate = false;
-    //     selectedDate = null;
-    //   });
-    // } catch (e) {
-    //   Navigator.pop(context); // 로딩 닫기
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('저장 실패: $e')),
-    //   );
-    // }
+      // 필드 초기화
+      setState(() {
+        urlController.clear();
+        titleController.clear();
+        selectedCategory = null;
+        isPrivate = false;
+        selectedDate = null;
+      });
+    } catch (e) {
+      Navigator.pop(context); // 로딩 닫기
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('저장 실패: $e')),
+      );
+    }
 
     setState(() {
       urlController.clear();
