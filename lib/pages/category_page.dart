@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
+import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/category_page_select_category.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 
@@ -20,60 +22,51 @@ class CategoryPage extends StatefulWidget {
   State<CategoryPage> createState() => _CategoryPageState();
 }
 
-List<String> categoryNames = ['전체','즐겨찾기'];
-List<String> categories_contentsTitle = [];
-List<String> categories_contentsURL = [];
+// List<String> categoryNames = ['전체', '즐겨찾기'];
 
 class _CategoryPageState extends State<CategoryPage> {
   String selectedCategory = 'All';
 
-  void _updatePage(int index) {
-    setState(() {
-      categories_contentsTitle.removeAt(index);
-      categories_contentsURL.removeAt(index);
-      contentsFavorite.removeAt(index);
-    });
-  }
+  // void _updatePage(int index) {
+  //   setState(() {
+  //     categories_contentsTitle.removeAt(index);
+  //     categories_contentsURL.removeAt(index);
+  //     contentsFavorite.removeAt(index);
+  //   });
+  // }
 
-  late List<bool> contentsFavorite = List.generate(
-    categories_contentsTitle.length,
-    (index) => false,
-  );
+  // late List<bool> contentsFavorite = List.generate(
+  //   categories_contentsTitle.length,
+  //   (index) => false,
+  // );
 
   @override
   Widget build(BuildContext context) {
-    // [1] 필터링 로직 정리
-    List<int> filteredIndices = [];
-    for (int i = 0; i < categories_contentsTitle.length; i++) {
-      if (selectedCategory == 'All') {
-        filteredIndices.add(i);
-      } else if (selectedCategory == 'Favorites') {
-        if (contentsFavorite[i]) filteredIndices.add(i);
-      } else {
-        // 나머지 카테고리는 제목에 카테고리명이 포함되어 있는지 확인
-        if (categories_contentsTitle[i].contains(selectedCategory)) {
-          filteredIndices.add(i);
-        }
-      }
-    }
+    final appState = context.watch<AppState>();
+    final allContents = appState.contents;
+    final categories = appState.categories;
 
-    final List<Map<String, String>> currentCategories = categoryNames.map((
-      name,
-    ) {
-      String count;
-      if (name == 'All') {
-        count = categories_contentsTitle.length.toString(); //
-      } else if (name == 'Favorites') {
-        count = contentsFavorite.where((e) => e).length.toString(); //
-      } else {
-        count = categories_contentsTitle
-            .where((title) => title.contains(name))
-            .length
-            .toString();
+    final filteredItems = allContents.where((item) {
+      if (item.isPrivate) return false;
+      if (selectedCategory == 'All' || selectedCategory == '전체') return true;
+      if (selectedCategory == 'Favorites' || selectedCategory == '즐겨찾기') {
+        return item.isFavorite;
       }
+      return item.category == selectedCategory;
+    }).toList();
 
-      return {"title": name, "count": count};
-    }).toList(); //
+    final List<Map<String, String>> currentCategories = categories.map((name) {
+      final publicItems = allContents.where((item) => !item.isPrivate).toList();
+      int count;
+      if (name == 'All' || name == '전체') {
+        count = publicItems.length;
+      } else if (name == 'Favorites' || name == '즐겨찾기') {
+        count = publicItems.where((item) => item.isFavorite).length;
+      } else {
+        count = publicItems.where((item) => item.category == name).length;
+      }
+      return {"title": name, "count": count.toString()};
+    }).toList();
 
     return Scaffold(
       backgroundColor: const Color(0xFFf0f2f6),
@@ -107,7 +100,10 @@ class _CategoryPageState extends State<CategoryPage> {
               physics: const BouncingScrollPhysics(),
               child: Row(
                 children: currentCategories.map((cat) {
-                  bool isSelected = selectedCategory == cat["title"];
+                  final String? categoryTitle = cat["title"];
+                  final String? categoryCount = cat["count"];
+
+                  bool isSelected = selectedCategory == categoryTitle;
 
                   return Padding(
                     padding: const EdgeInsets.only(right: 12),
@@ -118,8 +114,8 @@ class _CategoryPageState extends State<CategoryPage> {
                         });
                       },
                       child: SelectCategoryHome(
-                        categoryCount: cat["count"]!,
-                        categoryTitle: cat["title"]!,
+                        categoryCount: categoryCount!,
+                        categoryTitle: categoryTitle!,
                         backgroundColor: isSelected
                             ? AppColors.mainGreen
                             : Colors.white,
@@ -136,9 +132,9 @@ class _CategoryPageState extends State<CategoryPage> {
             const SizedBox(height: 13),
             Expanded(
               child: ListView.builder(
-                itemCount: filteredIndices.length,
+                itemCount: filteredItems.length,
                 itemBuilder: (context, index) {
-                  int targetIdx = filteredIndices[index];
+                  final item = filteredItems[index];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 13),
                     child: Container(
@@ -150,7 +146,7 @@ class _CategoryPageState extends State<CategoryPage> {
                         border: Border.all(color: Colors.black, width: 1),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black,
+                            color: Colors.black.withValues(alpha: 0.25),
                             spreadRadius: 0,
                             blurRadius: 4,
                             offset: const Offset(0, 4),
@@ -179,17 +175,17 @@ class _CategoryPageState extends State<CategoryPage> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      categories_contentsTitle[targetIdx],
+                                      item.title,
                                       style: GoogleFonts.inter(
                                         color: Colors.black,
                                         fontSize: 16,
                                       ),
                                     ),
                                     PopupButton(
-                                      titleValue: categories_contentsTitle[targetIdx],
-                                      urlValue: categories_contentsURL[targetIdx],
-                                      onActionDone: () =>
-                                          _updatePage(targetIdx),
+                                      contentID: item.id,
+                                      onActionDone: () => context
+                                          .read<AppState>()
+                                          .removeContent(item.id),
                                       context: context,
                                     ),
                                   ],
@@ -201,7 +197,7 @@ class _CategoryPageState extends State<CategoryPage> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 25),
                             child: Text(
-                              categories_contentsURL[targetIdx], // targetIdx로 수정 완료
+                              item.url, // targetIdx로 수정 완료
                               style: GoogleFonts.inter(
                                 fontSize: 13,
                                 color: const Color(0xff7E7E7E),
@@ -217,15 +213,14 @@ class _CategoryPageState extends State<CategoryPage> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    setState(() {
-                                      contentsFavorite[targetIdx] =
-                                          !contentsFavorite[targetIdx];
-                                    });
+                                    context.read<AppState>().toggleFavorite(
+                                      item,
+                                    );
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Image.asset(
-                                      contentsFavorite[targetIdx]
+                                      item.isFavorite
                                           ? 'assets/images/FavoriteIcon_Active.png'
                                           : 'assets/images/FavoriteIcon.png',
                                       height: 15,

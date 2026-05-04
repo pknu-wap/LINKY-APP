@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/plus_page.dart';
-import 'package:std/widgets/puablic_dropdown_menu.dart';
-
+import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/public_dropdown_menu.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -15,6 +16,9 @@ class SettingPage extends StatefulWidget {
 
 class SettingPageState extends State<SettingPage> {
   final TextEditingController _categoryController = TextEditingController();
+
+  String? selectedCategory;
+
   // 입력창 스타일을 위한 공통 함수
   InputDecoration inputBox(String hint) {
     return InputDecoration(
@@ -47,6 +51,9 @@ class SettingPageState extends State<SettingPage> {
   @override
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+    final categories = appState.categories;
+
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey, // 연한 그레이 배경색
       body: SafeArea(
@@ -93,20 +100,18 @@ class SettingPageState extends State<SettingPage> {
                     onPressed: () {
                       String categoryValue = _categoryController.text.trim();
                       if (categoryValue.isNotEmpty) {
-                        if (categoryNames.contains(categoryValue)) {
+                        if (categories.contains(categoryValue)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('이미 존재하는 카테고리입니다.')),
                           );
                           return;
                         }
 
-                        setState(() {
-                          categoryNames.add(categoryValue);
-                        });
+                        context.read<AppState>().addCategory(categoryValue);
 
                         _categoryController.clear(); // 입력창 비우기
                         FocusScope.of(context).unfocus(); // 키보드 닫기
-                        print("카테고리 추가 완료: $categoryNames");
+                        print("카테고리 추가 완료: $categoryValue");
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -151,7 +156,10 @@ class SettingPageState extends State<SettingPage> {
                           selectedCategory != '전체' &&
                           selectedCategory != '즐겨찾기') {
                         //카테고리 삭제
-                        categoryNames.remove(selectedCategory);
+                        context.read<AppState>().removeCategory(
+                          selectedCategory!,
+                        );
+
                         setState(() {
                           selectedCategory = '카테고리'; // 선택 초기화
                         });
@@ -198,7 +206,7 @@ class SettingPageState extends State<SettingPage> {
                   ),
                 ),
                 child: DropdownWidget(
-                  itemsList: categoryNames,
+                  itemsList: categories,
                   onCategorySelected: (value) {
                     setState(() {
                       selectedCategory = value;

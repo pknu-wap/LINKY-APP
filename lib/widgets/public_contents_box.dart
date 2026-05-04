@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_content_detail_sheet.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 import 'package:std/constants.dart';
 
 class ContentsBox extends StatelessWidget {
-  final String titleText, urlText;
+  final int contentID;
   final VoidCallback onActionDone;
 
   const ContentsBox({
     super.key,
-    required this.titleText,
-    required this.urlText,
+    required this.contentID,
     required this.onActionDone,
   });
 
   @override
   Widget build(BuildContext context) {
+    final targetItem = context.select<AppState, ContentItem?>(
+      (state) => state.contentById(contentID),
+    );
+
+    final titleText = targetItem?.title ?? "찾을 수 없음";
+    final urlText = targetItem?.url ?? "찾을 수 없음";
+    final datetimeText = targetItem?.time ?? '';
+
     return InkWell(
       child: Container(
         width: 375,
@@ -61,8 +70,7 @@ class ContentsBox extends StatelessWidget {
                         ),
                       ),
                       PopupButton(
-                        titleValue: '',
-                        urlValue: '',
+                        contentID: contentID,
                         onActionDone: onActionDone,
                         context: context,
                       ),
@@ -94,7 +102,16 @@ class ContentsBox extends StatelessWidget {
 
             Padding(
               padding: const EdgeInsets.only(left: 33.21),
-              child: Icon(Icons.calendar_today_outlined, size: 24),
+              child: Row(
+                children: [
+                  Icon(Icons.calendar_today_outlined, size: 24),
+                  SizedBox(width: 7),
+                  Text(
+                    datetimeText.isEmpty ? '' : datetimeText.substring(0, 16),
+                    style: GoogleFonts.inter(fontSize: 13),
+                  ),
+                ],
+              ),
             ),
 
             SizedBox(height: 10.22),
@@ -107,10 +124,7 @@ class ContentsBox extends StatelessWidget {
           context: context,
           isScrollControlled: true,
           backgroundColor: AppColors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
-          builder: (context) => TripleFolderBottomSheet(
-            contentTitle: titleText,
-            url: urlText,
-          ),
+          builder: (context) => TripleFolderBottomSheet(contentID: contentID),
         );
       },
     );

@@ -273,6 +273,8 @@ class Reminder extends State<ReminderScreen> {
                     ? RemindertaskWidget(
                         backgroundColor: AppColors.mainGreen,
                         // 여기서는 첫 번째 이벤트의 제목을 전달하는 식으로 커스텀 가능
+                        contentID:
+                            hourEvents.first.contentID, // 고유 id 가져오는 로직 추가 필요
                       )
                     : const SizedBox(height: 40), // 일정이 없을 때의 높이 확보
               ),
@@ -280,25 +282,6 @@ class Reminder extends State<ReminderScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget buildEditField(String hint, IconData suffixIcon) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(color: AppColors.textGrey),
-          border: InputBorder.none,
-          suffixIcon: Icon(suffixIcon, color: AppColors.outlineGrey, size: 20),
-        ),
-      ),
     );
   }
 
