@@ -36,26 +36,45 @@ class _CalendarPageState extends State<CalendarPage> {
     "Dec",
   ];
 
+  late AppState _appState;
+
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
+
+    _appState = Provider.of<AppState>(context, listen: false);
+
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    _appState.addListener(_handleAppStateChange);
   }
 
-  void _updatePage(int eventIndex, int contentID) {
+  void _handleAppStateChange() {
+    if (!mounted) return; // 위젯이 사라졌으면 무시
+
+    if (_selectedDay != null) {
+      setState(() {
+        final newEvents = _appState.getEventsForDay(_selectedDay!);
+
+        _selectedEvents.value = newEvents;
+      });
+    }
+  }
+
+  void _updatePage(int contentID) {
     if (_selectedDay == null) return;
 
-    context.read<AppState>().removeEvent(_selectedDay!, eventIndex);
+    context.read<AppState>().removeEvent(_selectedDay!, contentID);
 
+    // 변경된 일정을 화면(ValueNotifier)에 갱신
     _selectedEvents.value = context.read<AppState>().getEventsForDay(
       _selectedDay!,
     );
-    context.read<AppState>().removeContent(contentID);
   }
 
   @override
   void dispose() {
+    _appState.removeListener(_handleAppStateChange);
     _selectedEvents.dispose();
     super.dispose();
   }
@@ -84,72 +103,86 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Widget today_reminder(BuildContext context, Event event, int index) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.mainBackGrey,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.outlineGrey, width: 1), // 외곽선 추가
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 6,
-            height: 45,
-            decoration: BoxDecoration(
-              color: AppColors.mainGreen,
-              borderRadius: BorderRadius.circular(10),
-            ),
+    return Builder(
+      builder: (innerContext) {
+        // 새로운 innerContext를 생성
+        // 💡 부모의 context가 아닌 Builder의 innerContext에서 select를 호출합니다.
+        final currentContent = innerContext.select<AppState, ContentItem?>(
+          (state) => state.contentById(event.contentID),
+        );
+
+        final displayTitle = currentContent?.title ?? event.title;
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.mainBackGrey,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: AppColors.outlineGrey,
+              width: 1,
+            ), // 외곽선 추가
           ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  event.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+          child: Row(
+            children: [
+              Container(
+                width: 6,
+                height: 45,
+                decoration: BoxDecoration(
+                  color: AppColors.mainGreen,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const SizedBox(height: 4),
-                Row(
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
-                      Icons.calendar_today_outlined,
-                      size: 18,
-                      color: AppColors.black,
-                    ),
-                    SizedBox(width: 7),
                     Text(
-                      '${event.hour.toString().padLeft(2, '0')}:${event.minute.toString().padLeft(2, '0')}',
-                      style: GoogleFonts.inter(fontSize: 14),
+                      displayTitle,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today_outlined,
+                          size: 18,
+                          color: AppColors.black,
+                        ),
+                        SizedBox(width: 7),
+                        Text(
+                          '${event.hour.toString().padLeft(2, '0')}:${event.minute.toString().padLeft(2, '0')}',
+                          style: GoogleFonts.inter(fontSize: 14),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              PopupButton(
+                contentID: event.contentID,
+                onActionDone: () => _updatePage(event.contentID),
+                context: context,
+              ),
+              // if (event.url.isNotEmpty)
+              //   PopupButton(
+              //     contentID: event.contentID,
+              //     onActionDone: () => _updatePage(index, event.contentID),
+              //     context: context,
+              //   )
+              // else
+              //   IconButton(
+              //     onPressed: () => _updatePage(index, event.contentID),
+              //     icon: const Icon(Icons.more_vert),
+              //   ),
+            ],
           ),
-          PopupButton(
-            contentID: event.contentID,
-            onActionDone: () => _updatePage(index, event.contentID),
-            context: context,
-          ),
-          // if (event.url.isNotEmpty)
-          //   PopupButton(
-          //     contentID: event.contentID,
-          //     onActionDone: () => _updatePage(index, event.contentID),
-          //     context: context,
-          //   )
-          // else
-          //   IconButton(
-          //     onPressed: () => _updatePage(index, event.contentID),
-          //     icon: const Icon(Icons.more_vert),
-          //   ),
-        ],
-      ),
+        );
+      },
     );
   }
 
