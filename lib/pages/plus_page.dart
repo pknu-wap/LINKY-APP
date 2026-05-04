@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:provider/provider.dart';
+import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
+import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:mysql_client/mysql_client.dart';
+import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/public_dropdown_menu.dart';
+// import 'package:mysql_client/mysql_client.dart';
 import '../widgets/plus_page_calendar.dart';
-import '../widgets/plus_page_category.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 Future<void> dbConnector({
@@ -42,9 +48,9 @@ Future<void> dbConnector({
     throw e; // 에러를 위로 던져서 UI에서 처리하게 함
   }
 }
-final List<String> categories = ['공부', '쇼핑', '취미', '검색', '설문'];
+String? selectedCategory;
 
-void addEventToMap(String title, DateTime selectedDate) {
+void addEventToMap(int contentID, String title, DateTime selectedDate) {
   // 날짜 정규화 (시간/분/초를 제외한 날짜만)
   final dateKey = DateTime.utc(
     selectedDate.year,
@@ -53,6 +59,7 @@ void addEventToMap(String title, DateTime selectedDate) {
   );
   // 이벤트 생성 (전달받은 selectedDate의 시, 분 활용)
   final newEvent = Event(
+    contentID,
     title,
     hour: selectedDate.hour,
     minute: selectedDate.minute,
@@ -91,21 +98,6 @@ class _PlusPageState extends State<PlusPage> {
     super.dispose();
   }
 
-  Future<void> pickDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
-    );
-
-    if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
-
   void saveLink() {
     final url = urlController.text.trim();
     final title = titleController.text.trim();
@@ -125,7 +117,7 @@ class _PlusPageState extends State<PlusPage> {
     }
 
     final blockedScheme = RegExp(
-      r'^(javacript|data|file|ftp|mailto):',
+      r'^(javascript|data|file|ftp|mailto):',
       caseSensitive: false,
     );
 
@@ -149,12 +141,22 @@ class _PlusPageState extends State<PlusPage> {
       ).showSnackBar(const SnackBar(content: Text('유효한 URL을 입력하세요.')));
       return;
     }
-    
-    if (isPrivate == true) {
-      contentsTitle.add(title);
-      contentsURL.add(url);
+
+    final int newContentID = context.read<AppState>().addContent(
+      title: title,
+      url: url,
+      isPrivate: isPrivate,
+      category: selectedCategory ?? '전체',
+      datetime: selectedDate.toString(),
+    );
+
+    if (selectedDate != null) {
+      addEventToMap(
+        newContentID,
+        title,
+        selectedDate!,
+      ); //리마인더에 이벤트 추가
     }
-    addEventToMap(title, selectedDate ?? DateTime.now()); //리마인더에 이벤트 추가
 
     print('url: $url');
     print('title: $title');
@@ -210,8 +212,11 @@ class _PlusPageState extends State<PlusPage> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+    final categoryList = appState.categories;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F2F6),
+      backgroundColor: AppColors.mainBackGrey,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -235,7 +240,7 @@ class _PlusPageState extends State<PlusPage> {
                           style: GoogleFonts.inter(
                             fontSize: 60,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF232323),
+                            color: AppColors.black,
                           ),
                         ),
                       ],
@@ -248,7 +253,7 @@ class _PlusPageState extends State<PlusPage> {
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFF232323),
+                      color: AppColors.black,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -258,11 +263,12 @@ class _PlusPageState extends State<PlusPage> {
                     maxLength: 1024,
                     //maxLength: 2048,
                     decoration: InputDecoration(
+                      labelStyle: GoogleFonts.inter(color: AppColors.textGrey),
                       labelText: '링크 URL',
                       hintText: 'https://example.com',
                       //counterText: '',
                       filled: true,
-                      fillColor: const Color(0xFFFFFFFF),
+                      fillColor: AppColors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -274,9 +280,10 @@ class _PlusPageState extends State<PlusPage> {
                     controller: titleController,
                     maxLength: 50,
                     decoration: InputDecoration(
+                      labelStyle: GoogleFonts.inter(color: AppColors.textGrey),
                       labelText: '제목',
                       filled: true,
-                      fillColor: const Color(0xFFFFFFFF),
+                      fillColor: AppColors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -284,15 +291,46 @@ class _PlusPageState extends State<PlusPage> {
                   ),
                   const SizedBox(height: 10),
 
-                  CategoryWidget(
-                    selectedCategory: selectedCategory,
-                    categories: categories,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCategory = value;
-                      });
-                    },
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: AppColors.bottNavTextGrey,
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    width: double.infinity,
+                    padding: EdgeInsets.only(left: 13, right: 12),
+                    height: 56,
+                    child: DropdownWidget(
+                      itemsList: categoryList,
+                      onCategorySelected: (value) {
+                        setState(() {
+                          selectedCategory = value;
+                        });
+                      },
+                      menuWidget: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            selectedCategory ?? '카테고리',
+                            style: GoogleFonts.inter(
+                              color:
+                                  selectedCategory == '카테고리' ||
+                                      selectedCategory == null
+                                  ? AppColors.textGrey
+                                  : AppColors.black,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const Icon(Icons.arrow_drop_down_outlined),
+                        ],
+                      ),
+                    ),
                   ),
+
                   const SizedBox(height: 8),
 
                   Row(
@@ -302,7 +340,7 @@ class _PlusPageState extends State<PlusPage> {
                         '나만 보기로 저장',
                         style: GoogleFonts.inter(
                           fontSize: 15,
-                          color: Color(0xff7F7F7F),
+                          color: AppColors.textGrey,
                         ),
                       ),
                       Transform.scale(
@@ -322,7 +360,11 @@ class _PlusPageState extends State<PlusPage> {
 
                   CalendarWidget(
                     selectedDate: selectedDate,
-                    onPressed: pickDate,
+                    onChanged: (date) {
+                      setState(() {
+                        selectedDate = date;
+                      });
+                    },
                   ),
                   const SizedBox(height: 15),
 
@@ -331,9 +373,9 @@ class _PlusPageState extends State<PlusPage> {
                     child: OutlinedButton(
                       onPressed: saveLink,
                       style: OutlinedButton.styleFrom(
-                        backgroundColor: Color(0xFF3FD966),
-                        foregroundColor: Color(0xFF000000),
-                        side: BorderSide(color: Colors.black),
+                        backgroundColor: AppColors.mainGreen,
+                        foregroundColor: AppColors.black,
+                        side: BorderSide(color: AppColors.black),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(23),
                         ),

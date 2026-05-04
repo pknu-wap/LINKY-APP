@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:std/services/auth_service.dart';
 import 'package:std/widgets/public_messagebox.dart';
+import 'package:std/constants.dart';
 
 class SecretGuardWrapperPw extends StatefulWidget {
   final Widget child;
@@ -69,15 +70,15 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // 배경 블러 처리
             child: Container(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: AppColors.black.withValues(alpha: 0.1),
               child: Center(
                 child: Container(
                   width: 362,
                   height: 186,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(21),
-                    border: Border.all(color: Colors.black, width: 1),
-                    color: Colors.white,
+                    border: Border.all(color: AppColors.black, width: 1),
+                    color: AppColors.white,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -86,7 +87,7 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
                       const Text(
                         "비밀번호 입력",
                         style: TextStyle(
-                          color: Colors.black,
+                          color: AppColors.black,
                           fontSize: 16,
                         ),
                       ),

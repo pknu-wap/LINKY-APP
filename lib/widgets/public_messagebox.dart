@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:std/constants.dart';
 
 enum BoxType { alert, warning }
 
@@ -19,13 +20,13 @@ class DialogPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       child: Container(
         width: 326,
         height: 141,
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.black, width: 1),
+          color: AppColors.white,
+          border: Border.all(color: AppColors.black, width: 1),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -33,6 +34,7 @@ class DialogPopup extends StatelessWidget {
             Expanded(
               child: Center(
                 child: Text(
+                  textAlign: TextAlign.center,
                   title,
                   style: GoogleFonts.inter(fontSize: 20),
                 ),
@@ -42,7 +44,7 @@ class DialogPopup extends StatelessWidget {
             const Divider(
               height: 1,
               thickness: 0.38,
-              color: Colors.black,
+              color: AppColors.black,
             ),
 
             if (boxType == BoxType.warning)
@@ -58,7 +60,7 @@ class DialogPopup extends StatelessWidget {
                             child: Text(
                               '취소',
                               style: GoogleFonts.inter(
-                                color: Colors.blue,
+                                color: AppColors.mainBlue,
                                 fontSize: 20,
                               ),
                             ),
@@ -79,7 +81,7 @@ class DialogPopup extends StatelessWidget {
                             child: Text(
                               confirmText,
                               style: GoogleFonts.inter(
-                                color: Colors.red,
+                                color: AppColors.mainRed,
                                 fontSize: 20,
                               ),
                             ),
@@ -98,7 +100,7 @@ class DialogPopup extends StatelessWidget {
                     child: Text(
                       '확인',
                       style: GoogleFonts.inter(
-                        color: Colors.blue,
+                        color: AppColors.mainBlue,
                         fontSize: 20,
                       ),
                     ),

@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/Users/Samsung/VSCODE/LINKY-APP/linux"
+    "cmake.sourceDirectory": "C:/Users/Samsung/VSCODE/LINKY-APP/linux",
+    "cmake.ignoreCMakeListsMissing": true
 }

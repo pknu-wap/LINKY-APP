@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:std/constants.dart';
+import 'package:std/pages/category_page.dart';
+import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/public_dropdown_menu.dart';
 import 'package:std/widgets/reminder_page_calender.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 
 class CalendarPage extends StatefulWidget {
+  const CalendarPage({super.key});
+
   @override
   _CalendarPageState createState() => _CalendarPageState();
 }
@@ -13,6 +21,20 @@ class _CalendarPageState extends State<CalendarPage> {
   DateTime? _selectedDay;
   int startYear = 2026;
   int endYear = 2099;
+  List<String> months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   @override
   void initState() {
@@ -21,28 +43,21 @@ class _CalendarPageState extends State<CalendarPage> {
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
   }
 
+  void _updatePage(int eventIndex, int contentID) {
+    if (_selectedDay == null) return;
+
+    context.read<AppState>().removeEvent(_selectedDay!, eventIndex);
+
+    _selectedEvents.value = context.read<AppState>().getEventsForDay(
+      _selectedDay!,
+    );
+    context.read<AppState>().removeContent(contentID);
+  }
+
   @override
   void dispose() {
     _selectedEvents.dispose();
     super.dispose();
-  }
-
-  String _getMonthName(int month) {
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    return months[month - 1];
   }
 
   String getMonthName(int month) {
@@ -68,26 +83,14 @@ class _CalendarPageState extends State<CalendarPage> {
     return kEvents[dateOnly] ?? [];
   }
 
-  Widget _buildDropdownContainer({required Widget child}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey[400]!, width: 1.2),
-      ),
-      child: DropdownButtonHideUnderline(child: child),
-    );
-  }
-
-  Widget today_reminder(BuildContext context, String title) {
+  Widget today_reminder(BuildContext context, Event event, int index) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100], // 배경색을 조금 더 밝게 조정
+        color: AppColors.mainBackGrey,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey[300]!, width: 1), // 외곽선 추가
+        border: Border.all(color: AppColors.outlineGrey, width: 1), // 외곽선 추가
       ),
       child: Row(
         children: [
@@ -95,7 +98,7 @@ class _CalendarPageState extends State<CalendarPage> {
             width: 6,
             height: 45,
             decoration: BoxDecoration(
-              color: const Color(0xFF3FD966),
+              color: AppColors.mainGreen,
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -105,22 +108,46 @@ class _CalendarPageState extends State<CalendarPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  event.title,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Icon(
-                  Icons.calendar_today_outlined,
-                  size: 18,
-                  color: Colors.black54,
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.calendar_today_outlined,
+                      size: 18,
+                      color: AppColors.black,
+                    ),
+                    SizedBox(width: 7),
+                    Text(
+                      '${event.hour.toString().padLeft(2, '0')}:${event.minute.toString().padLeft(2, '0')}',
+                      style: GoogleFonts.inter(fontSize: 14),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          PopupButton(onActionDone: () => print('삭제 버튼 클릭됨'), context: context),
+          PopupButton(
+            contentID: event.contentID,
+            onActionDone: () => _updatePage(index, event.contentID),
+            context: context,
+          ),
+          // if (event.url.isNotEmpty)
+          //   PopupButton(
+          //     contentID: event.contentID,
+          //     onActionDone: () => _updatePage(index, event.contentID),
+          //     context: context,
+          //   )
+          // else
+          //   IconButton(
+          //     onPressed: () => _updatePage(index, event.contentID),
+          //     icon: const Icon(Icons.more_vert),
+          //   ),
         ],
       ),
     );
@@ -129,7 +156,7 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: Row(
         children: [
           Expanded(
@@ -146,12 +173,12 @@ class _CalendarPageState extends State<CalendarPage> {
                         Container(
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFBFF3),
+                            color: AppColors.mainPink,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
                             Icons.calendar_today_outlined,
-                            color: Colors.black,
+                            color: AppColors.black,
                             size: 20,
                           ),
                         ),
@@ -171,7 +198,7 @@ class _CalendarPageState extends State<CalendarPage> {
                       "${_focusedDay.year}",
                       style: TextStyle(
                         fontSize: 28,
-                        color: Colors.black,
+                        color: AppColors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -202,46 +229,65 @@ class _CalendarPageState extends State<CalendarPage> {
                           }),
                         ),
                         const SizedBox(width: 25),
-                        _buildDropdownContainer(
-                          child: DropdownButton<int>(
-                            value: _focusedDay.month,
-                            items: List.generate(12, (index) => index + 1)
-                                .map(
-                                  (month) => DropdownMenuItem(
-                                    value: month,
-                                    child: Text(_getMonthName(month)),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (month) => setState(
-                              () => _focusedDay = DateTime(
-                                _focusedDay.year,
-                                month!,
-                              ),
+                        Container(
+                          width: 87,
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.outlineGrey),
+                          ),
+                          child: DropdownWidget(
+                            itemsList: months,
+                            onCategorySelected: (value) {
+                              setState(
+                                () => _focusedDay = DateTime(
+                                  _focusedDay.year,
+                                  months.indexOf(value) + 1,
+                                ),
+                              );
+                            },
+                            menuWidget: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  months[_focusedDay.month - 1],
+                                  style: GoogleFonts.inter(fontSize: 16),
+                                ),
+                                const Icon(Icons.arrow_drop_down_outlined),
+                              ],
                             ),
                           ),
                         ),
-                        const SizedBox(width: 25),
-                        _buildDropdownContainer(
-                          child: DropdownButton<int>(
-                            value: _focusedDay.year.clamp(startYear, endYear),
-                            items:
-                                List.generate(
-                                      endYear - startYear + 1,
-                                      (index) => startYear + index,
-                                    )
-                                    .map(
-                                      (year) => DropdownMenuItem(
-                                        value: year,
-                                        child: Text(year.toString()),
-                                      ),
-                                    )
-                                    .toList(),
-                            onChanged: (year) => setState(
-                              () => _focusedDay = DateTime(
-                                year!,
-                                _focusedDay.month,
-                              ),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 87,
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.outlineGrey),
+                          ),
+                          child: DropdownWidget(
+                            itemsList: List.generate(
+                              endYear - startYear + 1,
+                              (index) => (startYear + index).toString(),
+                            ),
+                            onCategorySelected: (value) {
+                              setState(
+                                () => _focusedDay = DateTime(
+                                  int.parse(value),
+                                  _focusedDay.month,
+                                ),
+                              );
+                            },
+                            menuWidget: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  _focusedDay.year.toString(),
+                                  style: GoogleFonts.inter(fontSize: 16),
+                                ),
+                                const Icon(Icons.arrow_drop_down_outlined),
+                              ],
                             ),
                           ),
                         ),
@@ -295,7 +341,7 @@ class _CalendarPageState extends State<CalendarPage> {
                               child: Text(
                                 "등록된 일정이 없습니다.",
                                 style: TextStyle(
-                                  color: Colors.grey[400],
+                                  color: AppColors.outlineGrey,
                                   fontSize: 16,
                                 ),
                               ),
@@ -304,8 +350,15 @@ class _CalendarPageState extends State<CalendarPage> {
                           return ListView.builder(
                             padding: EdgeInsets.zero,
                             itemCount: events.length,
-                            itemBuilder: (context, index) =>
-                                today_reminder(context, events[index].title),
+                            itemBuilder: (context, index) {
+                              final event = events[index];
+
+                              return today_reminder(
+                                context,
+                                event,
+                                index,
+                              );
+                            },
                           );
                         },
                       ),
@@ -319,7 +372,7 @@ class _CalendarPageState extends State<CalendarPage> {
           Container(
             width: 30,
             decoration: const BoxDecoration(
-              color: Color(0xFF3FD966),
+              color: AppColors.mainGreen,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20),
                 bottomLeft: Radius.circular(20),
@@ -330,7 +383,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 width: 4,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.8),
+                  color: AppColors.white.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -343,12 +396,14 @@ class _CalendarPageState extends State<CalendarPage> {
 }
 
 class Event {
+  final int contentID;
   final String title;
   final int hour;
   final int minute;
-  const Event(this.title, {this.hour = 9, this.minute = 0});
+  const Event(this.contentID, this.title, {this.hour = 9, this.minute = 0});
 }
 
-final Map<DateTime, List<Event>> kEvents = {}; // -> 알림 30분 전에 한번 울리고 정시간에 한번 더 울림
+final Map<DateTime, List<Event>> kEvents =
+    {}; // -> 알림 30분 전에 한번 울리고 정시간에 한번 더 울림
 //데이터 하루 지나면 삭제 -> 만료시 색깔 변경
 //년도 2099년

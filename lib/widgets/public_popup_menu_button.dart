@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:std/constants.dart';
+import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_edit_content_sheet.dart';
 import 'package:std/widgets/public_messagebox.dart';
 
 class PopupButton extends StatelessWidget {
   const PopupButton({
     super.key,
+    required this.contentID,
     required this.onActionDone,
     required this.context,
   });
 
+  final int contentID;
   final VoidCallback onActionDone;
   final BuildContext context;
 
@@ -38,8 +43,10 @@ class PopupButton extends StatelessWidget {
                     context: context,
                     isScrollControlled: true,
                     backgroundColor:
-                        Colors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
-                    builder: (context) => const EditContentSheet(),
+                        AppColors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
+                    builder: (context) => EditContentSheet(
+                      contentID: contentID,
+                    ),
                   );
                 },
                 confirmText: '수정',
@@ -92,7 +99,7 @@ class PopupButton extends StatelessWidget {
           ),
         ),
       ],
-      color: Colors.grey[200],
+      color: AppColors.lightGrey,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),

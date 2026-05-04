@@ -1,17 +1,21 @@
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
-import 'package:std/pages/login_page.dart';
+// import 'package:std/pages/login_page.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting_page.dart';
 import 'package:std/pages/slide_page.dart';
 import 'package:std/pages/plus_page.dart';
+import 'package:std/provider/app_state.dart';
 import 'package:std/services/alarm_service.dart';
 import 'package:std/widgets/secret_page_guard.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter/services.dart';
+
+import 'constants.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -52,21 +56,35 @@ void main() async {
   KakaoSdk.init(
     nativeAppKey: '82e41c6f8193caa43b268cd5c33fe23a',
   );
-
   // 1. 알람 매니저 초기화
   await AndroidAlarmManager.initialize();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AppState(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 
   // 2. kEvents 데이터 자동 동기화 (앱 실행 시마다 수행)
   // 데이터가 있는 위치에 맞춰 kEvents를 넣어주세요.
   if (kEvents.isNotEmpty) {
-    await AlarmService.syncEventsWithAlarms(
-      kEvents.cast<DateTime, List<dynamic>>(),
-    );
+    AlarmService.syncEventsWithAlarms(
+          kEvents.cast<DateTime, List<dynamic>>(),
+        )
+        .then((_) {
+          print("알람 동기화 완료");
+        })
+        .catchError((e) {
+          print("알람 동기화 중 에러 발생: $e");
+        });
   } else {
     print("앱 실행 시 kEvents 데이터가 비어 있습니다.");
   }
-
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -78,10 +96,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const LoginPage(),
-      routes: {
-        '/main': (context) => const MainScreen(),
-      },
+      home: const MainScreen(),
+      // home: const LoginPage(),
+      // routes: {
+      //   '/main': (context) => const MainScreen(),
+      // },
     );
   }
 }
@@ -157,7 +176,7 @@ class _MainScreenState extends State<MainScreen> {
               topRight: Radius.circular(19),
               topLeft: Radius.circular(19),
             ),
-            border: Border.all(color: Color(0xffC4C4C4), width: 1),
+            border: Border.all(color: AppColors.outlineGrey, width: 1),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.only(
@@ -170,8 +189,8 @@ class _MainScreenState extends State<MainScreen> {
               type: BottomNavigationBarType.fixed,
               currentIndex: _selectedIndex,
               onTap: _onItemTapped,
-              selectedItemColor: Color(0xff3fd966),
-              unselectedItemColor: Colors.black,
+              selectedItemColor: AppColors.mainGreen,
+              unselectedItemColor: AppColors.black,
               items: [
                 BottomNavigationBarItem(
                   icon: _buildCommonItem(Icons.reorder, '카테고리', false),
@@ -197,7 +216,7 @@ class _MainScreenState extends State<MainScreen> {
                     child: const Center(
                       child: Icon(
                         Icons.add,
-                        color: Color(0xff3fd966),
+                        color: AppColors.mainGreen,
                         size: 45,
                       ),
                     ),
@@ -240,14 +259,14 @@ class _MainScreenState extends State<MainScreen> {
       children: [
         Icon(
           icon,
-          color: isSelected ? const Color(0xff3fd966) : Colors.black,
+          color: isSelected ? AppColors.mainGreen : AppColors.black,
           size: 25,
         ),
         const SizedBox(height: 6),
         Text(
           label,
           style: TextStyle(
-            color: isSelected ? const Color(0xff3fd966) : Colors.black,
+            color: isSelected ? AppColors.mainGreen : AppColors.black,
             fontSize: 11,
           ),
         ),

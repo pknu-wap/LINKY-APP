@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:std/constants.dart';
+import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/category_page_select_category.dart';
+import 'package:std/widgets/public_popup_menu_button.dart';
 
 class Linky extends StatelessWidget {
   const Linky({super.key});
@@ -17,296 +22,224 @@ class CategoryPage extends StatefulWidget {
   State<CategoryPage> createState() => _CategoryPageState();
 }
 
-class FilterButton extends StatelessWidget {
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const FilterButton({
-    super.key,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(30),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected ? Color(0xff3FD966) : Colors.white,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.white : Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text("갯수", style: TextStyle(color: Colors.black)),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              "카테고리 제목",
-              style: TextStyle(color: isSelected ? Colors.white : Colors.black),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// List<String> categoryNames = ['전체', '즐겨찾기'];
 
 class _CategoryPageState extends State<CategoryPage> {
-  int selectedIndex = 0;
+  String selectedCategory = 'All';
 
-  final List<List<TextEditingController>> titleControllers = List.generate(
-    3,
-    (_) => List.generate(3, (_) => TextEditingController()),
-  );
-  final List<List<TextEditingController>> urlControllers = List.generate(
-    3,
-    (_) => List.generate(3, (_) => TextEditingController()),
-  );
+  // void _updatePage(int index) {
+  //   setState(() {
+  //     categories_contentsTitle.removeAt(index);
+  //     categories_contentsURL.removeAt(index);
+  //     contentsFavorite.removeAt(index);
+  //   });
+  // }
 
-  void _openEditSheet(int categoryIndex, int cardIndex) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            left: 16,
-            right: 16,
-            top: 16,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(16),
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                    child: const Icon(Icons.close, color: Colors.white),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xff3FD966),
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(16),
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                    child: const Icon(Icons.check, color: Colors.white),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const Text("Category", style: TextStyle(fontSize: 20)),
-              const SizedBox(height: 16),
-              TextField(
-                controller: titleControllers[categoryIndex][cardIndex],
-                decoration: InputDecoration(
-                  labelText: "제목 수정",
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () =>
-                        titleControllers[categoryIndex][cardIndex].clear(),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: urlControllers[categoryIndex][cardIndex],
-                decoration: InputDecoration(
-                  labelText: "URL 수정",
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () =>
-                        urlControllers[categoryIndex][cardIndex].clear(),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: "날짜 수정",
-                  suffixIcon: const Icon(Icons.calendar_today),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                value: "카테고리 1",
-                items: ["카테고리 1", "카테고리 2", "카테고리 3"]
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                    .toList(),
-                onChanged: (value) {},
-                decoration: InputDecoration(
-                  labelText: "카테고리 수정",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget buildCategoryCards(int categoryIndex) {
-    return ListView.builder(
-      itemCount: 3,
-      itemBuilder: (context, index) {
-        return Card(
-          margin: const EdgeInsets.all(8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-                child: Container(
-                  color: Color(0xff3FD966),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: titleControllers[categoryIndex][index],
-                          style: const TextStyle(color: Colors.black),
-                          decoration: const InputDecoration(
-                            hintText: "  제목",
-                            hintStyle: TextStyle(color: Colors.black),
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.more_vert, color: Colors.white),
-                        onPressed: () => _openEditSheet(categoryIndex, index),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: TextField(
-                  controller: urlControllers[categoryIndex][index],
-                  decoration: InputDecoration(
-                    labelText: "URL",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Image.asset('assets/images/FavoriteIcon.png'),
-                    const SizedBox(width: 12),
-                    Image.asset('assets/images/CalendarIcon.png'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  // late List<bool> contentsFavorite = List.generate(
+  //   categories_contentsTitle.length,
+  //   (index) => false,
+  // );
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+    final allContents = appState.contents;
+    final categories = appState.categories;
+
+    final filteredItems = allContents.where((item) {
+      if (item.isPrivate) return false;
+      if (selectedCategory == 'All' || selectedCategory == '전체') return true;
+      if (selectedCategory == 'Favorites' || selectedCategory == '즐겨찾기') {
+        return item.isFavorite;
+      }
+      return item.category == selectedCategory;
+    }).toList();
+
+    final List<Map<String, String>> currentCategories = categories.map((name) {
+      final publicItems = allContents.where((item) => !item.isPrivate).toList();
+      int count;
+      if (name == 'All' || name == '전체') {
+        count = publicItems.length;
+      } else if (name == 'Favorites' || name == '즐겨찾기') {
+        count = publicItems.where((item) => item.isFavorite).length;
+      } else {
+        count = publicItems.where((item) => item.category == name).length;
+      }
+      return {"title": name, "count": count.toString()};
+    }).toList();
+
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
+      backgroundColor: const Color(0xFFf0f2f6),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset('assets/images/CategoryIcon.png', height: 24),
-            const SizedBox(width: 8),
-            const Text("Category"),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+            const SizedBox(height: 41),
+            Padding(
+              padding: const EdgeInsets.only(left: 6),
               child: Row(
                 children: [
-                  FilterButton(
-                    isSelected: selectedIndex == 0,
-                    onTap: () {
-                      setState(() {
-                        selectedIndex = 0;
-                      });
-                    },
+                  Container(
+                    width: 36,
+                    height: 34.43,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color(0xffffffff),
+                    ),
+                    child: Image.asset('assets/images/CategoryIcon.png'),
                   ),
                   const SizedBox(width: 8),
-                  FilterButton(
-                    isSelected: selectedIndex == 1,
-                    onTap: () {
-                      setState(() {
-                        selectedIndex = 1;
-                      });
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  FilterButton(
-                    isSelected: selectedIndex == 2,
-                    onTap: () {
-                      setState(() {
-                        selectedIndex = 2;
-                      });
-                    },
-                  ),
+                  Text('Category', style: GoogleFonts.inter(fontSize: 24)),
                 ],
               ),
             ),
-          ),
-          Expanded(child: buildCategoryCards(selectedIndex)),
-        ],
+            const SizedBox(height: 13),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Row(
+                children: currentCategories.map((cat) {
+                  final String? categoryTitle = cat["title"];
+                  final String? categoryCount = cat["count"];
+
+                  bool isSelected = selectedCategory == categoryTitle;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedCategory = cat["title"]!;
+                        });
+                      },
+                      child: SelectCategoryHome(
+                        categoryCount: categoryCount!,
+                        categoryTitle: categoryTitle!,
+                        backgroundColor: isSelected
+                            ? AppColors.mainGreen
+                            : Colors.white,
+                        countBackgroundColor: isSelected
+                            ? const Color(0xffffffff)
+                            : const Color(0xFFC5C5C5),
+                        textColor: isSelected ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            const SizedBox(height: 13),
+            Expanded(
+              child: ListView.builder(
+                itemCount: filteredItems.length,
+                itemBuilder: (context, index) {
+                  final item = filteredItems[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 13),
+                    child: Container(
+                      width: double.infinity,
+                      height: 138,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(23),
+                        border: Border.all(color: Colors.black, width: 1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.25),
+                            spreadRadius: 0,
+                            blurRadius: 4,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 11),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 9),
+                            child: Container(
+                              height: 53,
+                              decoration: BoxDecoration(
+                                color: AppColors.mainGreen,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 21,
+                                  right: 10,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      item.title,
+                                      style: GoogleFonts.inter(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    PopupButton(
+                                      contentID: item.id,
+                                      onActionDone: () => context
+                                          .read<AppState>()
+                                          .removeContent(item.id),
+                                      context: context,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 25),
+                            child: Text(
+                              item.url, // targetIdx로 수정 완료
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: const Color(0xff7E7E7E),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(height: 12.78),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    context.read<AppState>().toggleFavorite(
+                                      item,
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.asset(
+                                      item.isFavorite
+                                          ? 'assets/images/FavoriteIcon_Active.png'
+                                          : 'assets/images/FavoriteIcon.png',
+                                      height: 15,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 110),
+          ],
+        ),
       ),
     );
   }
