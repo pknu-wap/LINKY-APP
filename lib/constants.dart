@@ -23,5 +23,5 @@ class AppColors {
   static const Color mainBlue = Color(0xFF0F63FF);
   static const Color logoBlue = Color(0xFF3978FF);
   static const Color calendarBlue = Color(0xFFC3D9FF);
-  static const Color dateBlue = Color(0xFFE0EFFF);
+  static const Color dateBlue = Color(0xFFE0EFFF); // -> ?파랑색 아닌데
 }

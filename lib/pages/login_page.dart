@@ -39,12 +39,12 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      final kakaoToken = await UserApi.instance.loginWithKakaoTalk();
+      final kakaoToken = await UserApi.instance.loginWithKakaoTalk();//테스트 진행시에는 이 코드 주석 처리하고 진행
       debugPrint('3. 카카오 로그인 성공');
 
       await sendKakaoTokenToBackend(
         kakaoToken.accessToken,
-      ); //테스트 진행시에는 이 코드 주석 처리하고 진행
+      );
       debugPrint('4. 백엔드 전송 성공');
 
       if (!mounted) return;
