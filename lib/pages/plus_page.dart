@@ -60,7 +60,6 @@ void addEventToMap(int contentID, String title, DateTime selectedDate) {
   final newEvent = Event(
     contentID,
     title,
-    url: url,
     hour: selectedDate.hour,
     minute: selectedDate.minute,
   );
@@ -364,7 +363,7 @@ class _PlusPageState extends State<PlusPage> {
                       setState(() {
                         selectedDate = date;
                       });
-                    }
+                    },
                   ),
                   const SizedBox(height: 15),
 

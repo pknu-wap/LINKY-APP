@@ -124,7 +124,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     ),
                     SizedBox(width: 7),
                     Text(
-                      '${event.hour}:${event.minute}',
+                      '${event.hour.toString().padLeft(2, '0')}:${event.minute.toString().padLeft(2, '0')}',
                       style: GoogleFonts.inter(fontSize: 14),
                     ),
                   ],
@@ -132,17 +132,22 @@ class _CalendarPageState extends State<CalendarPage> {
               ],
             ),
           ),
-          if (event.url.isNotEmpty)
-            PopupButton(
-              contentID: event.contentID,
-              onActionDone: () => _updatePage(index, event.contentID),
-              context: context,
-            )
-          else
-            IconButton(
-              onPressed: () => _updatePage(index, event.contentID),
-              icon: const Icon(Icons.more_vert),
-            ),
+          PopupButton(
+            contentID: event.contentID,
+            onActionDone: () => _updatePage(index, event.contentID),
+            context: context,
+          ),
+          // if (event.url.isNotEmpty)
+          //   PopupButton(
+          //     contentID: event.contentID,
+          //     onActionDone: () => _updatePage(index, event.contentID),
+          //     context: context,
+          //   )
+          // else
+          //   IconButton(
+          //     onPressed: () => _updatePage(index, event.contentID),
+          //     icon: const Icon(Icons.more_vert),
+          //   ),
         ],
       ),
     );
@@ -393,7 +398,6 @@ class _CalendarPageState extends State<CalendarPage> {
 class Event {
   final int contentID;
   final String title;
-  final String url;
   final int hour;
   final int minute;
   const Event(this.contentID, this.title, {this.hour = 9, this.minute = 0});
