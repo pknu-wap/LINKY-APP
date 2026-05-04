@@ -60,6 +60,7 @@ void addEventToMap(int contentID, String title, DateTime selectedDate) {
   final newEvent = Event(
     contentID,
     title,
+    url: url,
     hour: selectedDate.hour,
     minute: selectedDate.minute,
   );
@@ -97,21 +98,6 @@ class _PlusPageState extends State<PlusPage> {
     super.dispose();
   }
 
-  Future<void> pickDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
-    );
-
-    if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
-
   void saveLink() {
     final url = urlController.text.trim();
     final title = titleController.text.trim();
@@ -131,7 +117,7 @@ class _PlusPageState extends State<PlusPage> {
     }
 
     final blockedScheme = RegExp(
-      r'^(javacript|data|file|ftp|mailto):',
+      r'^(javascript|data|file|ftp|mailto):',
       caseSensitive: false,
     );
 
@@ -168,7 +154,7 @@ class _PlusPageState extends State<PlusPage> {
       addEventToMap(
         newContentID,
         title,
-        selectedDate ?? DateTime.now(),
+        selectedDate!,
       ); //리마인더에 이벤트 추가
     }
 
@@ -374,7 +360,11 @@ class _PlusPageState extends State<PlusPage> {
 
                   CalendarWidget(
                     selectedDate: selectedDate,
-                    onPressed: pickDate,
+                    onChanged: (date) {
+                      setState(() {
+                        selectedDate = date;
+                      });
+                    }
                   ),
                   const SizedBox(height: 15),
 

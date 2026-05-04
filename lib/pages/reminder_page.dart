@@ -272,6 +272,8 @@ class Reminder extends State<ReminderScreen> {
                 child: hourEvents.isNotEmpty
                     ? RemindertaskWidget(
                         backgroundColor: AppColors.mainGreen,
+                        title: hourEvents.first.title,
+                        url: hourEvents.first.url,
                         // 여기서는 첫 번째 이벤트의 제목을 전달하는 식으로 커스텀 가능
                         contentID:
                             hourEvents.first.contentID, // 고유 id 가져오는 로직 추가 필요

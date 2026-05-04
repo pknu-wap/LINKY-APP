@@ -7,6 +7,8 @@ import 'package:std/constants.dart';
 
 class RemindertaskWidget extends StatelessWidget {
   final Color backgroundColor;
+  final String title;
+  final String url;
   final VoidCallback? onMorePressed; // 더보기 버튼 클릭 시 실행할 함수
   final OffsetTapCallback? onTapDown; // 팝업 메뉴 위치 계산을 위한 콜백
   final int contentID;
@@ -25,7 +27,7 @@ class RemindertaskWidget extends StatelessWidget {
       (state) => state.contentById(contentID),
     );
 
-    final titleText = targetItem?.title ?? "찾을 수 없음";
+    final titleText = targetItem?.title ?? "제목 없음";
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -34,7 +36,6 @@ class RemindertaskWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Icon(
             Icons.calendar_today,
@@ -54,6 +55,26 @@ class RemindertaskWidget extends StatelessWidget {
                 context.read<AppState>().removeContent(contentID),
             context: context,
           ),
+
+          const SizedBox(width: 8),
+
+          if (hasUrl)
+            PopupButton(
+              titleValue: safeTitle,
+              urlValue: url,
+              onActionDone: () {
+                print('삭제 버튼 클릭됨');
+              },
+              context: context,
+            )
+          else
+            IconButton(
+              onPressed: onMorePressed,
+              icon: const Icon(
+                Icons.more_horiz,
+                color: AppColors.black,
+              ),
+            ),
         ],
       ),
     );
