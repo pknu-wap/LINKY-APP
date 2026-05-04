@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 import 'package:std/constants.dart';
 
@@ -8,20 +11,23 @@ class RemindertaskWidget extends StatelessWidget {
   final String url;
   final VoidCallback? onMorePressed; // 더보기 버튼 클릭 시 실행할 함수
   final OffsetTapCallback? onTapDown; // 팝업 메뉴 위치 계산을 위한 콜백
+  final int contentID;
 
   const RemindertaskWidget({
     super.key,
     required this.backgroundColor,
-    required this.title,
-    this.url = '',
+    required this.contentID,
     this.onMorePressed,
     this.onTapDown,
   });
 
   @override
   Widget build(BuildContext context) {
-    final safeTitle = title.isEmpty ? '제목 없음' : title;
-    final hasUrl = url.isNotEmpty;
+    final targetItem = context.select<AppState, ContentItem?>(
+      (state) => state.contentById(contentID),
+    );
+
+    final titleText = targetItem?.title ?? "제목 없음";
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -36,19 +42,18 @@ class RemindertaskWidget extends StatelessWidget {
             size: 18,
             color: AppColors.black.withValues(alpha: 0.541),
           ),
-
-          const SizedBox(width: 10),
-
+          SizedBox(width: 10),
           Expanded(
             child: Text(
-              safeTitle,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: AppColors.black,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              titleText,
+              style: GoogleFonts.inter(fontSize: 16),
             ),
+          ),
+          PopupButton(
+            contentID: contentID,
+            onActionDone: () =>
+                context.read<AppState>().removeContent(contentID),
+            context: context,
           ),
 
           const SizedBox(width: 8),

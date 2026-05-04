@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/private_page.dart';
-import 'package:std/widgets/puablic_dropdown_menu.dart';
+import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/public_dropdown_menu.dart';
 // import 'package:mysql_client/mysql_client.dart';
 import '../widgets/plus_page_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -44,9 +47,9 @@ import 'package:google_fonts/google_fonts.dart';
 //     throw e; // 에러를 위로 던져서 UI에서 처리하게 함
 //   }
 // }
-String selectedCategory = '카테고리';
+String? selectedCategory;
 
-void addEventToMap(String title, String url, DateTime selectedDate) {
+void addEventToMap(int contentID, String title, DateTime selectedDate) {
   // 날짜 정규화 (시간/분/초를 제외한 날짜만)
   final dateKey = DateTime.utc(
     selectedDate.year,
@@ -55,6 +58,7 @@ void addEventToMap(String title, String url, DateTime selectedDate) {
   );
   // 이벤트 생성 (전달받은 selectedDate의 시, 분 활용)
   final newEvent = Event(
+    contentID,
     title,
     url: url,
     hour: selectedDate.hour,
@@ -138,17 +142,20 @@ class _PlusPageState extends State<PlusPage> {
       return;
     }
 
-    if (isPrivate == true) {
-      private_contentsTitle.add(title);
-      private_contentsURL.add(url);
-    }
-    if (!isPrivate) {
-      categories_contentsTitle.add(title);
-      categories_contentsURL.add(url);
-    }
+    final int newContentID = context.read<AppState>().addContent(
+      title: title,
+      url: url,
+      isPrivate: isPrivate,
+      category: selectedCategory ?? '전체',
+      datetime: selectedDate.toString(),
+    );
 
     if (selectedDate != null) {
-      addEventToMap(title, url, selectedDate!); //리마인더에 이벤트 추가
+      addEventToMap(
+        newContentID,
+        title,
+        selectedDate!,
+      ); //리마인더에 이벤트 추가
     }
 
     print('url: $url');
@@ -205,6 +212,9 @@ class _PlusPageState extends State<PlusPage> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+    final categoryList = appState.categories;
+
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey,
       body: SafeArea(
@@ -295,7 +305,7 @@ class _PlusPageState extends State<PlusPage> {
                     padding: EdgeInsets.only(left: 13, right: 12),
                     height: 56,
                     child: DropdownWidget(
-                      itemsList: categoryNames,
+                      itemsList: categoryList,
                       onCategorySelected: (value) {
                         setState(() {
                           selectedCategory = value;

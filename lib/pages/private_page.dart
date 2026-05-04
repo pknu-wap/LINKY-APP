@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
+import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_contents_box.dart';
 import 'package:std/widgets/public_select_category.dart';
-
-List<String> private_contentsTitle = [];
-List<String> private_contentsURL = [];
 
 class PrivatePage extends StatefulWidget {
   const PrivatePage({super.key});
@@ -15,15 +14,11 @@ class PrivatePage extends StatefulWidget {
 }
 
 class _PrivatePageState extends State<PrivatePage> {
-  void _updatePage(int listIndex) {
-    setState(() {
-      private_contentsTitle.remove(private_contentsTitle[listIndex]);
-      private_contentsURL.remove(private_contentsURL[listIndex]);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+    final privateList = appState.privateContents;
+
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey,
       body: Padding(
@@ -65,11 +60,11 @@ class _PrivatePageState extends State<PrivatePage> {
             ),
             SizedBox(height: 13),
             SelectCategory(
-              categoryCount: private_contentsTitle.length.toString(),
+              categoryCount: privateList.length.toString(),
               categoryTitle: 'Only me',
             ),
             SizedBox(height: 13),
-            Expanded(child: _contentsScroll()),
+            Expanded(child: _contentsScroll(privateList)),
             const SizedBox(height: 110),
           ],
         ),
@@ -77,21 +72,30 @@ class _PrivatePageState extends State<PrivatePage> {
     );
   }
 
-  Widget _contentsScroll() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Column(
-        children: List.generate(private_contentsTitle.length, (index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 13),
-            child: ContentsBox(
-              titleText: private_contentsTitle[index],
-              urlText: private_contentsURL[index],
-              onActionDone: () => _updatePage(index),
-            ),
-          );
-        }),
-      ),
+  Widget _contentsScroll(List<ContentItem> items) {
+    if (items.isEmpty) {
+      return Center(
+        child: Text(
+          "일정을 추가해주세요!",
+          style: GoogleFonts.inter(color: AppColors.textGrey, fontSize: 20),
+        ),
+      );
+    }
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 13),
+          child: ContentsBox(
+            key: ValueKey(item.id),
+            contentID: item.id,
+            onActionDone: () {
+              context.read<AppState>().removeContent(item.id);
+            },
+          ),
+        );
+      },
     );
   }
 }

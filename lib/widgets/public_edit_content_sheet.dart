@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/plus_page.dart';
-import 'package:std/widgets/puablic_dropdown_menu.dart';
+import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/public_dropdown_menu.dart';
 import 'package:std/widgets/reminder_page_calender.dart';
 
 class EditContentSheet extends StatefulWidget {
-  const EditContentSheet({
-    super.key,
-    required this.category_page_title,
-    required this.category_page_url,
-  });
-  final String category_page_title;
-  final String category_page_url;
+  const EditContentSheet({super.key, required this.contentID});
+  final int contentID;
 
   @override
   State<EditContentSheet> createState() => _EditContentSheetState();
@@ -39,21 +36,6 @@ class _EditContentSheetState extends State<EditContentSheet> {
     _dateController = TextEditingController();
     titleFocusNode = FocusNode();
     urlFocusNode = FocusNode();
-
-    titleFocusNode.addListener(() {
-      if (titleFocusNode.hasFocus && titleController.text.isEmpty) {
-        setState(() {
-          titleController.text = widget.category_page_title;
-        });
-      }
-    });
-    urlFocusNode.addListener(() {
-      if (urlFocusNode.hasFocus && urlController.text.isEmpty) {
-        setState(() {
-          urlController.text = widget.category_page_url;
-        });
-      }
-    });
   }
 
   @override
@@ -71,6 +53,20 @@ class _EditContentSheetState extends State<EditContentSheet> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
+
+    final appState = context.watch<AppState>();
+    final categories = appState.categories;
+    final targetItem = context.select<AppState, ContentItem?>(
+      (state) => state.contentById(widget.contentID),
+    );
+
+    final titleText = targetItem?.title ?? "찾을 수 없음";
+    final urlText = targetItem?.url ?? "찾을 수 없음";
+    final datetimeText = targetItem?.time ?? "";
+
+    titleController.text = titleText;
+    urlController.text = urlText;
+    _dateController.text = datetimeText;
 
     return Container(
       height: screenSize.height * 0.9,
@@ -99,7 +95,15 @@ class _EditContentSheetState extends State<EditContentSheet> {
               _circleButton(
                 Icons.check_rounded,
                 AppColors.mainGreen,
-                () => Navigator.pop(context),
+                () {
+                  context.read<AppState>().updateContent(
+                    id: widget.contentID,
+                    newTitle: titleController.text,
+                    newUrl: urlController.text,
+                    newTime: _dateController.text,
+                  );
+                  Navigator.pop(context);
+                },
               ),
             ],
           ),
@@ -126,7 +130,13 @@ class _EditContentSheetState extends State<EditContentSheet> {
                         ),
                       ),
                     ),
-                    Icon(Icons.cancel_outlined, color: AppColors.textGrey),
+                    InkWell(
+                      onTap: () => titleController.text = '',
+                      child: Icon(
+                        Icons.cancel_outlined,
+                        color: AppColors.textGrey,
+                      ),
+                    ),
                   ],
                 ),
                 Divider(),
@@ -146,7 +156,13 @@ class _EditContentSheetState extends State<EditContentSheet> {
                         ),
                       ),
                     ),
-                    Icon(Icons.cancel_outlined, color: AppColors.textGrey),
+                    InkWell(
+                      onTap: () => urlController.text = '',
+                      child: Icon(
+                        Icons.cancel_outlined,
+                        color: AppColors.textGrey,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -173,17 +189,6 @@ class _EditContentSheetState extends State<EditContentSheet> {
                 // 아이콘을 클릭하면 팝업으로 캘린더를 띄움
                 PopupMenuButton<void>(
                   padding: EdgeInsets.zero,
-                  icon: Image.asset(
-                    'assets/images/calendar_img.png', // 이미지 경로
-                    width: 24, // 아이콘 크기에 맞춰 적절히 조절
-                    height: 24,
-                    fit: BoxFit.contain,
-                    // 이미지가 없을 때를 대비한 에러 처리 (선택사항)
-                    errorBuilder: (context, error, stackTrace) => const Icon(
-                      Icons.calendar_today,
-                      color: AppColors.textGrey,
-                    ),
-                  ),
                   position: PopupMenuPosition.under,
                   offset: const Offset(0, 10),
                   elevation: 4,
@@ -227,6 +232,17 @@ class _EditContentSheetState extends State<EditContentSheet> {
                       ),
                     ),
                   ],
+                  child: Image.asset(
+                    'assets/images/calendar_img.png', // 이미지 경로
+                    width: 24, // 아이콘 크기에 맞춰 적절히 조절
+                    height: 24,
+                    fit: BoxFit.contain,
+                    // 이미지가 없을 때를 대비한 에러 처리 (선택사항)
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.calendar_today,
+                      color: AppColors.textGrey,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -237,7 +253,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
           _WhiteContainer(
             screenSize: screenSize,
             insideWidget: DropdownWidget(
-              itemsList: categoryNames,
+              itemsList: categories,
               onCategorySelected: (value) {
                 setState(() {
                   selectedCategory = value;
@@ -247,10 +263,12 @@ class _EditContentSheetState extends State<EditContentSheet> {
                 children: [
                   Expanded(
                     child: Text(
-                      '카테고리 수정',
+                      selectedCategory ?? selectedCategory.toString(),
                       style: GoogleFonts.inter(
                         fontSize: 16,
-                        color: AppColors.textGrey,
+                        color: selectedCategory == null
+                            ? AppColors.textGrey
+                            : AppColors.black,
                       ),
                     ),
                   ),

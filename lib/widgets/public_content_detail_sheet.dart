@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
+import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 
 class TripleFolderBottomSheet extends StatefulWidget {
-  final String contentTitle, url;
+  final int contentID;
 
   const TripleFolderBottomSheet({
     super.key,
-    required this.contentTitle,
-    required this.url,
+    required this.contentID,
   });
 
   @override
@@ -61,8 +62,7 @@ class _TripleFolderBottomSheetState extends State<TripleFolderBottomSheet> {
             child: Transform.translate(
               offset: const Offset(27, 0),
               child: ContentDetailSheet(
-                title: widget.contentTitle,
-                urlLink: widget.url,
+                contentID: widget.contentID,
                 showContent: false,
                 subWidth: 80,
                 color: AppColors.lightGrey,
@@ -77,8 +77,7 @@ class _TripleFolderBottomSheetState extends State<TripleFolderBottomSheet> {
             child: Transform.translate(
               offset: const Offset(16, 0),
               child: ContentDetailSheet(
-                title: widget.contentTitle,
-                urlLink: widget.url,
+                contentID: widget.contentID,
                 showContent: false,
                 subWidth: 33,
                 color: AppColors.outlineGrey,
@@ -91,8 +90,7 @@ class _TripleFolderBottomSheetState extends State<TripleFolderBottomSheet> {
             curve: Curves.easeOutCubic,
             top: _top3,
             child: ContentDetailSheet(
-              title: widget.contentTitle,
-              urlLink: widget.url,
+              contentID: widget.contentID,
               showContent: true,
               subWidth: 0,
               color: AppColors.mainGreen,
@@ -108,15 +106,14 @@ class ContentDetailSheet extends StatelessWidget {
   final Color color;
   final int subWidth;
   final bool showContent;
-  final String title, urlLink;
+  final int contentID;
 
   const ContentDetailSheet({
     super.key,
     required this.color,
     required this.subWidth,
     required this.showContent,
-    required this.title,
-    required this.urlLink,
+    required this.contentID,
   });
 
   @override
@@ -124,6 +121,13 @@ class ContentDetailSheet extends StatelessWidget {
     Size screenSize = MediaQuery.of(context).size;
     double folderWidth = screenSize.width - 28 - subWidth;
     double folderHeight = screenSize.height - 260;
+
+    final targetItem = context.select<AppState, ContentItem?>(
+      (state) => state.contentById(contentID),
+    );
+
+    final titleText = targetItem?.title ?? "찾을 수 없음";
+    final urlText = targetItem?.url ?? "찾을 수 없음";
 
     return Material(
       color: AppColors.transparent, // InkWell 에러 방지용 투명 Material
@@ -159,7 +163,7 @@ class ContentDetailSheet extends StatelessWidget {
                             ),
                             SizedBox(width: 20),
                             Text(
-                              title,
+                              titleText,
                               style: GoogleFonts.inter(
                                 color: AppColors.black,
                                 decoration: TextDecoration.none,
@@ -171,8 +175,7 @@ class ContentDetailSheet extends StatelessWidget {
                         ),
 
                         PopupButton(
-                          titleValue: '',
-                          urlValue: '',
+                          contentID: contentID,
                           onActionDone: () => print('삭제 버튼 클릭됨'),
                           context: context,
                         ),
@@ -197,7 +200,7 @@ class ContentDetailSheet extends StatelessWidget {
                             ),
                             SizedBox(width: 20),
                             Text(
-                              urlLink,
+                              urlText,
                               style: GoogleFonts.inter(
                                 color: AppColors.black,
                                 decoration: TextDecoration.none,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/category_page.dart';
-import 'package:std/widgets/puablic_dropdown_menu.dart';
+import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/public_dropdown_menu.dart';
 import 'package:std/widgets/reminder_page_calender.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 
@@ -41,29 +43,15 @@ class _CalendarPageState extends State<CalendarPage> {
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
   }
 
-  void _updatePage(int index) {
+  void _updatePage(int eventIndex, int contentID) {
     if (_selectedDay == null) return;
 
-    //  날짜를 키로 사용하기 위해 시간 정보를 제거한 DateTime 생성
-    final dateOnly = DateTime.utc(
-      _selectedDay!.year,
-      _selectedDay!.month,
-      _selectedDay!.day,
+    context.read<AppState>().removeEvent(_selectedDay!, eventIndex);
+
+    _selectedEvents.value = context.read<AppState>().getEventsForDay(
+      _selectedDay!,
     );
-
-    setState(() {
-      //원본 데이터(kEvents)에서 삭제
-      if (kEvents.containsKey(dateOnly)) {
-        kEvents[dateOnly]!.removeAt(index);
-
-        // 만약 해당 날짜에 이벤트가 하나도 남지 않았다면 키 자체를 삭제
-        if (kEvents[dateOnly]!.isEmpty) {
-          kEvents.remove(dateOnly);
-        }
-      }
-
-      _selectedEvents.value = List.from(_getEventsForDay(_selectedDay!));
-    });
+    context.read<AppState>().removeContent(contentID);
   }
 
   @override
@@ -127,24 +115,32 @@ class _CalendarPageState extends State<CalendarPage> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Icon(
-                  Icons.calendar_today_outlined,
-                  size: 18,
-                  color: AppColors.black,
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.calendar_today_outlined,
+                      size: 18,
+                      color: AppColors.black,
+                    ),
+                    SizedBox(width: 7),
+                    Text(
+                      '${event.hour}:${event.minute}',
+                      style: GoogleFonts.inter(fontSize: 14),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
           if (event.url.isNotEmpty)
             PopupButton(
-              titleValue: event.title,
-              urlValue: event.url,
-              onActionDone: () => _updatePage(index),
+              contentID: event.contentID,
+              onActionDone: () => _updatePage(index, event.contentID),
               context: context,
             )
           else
             IconButton(
-              onPressed: () => _updatePage(index),
+              onPressed: () => _updatePage(index, event.contentID),
               icon: const Icon(Icons.more_vert),
             ),
         ],
@@ -349,11 +345,15 @@ class _CalendarPageState extends State<CalendarPage> {
                           return ListView.builder(
                             padding: EdgeInsets.zero,
                             itemCount: events.length,
-                            itemBuilder: (context, index) => today_reminder(
-                              context,
-                              events[index],
-                              index,
-                            ),
+                            itemBuilder: (context, index) {
+                              final event = events[index];
+
+                              return today_reminder(
+                                context,
+                                event,
+                                index,
+                              );
+                            },
                           );
                         },
                       ),
@@ -391,11 +391,12 @@ class _CalendarPageState extends State<CalendarPage> {
 }
 
 class Event {
+  final int contentID;
   final String title;
   final String url;
   final int hour;
   final int minute;
-  const Event(this.title, {this.url = '', this.hour = 9, this.minute = 0});
+  const Event(this.contentID, this.title, {this.hour = 9, this.minute = 0});
 }
 
 final Map<DateTime, List<Event>> kEvents =

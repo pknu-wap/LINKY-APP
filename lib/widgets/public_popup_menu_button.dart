@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
+import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_edit_content_sheet.dart';
 import 'package:std/widgets/public_messagebox.dart';
 
 class PopupButton extends StatelessWidget {
   const PopupButton({
     super.key,
-    required this.titleValue,
-    required this.urlValue,
+    required this.contentID,
     required this.onActionDone,
     required this.context,
   });
 
-  final String titleValue;
-  final String urlValue;
+  final int contentID;
   final VoidCallback onActionDone;
   final BuildContext context;
 
@@ -44,7 +44,9 @@ class PopupButton extends StatelessWidget {
                     isScrollControlled: true,
                     backgroundColor:
                         AppColors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
-                    builder: (context) => EditContentSheet(category_page_title: titleValue, category_page_url: urlValue),
+                    builder: (context) => EditContentSheet(
+                      contentID: contentID,
+                    ),
                   );
                 },
                 confirmText: '수정',
