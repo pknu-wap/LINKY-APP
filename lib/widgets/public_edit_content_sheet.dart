@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
-import 'package:std/pages/category_page.dart';
-import 'package:std/pages/plus_page.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
-import 'package:std/widgets/reminder_page_calender.dart';
+import 'package:std/widgets/plus_page_calendar.dart';
 
 class EditContentSheet extends StatefulWidget {
   const EditContentSheet({super.key, required this.contentID});
@@ -24,8 +23,11 @@ class _EditContentSheetState extends State<EditContentSheet> {
   late FocusNode titleFocusNode;
   late FocusNode urlFocusNode;
 
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+  bool _isInitialized = false;
+  String? _selectedCategory;
+
+  // final DateTime _focusedDay = DateTime.now();
+  // DateTime? _selectedDay;
 
   @override
   void initState() {
@@ -63,10 +65,16 @@ class _EditContentSheetState extends State<EditContentSheet> {
     final titleText = targetItem?.title ?? "찾을 수 없음";
     final urlText = targetItem?.url ?? "찾을 수 없음";
     final datetimeText = targetItem?.time ?? "";
+    final categoryText = targetItem?.category ?? "카테고리 선택";
 
-    titleController.text = titleText;
-    urlController.text = urlText;
-    _dateController.text = datetimeText;
+    if (!_isInitialized && targetItem != null) {
+      titleController.text = titleText;
+      urlController.text = urlText;
+      _dateController.text = datetimeText;
+      _selectedCategory = targetItem.category;
+
+      _isInitialized = true;
+    }
 
     return Container(
       height: screenSize.height * 0.9,
@@ -101,6 +109,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
                     newTitle: titleController.text,
                     newUrl: urlController.text,
                     newTime: _dateController.text,
+                    newCategory: _selectedCategory,
                   );
                   Navigator.pop(context);
                 },
@@ -191,63 +200,70 @@ class _EditContentSheetState extends State<EditContentSheet> {
                   ),
                 ),
                 // 아이콘을 클릭하면 팝업으로 캘린더를 띄움
-                PopupMenuButton<void>(
-                  padding: EdgeInsets.zero,
-                  position: PopupMenuPosition.under,
-                  offset: const Offset(0, 10),
-                  elevation: 4,
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(color: Colors.grey.shade200),
-                  ),
-                  itemBuilder: (BuildContext context) => [
-                    PopupMenuItem<void>(
-                      enabled: false, // 메뉴 자체 클릭 방지
-                      child: SizedBox(
-                        width: 320, // 캘린더 크기 명시
-                        height: 380,
-                        child: CalenderWidget(
-                          focusedDay: _focusedDay,
-                          selectedDay: _selectedDay,
-                          onDaySelected: (selectedDay, focusedDay) {
+                Builder(
+                  builder: (buttonContext) {
+                    return GestureDetector(
+                      behavior: HitTestBehavior.opaque, // 빈 공간 터치 방지용
+                      onTap: () {
+                        DateTime? parsedDate = DateTime.tryParse(
+                          _dateController.text,
+                        );
+
+                        showLinkyCalendarPicker(
+                          context,
+                          initialDate: parsedDate ?? DateTime.now(),
+                          onChanged: (date) {
                             setState(() {
-                              _selectedDay = selectedDay;
-                              _focusedDay = focusedDay;
-                              String month = selectedDay.month
-                                  .toString()
-                                  .padLeft(2, '0');
-                              String day = selectedDay.day.toString().padLeft(
-                                2,
-                                '0',
-                              );
-                              _dateController.text =
-                                  "${selectedDay.year}.$month.$day";
-                            });
-                            Navigator.pop(context); // 날짜 선택 시 팝업 닫기
-                          },
-                          onPageChanged: (focusedDay) {
-                            setState(() {
-                              _focusedDay = focusedDay;
+                              _dateController.text = DateFormat(
+                                'yyyy-MM-dd HH:mm',
+                              ).format(date);
                             });
                           },
-                          eventLoader: (day) => [],
-                        ),
-                      ),
-                    ),
-                  ],
-                  child: Image.asset(
-                    'assets/images/calendar_img.png', // 이미지 경로
-                    width: 24, // 아이콘 크기에 맞춰 적절히 조절
-                    height: 24,
-                    fit: BoxFit.contain,
-                    // 이미지가 없을 때를 대비한 에러 처리 (선택사항)
-                    errorBuilder: (context, error, stackTrace) => const Icon(
-                      Icons.calendar_today,
-                      color: AppColors.textGrey,
-                    ),
-                  ),
+                        );
+                      },
+                      child: Image.asset('assets/images/CalendarIcon.png'),
+                    );
+                  },
                 ),
+                // PopupMenuButton<void>(
+                //   padding: EdgeInsets.zero,
+                //   position: PopupMenuPosition.under,
+                //   offset: const Offset(0, 10),
+                //   elevation: 4,
+                //   color: Colors.white,
+                //   shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(16),
+                //     side: BorderSide(color: Colors.grey.shade200),
+                //   ),
+                //   itemBuilder: (BuildContext context) => [
+                //     PopupMenuItem<void>(
+                //       enabled: false, // 메뉴 자체 클릭 방지
+                //       child: SizedBox(
+                //         width: 320, // 캘린더 크기 명시
+                //         height: 380,
+                //         child: CalendarWidget(
+                //           selectedDate: _selectedDay,
+                //           onChanged: (date) {
+                //             setState(() {
+                //               _selectedDay = date;
+                //             });
+                //           },
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                //   child: Image.asset(
+                //     'assets/images/calendar_img.png', // 이미지 경로
+                //     width: 24, // 아이콘 크기에 맞춰 적절히 조절
+                //     height: 24,
+                //     fit: BoxFit.contain,
+                //     // 이미지가 없을 때를 대비한 에러 처리 (선택사항)
+                //     errorBuilder: (context, error, stackTrace) => const Icon(
+                //       Icons.calendar_today,
+                //       color: AppColors.textGrey,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -260,17 +276,17 @@ class _EditContentSheetState extends State<EditContentSheet> {
               itemsList: categories,
               onCategorySelected: (value) {
                 setState(() {
-                  selectedCategory = value;
+                  _selectedCategory = value;
                 });
               },
               menuWidget: Row(
                 children: [
                   Expanded(
                     child: Text(
-                      selectedCategory ?? selectedCategory.toString(),
+                      _selectedCategory ?? categoryText,
                       style: GoogleFonts.inter(
                         fontSize: 16,
-                        color: selectedCategory == null
+                        color: categoryText == "카테고리 추가"
                             ? AppColors.textGrey
                             : AppColors.black,
                       ),
