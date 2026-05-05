@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
@@ -108,7 +109,9 @@ class _PlusPageState extends State<PlusPage> {
       url: url,
       isPrivate: isPrivate,
       category: selectedCategory ?? '전체',
-      datetime: selectedDate.toString(),
+      datetime: selectedDate != null
+          ? DateFormat('yyyy-MM-dd HH:mm').format(selectedDate!)
+          : '',
     );
 
     if (selectedDate != null) {
