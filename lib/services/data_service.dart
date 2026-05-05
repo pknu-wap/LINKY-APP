@@ -2,7 +2,7 @@ import 'package:mysql_client/mysql_client.dart';
 
 class DataService {
   // DB 설정 값들
-  final String _host = '192.168.35.178';
+  final String _host = '172.20.10.2';
   final int _port = 3306;
   final String _user = 'linky_user';
   final String _password = 'k08221004k!';
