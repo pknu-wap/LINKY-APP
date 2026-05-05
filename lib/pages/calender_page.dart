@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
 import 'package:std/widgets/reminder_page_calender.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
@@ -199,31 +200,11 @@ class _CalendarPageState extends State<CalendarPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
                     // 1. Reminder 헤더 추가
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: AppColors.mainPink,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.calendar_today_outlined,
-                            color: AppColors.black,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          "Reminder",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                    AppBarDesign(
+                      appbarText: 'Reminder',
+                      appbarIcon: Icons.calendar_today_outlined,
                     ),
                     const SizedBox(height: 20),
                     // 연도 및 월 표시

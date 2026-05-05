@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_select_category.dart';
 import 'package:std/widgets/public_contents_box.dart';
 
@@ -68,88 +69,76 @@ class _CategoryPageState extends State<CategoryPage> {
       return {"title": name, "count": count.toString()};
     }).toList();
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFf0f2f6),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 41),
-            Padding(
-              padding: const EdgeInsets.only(left: 6),
-              child: Row(
-                children: [
-                  Container(
-                    width: 36,
-                    height: 34.43,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color(0xffffffff),
-                    ),
-                    child: Image.asset('assets/images/CategoryIcon.png'),
-                  ),
-                  const SizedBox(width: 8),
-                  Text('Category', style: GoogleFonts.inter(fontSize: 24)),
-                ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: const Color(0xFFf0f2f6),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              AppBarDesign(
+                appbarText: 'Category',
+                appbarIcon: 'assets/images/CategoryIcon.png',
               ),
-            ),
-            const SizedBox(height: 13),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              child: Row(
-                children: currentCategories.map((cat) {
-                  final String? categoryTitle = cat["title"];
-                  final String? categoryCount = cat["count"];
+              const SizedBox(height: 13),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  children: currentCategories.map((cat) {
+                    final String? categoryTitle = cat["title"];
+                    final String? categoryCount = cat["count"];
 
-                  bool isSelected = selectedCategory == categoryTitle;
+                    bool isSelected = selectedCategory == categoryTitle;
 
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedCategory = cat["title"]!;
-                        });
-                      },
-                      child: SelectCategoryHome(
-                        categoryCount: categoryCount!,
-                        categoryTitle: categoryTitle!,
-                        backgroundColor: isSelected
-                            ? AppColors.mainGreen
-                            : AppColors.white,
-                        countBackgroundColor: isSelected
-                            ? const Color(0xffffffff)
-                            : const Color(0xFFC5C5C5),
-                        textColor: isSelected ? Colors.white : Colors.black,
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedCategory = cat["title"]!;
+                          });
+                        },
+                        child: SelectCategoryHome(
+                          categoryCount: categoryCount!,
+                          categoryTitle: categoryTitle!,
+                          backgroundColor: isSelected
+                              ? AppColors.mainGreen
+                              : AppColors.white,
+                          countBackgroundColor: isSelected
+                              ? const Color(0xffffffff)
+                              : const Color(0xFFC5C5C5),
+                          textColor: isSelected ? Colors.white : Colors.black,
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
+                ),
               ),
-            ),
-            const SizedBox(height: 13),
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredItems.length,
-                itemBuilder: (context, index) {
-                  final item = filteredItems[index];
-                  return Column(
-                    children: [
-                      ContentsBox(
-                        contentID: item.id,
-                        onActionDone: () =>
-                            context.read<AppState>().removeContent(item.id),
-                      ),
-                      SizedBox(height: 16),
-                    ],
-                  );
-                },
+              const SizedBox(height: 13),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredItems.length,
+                  itemBuilder: (context, index) {
+                    final item = filteredItems[index];
+                    return Column(
+                      children: [
+                        ContentsBox(
+                          contentID: item.id,
+                          onActionDone: () =>
+                              context.read<AppState>().removeContent(item.id),
+                        ),
+                        SizedBox(height: 16),
+                      ],
+                    );
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 110),
-          ],
+              const SizedBox(height: 110),
+            ],
+          ),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/reminder_page_remindertask.dart';
 
 class ReminderScreen extends StatefulWidget {
@@ -73,52 +74,34 @@ class Reminder extends State<ReminderScreen> {
 
           // 2. 메인 컨텐츠 영역
           Expanded(
-            child: Container(
-              child: Column(
-                children: [
-                  const SizedBox(height: 50),
+            child: SafeArea(
+              child: Container(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
 
-                  // 헤더: 아이콘 + 타이틀
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: AppColors.mainPink,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.calendar_today_outlined,
-                            color: AppColors.black,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Reminder',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    // 헤더: 아이콘 + 타이틀
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: AppBarDesign(
+                        appbarText: 'Reminder',
+                        appbarIcon: Icons.calendar_today_outlined,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                  // 3. 월 선택 (Horizontal Scroll)
-                  _MonthScroll(),
-                  const SizedBox(height: 20),
+                    // 3. 월 선택 (Horizontal Scroll)
+                    _MonthScroll(),
+                    const SizedBox(height: 20),
 
-                  // 4. 일 선택 (Horizontal Scroll)
-                  _DayScroll(),
-                  const SizedBox(height: 20),
+                    // 4. 일 선택 (Horizontal Scroll)
+                    _DayScroll(),
+                    const SizedBox(height: 20),
 
-                  // 5. 시간별 타임라인 (Vertical Scroll)
-                  Expanded(child: Timeline()),
-                ],
+                    // 5. 시간별 타임라인 (Vertical Scroll)
+                    Expanded(child: Timeline()),
+                  ],
+                ),
               ),
             ),
           ),

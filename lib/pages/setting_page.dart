@@ -5,6 +5,7 @@ import 'package:std/constants.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/pages/plus_page.dart';
 import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
 import 'package:std/widgets/public_messagebox.dart';
 
@@ -59,33 +60,16 @@ class SettingPageState extends State<SettingPage> {
       backgroundColor: AppColors.mainBackGrey, // 연한 그레이 배경색
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 30),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: AppColors.mainPink,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.settings_outlined,
-                      color: AppColors.black,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    "Setting",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-                  ),
-                ],
+              const SizedBox(height: 20),
+              AppBarDesign(
+                appbarText: 'Setting',
+                appbarIcon: Icons.settings_outlined,
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 25),
 
               // 카테고리 추가 섹션
               Row(
