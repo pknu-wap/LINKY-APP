@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:std/services/auth_service.dart';
 import 'package:std/widgets/public_messagebox.dart';
 import 'package:std/constants.dart';
@@ -107,10 +108,26 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
                           controller: myController,
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () => _tryUnlock(myController.text),
-                        child: const Text("확인"),
+                      const SizedBox(height: 13),
+                      InkWell(
+                        onTap: () => _tryUnlock(myController.text),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 25,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(19.5),
+                            border: Border.all(
+                              color: AppColors.outlineGrey,
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Text(
+                            '확인',
+                            style: GoogleFonts.inter(color: AppColors.mainRed),
+                          ),
+                        ),
                       ),
                     ],
                   ),
