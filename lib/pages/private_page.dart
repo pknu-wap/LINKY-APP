@@ -60,7 +60,7 @@ class _PrivatePageState extends State<PrivatePage> {
     if (items.isEmpty) {
       return Center(
         child: Text(
-          "일정을 추가해주세요!",
+          "\n일정을 추가해주세요!",
           style: GoogleFonts.inter(color: AppColors.textGrey, fontSize: 20),
         ),
       );
