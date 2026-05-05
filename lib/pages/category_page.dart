@@ -118,24 +118,37 @@ class _CategoryPageState extends State<CategoryPage> {
                 ),
               ),
               const SizedBox(height: 13),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredItems.length,
-                  itemBuilder: (context, index) {
-                    final item = filteredItems[index];
-                    return Column(
-                      children: [
-                        ContentsBox(
-                          contentID: item.id,
-                          onActionDone: () =>
-                              context.read<AppState>().removeContent(item.id),
+              filteredItems.isEmpty
+                  ? Expanded(
+                      child: Center(
+                        child: Text(
+                          "\n일정을 추가해주세요!",
+                          style: GoogleFonts.inter(
+                            color: AppColors.textGrey,
+                            fontSize: 20,
+                          ),
                         ),
-                        SizedBox(height: 16),
-                      ],
-                    );
-                  },
-                ),
-              ),
+                      ),
+                    )
+                  : Expanded(
+                      child: ListView.builder(
+                        itemCount: filteredItems.length,
+                        itemBuilder: (context, index) {
+                          final item = filteredItems[index];
+                          return Column(
+                            children: [
+                              ContentsBox(
+                                contentID: item.id,
+                                onActionDone: () => context
+                                    .read<AppState>()
+                                    .removeContent(item.id),
+                              ),
+                              SizedBox(height: 16),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
               const SizedBox(height: 110),
             ],
           ),
