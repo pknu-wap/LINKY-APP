@@ -26,6 +26,8 @@ class _EditContentSheetState extends State<EditContentSheet> {
   bool _isInitialized = false;
   String? _selectedCategory;
 
+  final GlobalKey _calendarAnchorKey = GlobalKey();
+
   // final DateTime _focusedDay = DateTime.now();
   // DateTime? _selectedDay;
 
@@ -199,27 +201,36 @@ class _EditContentSheetState extends State<EditContentSheet> {
                         : AppColors.black,
                   ),
                 ),
-                // 아이콘을 클릭하면 팝업으로 캘린더를 띄움
+                Transform.translate(
+                  offset: const Offset(-3, 25),
+                  child: Container(
+                    key: _calendarAnchorKey,
+                  ),
+                ),
+
                 Builder(
                   builder: (buttonContext) {
                     return GestureDetector(
                       behavior: HitTestBehavior.opaque, // 빈 공간 터치 방지용
                       onTap: () {
-                        DateTime? parsedDate = DateTime.tryParse(
-                          _dateController.text,
-                        );
+                        final anchorContext = _calendarAnchorKey.currentContext;
 
-                        showLinkyCalendarPicker(
-                          context,
-                          initialDate: parsedDate ?? DateTime.now(),
-                          onChanged: (date) {
-                            setState(() {
-                              _dateController.text = DateFormat(
-                                'yyyy-MM-dd HH:mm',
-                              ).format(date);
-                            });
-                          },
-                        );
+                        if (anchorContext != null) {
+                          DateTime? parsedDate = DateTime.tryParse(
+                            _dateController.text,
+                          );
+                          showLinkyCalendarPicker(
+                            anchorContext,
+                            initialDate: parsedDate ?? DateTime.now(),
+                            onChanged: (date) {
+                              setState(() {
+                                _dateController.text = DateFormat(
+                                  'yyyy-MM-dd HH:mm',
+                                ).format(date);
+                              });
+                            },
+                          );
+                        }
                       },
                       child: Image.asset('assets/images/CalendarIcon.png'),
                     );

@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:std/constants.dart';
 
 class CalendarWidget extends StatelessWidget {
-  
   final DateTime? selectedDate;
   final ValueChanged<DateTime> onChanged;
 
@@ -591,9 +590,9 @@ class _CalendarBubblePainter extends CustomPainter {
 
     path.moveTo(radius, notchHeight);
 
-    path.lineTo(notchCenter - notchWidth / 2, notchHeight);
-    path.lineTo(notchCenter, 0);
-    path.lineTo(notchCenter + notchWidth / 2, notchHeight);
+    // path.lineTo(notchCenter - notchWidth / 2, notchHeight);
+    // path.lineTo(notchCenter, 0);
+    // path.lineTo(notchCenter + notchWidth / 2, notchHeight);
 
     path.lineTo(size.width - radius, notchHeight);
 
