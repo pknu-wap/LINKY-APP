@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/provider/app_state.dart';
-import 'package:std/widgets/category_page_select_category.dart';
-import 'package:std/widgets/public_popup_menu_button.dart';
+import 'package:std/widgets/public_select_category.dart';
+import 'package:std/widgets/public_contents_box.dart';
 
 class Linky extends StatelessWidget {
   const Linky({super.key});
@@ -25,7 +25,7 @@ class CategoryPage extends StatefulWidget {
 // List<String> categoryNames = ['전체', '즐겨찾기'];
 
 class _CategoryPageState extends State<CategoryPage> {
-  String selectedCategory = 'All';
+  String selectedCategory = '전체';
 
   // void _updatePage(int index) {
   //   setState(() {
@@ -106,7 +106,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   bool isSelected = selectedCategory == categoryTitle;
 
                   return Padding(
-                    padding: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.only(right: 6),
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
@@ -118,7 +118,7 @@ class _CategoryPageState extends State<CategoryPage> {
                         categoryTitle: categoryTitle!,
                         backgroundColor: isSelected
                             ? AppColors.mainGreen
-                            : Colors.white,
+                            : AppColors.white,
                         countBackgroundColor: isSelected
                             ? const Color(0xffffffff)
                             : const Color(0xFFC5C5C5),
@@ -135,104 +135,15 @@ class _CategoryPageState extends State<CategoryPage> {
                 itemCount: filteredItems.length,
                 itemBuilder: (context, index) {
                   final item = filteredItems[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 13),
-                    child: Container(
-                      width: double.infinity,
-                      height: 138,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(23),
-                        border: Border.all(color: Colors.black, width: 1),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.25),
-                            spreadRadius: 0,
-                            blurRadius: 4,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+                  return Column(
+                    children: [
+                      ContentsBox(
+                        contentID: item.id,
+                        onActionDone: () =>
+                            context.read<AppState>().removeContent(item.id),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 11),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 9),
-                            child: Container(
-                              height: 53,
-                              decoration: BoxDecoration(
-                                color: AppColors.mainGreen,
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 21,
-                                  right: 10,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      item.title,
-                                      style: GoogleFonts.inter(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    PopupButton(
-                                      contentID: item.id,
-                                      onActionDone: () => context
-                                          .read<AppState>()
-                                          .removeContent(item.id),
-                                      context: context,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 25),
-                            child: Text(
-                              item.url, // targetIdx로 수정 완료
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                color: const Color(0xff7E7E7E),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(height: 12.78),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    context.read<AppState>().toggleFavorite(
-                                      item,
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Image.asset(
-                                      item.isFavorite
-                                          ? 'assets/images/FavoriteIcon_Active.png'
-                                          : 'assets/images/FavoriteIcon.png',
-                                      height: 15,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                      SizedBox(height: 16),
+                    ],
                   );
                 },
               ),
