@@ -83,9 +83,9 @@ class ContentsBox extends StatelessWidget {
             SizedBox(height: 8),
 
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               child: SizedBox(
-                height: 16,
+                height: 17,
                 child: Text(
                   urlText,
                   style: GoogleFonts.inter(
@@ -97,21 +97,46 @@ class ContentsBox extends StatelessWidget {
             ),
 
             SizedBox(
-              height: 12.78,
+              height: 12.5,
             ),
 
             Padding(
-              padding: const EdgeInsets.only(left: 33.21),
-              child: Row(
-                children: [
-                  Icon(Icons.calendar_today_outlined, size: 24),
-                  SizedBox(width: 7),
-                  Text(
-                    datetimeText.isEmpty ? '' : datetimeText.substring(0, 16),
-                    style: GoogleFonts.inter(fontSize: 13),
-                  ),
-                ],
-              ),
+              padding: const EdgeInsets.only(left: 20),
+              child: targetItem!.isPrivate
+                  ? Row(
+                      children: [
+                        Icon(Icons.calendar_today_outlined, size: 24),
+                        SizedBox(width: 7),
+                        Text(
+                          datetimeText,
+                          style: GoogleFonts.inter(fontSize: 13),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            context.read<AppState>().toggleFavorite(targetItem);
+                          },
+                          child: Image.asset(
+                            targetItem.isFavorite
+                                ? 'assets/images/FavoriteIcon_Active.png'
+                                : 'assets/images/FavoriteIcon.png',
+                            height: 20,
+                          ),
+                        ),
+                        SizedBox(width: 7),
+                        Icon(Icons.calendar_today_outlined, size: 24),
+                        SizedBox(width: 7),
+                        Text(
+                          datetimeText.isEmpty
+                              ? ''
+                              : datetimeText.substring(0, 16),
+                          style: GoogleFonts.inter(fontSize: 13),
+                        ),
+                      ],
+                    ),
             ),
 
             SizedBox(height: 10.22),

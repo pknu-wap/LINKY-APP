@@ -1,53 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
-import 'package:std/pages/category_page.dart';
-import 'package:std/pages/private_page.dart';
-import 'package:mysql_client/mysql_client.dart';
 import 'package:std/provider/app_state.dart';
+import 'package:std/services/data_service.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
-// import 'package:mysql_client/mysql_client.dart';
 import '../widgets/plus_page_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Future<void> dbConnector({
-  required String url,
-  required String title,
-  required String? category,
-  required bool isPrivate,
-  required DateTime? selectedDate,
-}) async {
-  print("Connecting to mysql server...");
-  try {
-    // MySQL 접속 설정
-    final conn = await MySQLConnection.createConnection(
-      host: 'your host name',
-      port: 0808,
-      userName: 'your user name',
-      password: 'your password',
-      databaseName: 'your database name', // optional
-    );
-
-    await conn.execute(
-      "INSERT INTO links (url, title, category, is_private, selected_date) VALUES (:url, :title, :category, :is_private, :date)",
-      {
-        "url": url,
-        "title": title,
-        "category": category ?? "미분류",
-        "is_private": isPrivate ? 1 : 0,
-        "date": selectedDate?.toIso8601String(), // 날짜를 문자열로 변환
-      },
-    );
-
-    print("DB 저장 완료!");
-    await conn.close();
-  } catch (e) {
-    print("DB 저장 실패: $e");
-    throw e; // 에러를 위로 던져서 UI에서 처리하게 함
-  }
-}
+final DataService _dataService = DataService();
 String? selectedCategory;
 
 void addEventToMap(int contentID, String title, DateTime selectedDate) {
@@ -147,7 +109,9 @@ class _PlusPageState extends State<PlusPage> {
       url: url,
       isPrivate: isPrivate,
       category: selectedCategory ?? '전체',
-      datetime: selectedDate.toString(),
+      datetime: selectedDate != null
+          ? DateFormat('yyyy-MM-dd HH:mm').format(selectedDate!)
+          : '',
     );
 
     if (selectedDate != null) {
@@ -172,7 +136,7 @@ class _PlusPageState extends State<PlusPage> {
 
     try {
       // DB 저장 실행
-      dbConnector(
+      _dataService.insertLink(
         url: url,
         title: title,
         category: selectedCategory,

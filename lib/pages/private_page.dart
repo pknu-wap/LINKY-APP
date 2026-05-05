@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/provider/app_state.dart';
-import 'package:std/widgets/public_contents_box.dart';
 import 'package:std/widgets/public_select_category.dart';
+import 'package:std/widgets/public_contents_box.dart';
 
 class PrivatePage extends StatefulWidget {
   const PrivatePage({super.key});
@@ -59,10 +59,18 @@ class _PrivatePageState extends State<PrivatePage> {
               ),
             ),
             SizedBox(height: 13),
-            SelectCategory(
+            SelectCategoryHome(
               categoryCount: privateList.length.toString(),
               categoryTitle: 'Only me',
+              backgroundColor: AppColors.mainGreen,
+              countBackgroundColor: AppColors.white,
+              textColor: AppColors.white,
             ),
+
+            // SelectCategory(
+            //   categoryCount: privateList.length.toString(),
+            //   categoryTitle: 'Only me',
+            // ),
             SizedBox(height: 13),
             Expanded(child: _contentsScroll(privateList)),
             const SizedBox(height: 110),
