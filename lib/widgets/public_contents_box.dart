@@ -126,7 +126,7 @@ class ContentsBox extends StatelessWidget {
                             height: 20,
                           ),
                         ),
-                        SizedBox(width: 7),
+                        SizedBox(width: 10),
                         Icon(Icons.calendar_today_outlined, size: 24),
                         SizedBox(width: 7),
                         Text(
