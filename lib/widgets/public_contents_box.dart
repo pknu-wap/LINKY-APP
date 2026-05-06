@@ -22,9 +22,17 @@ class ContentsBox extends StatelessWidget {
       (state) => state.contentById(contentID),
     );
 
-    final titleText = targetItem?.title ?? "찾을 수 없음";
-    final urlText = targetItem?.url ?? "찾을 수 없음";
+    String titleText = targetItem?.title ?? "찾을 수 없음";
+    String urlText = targetItem?.url ?? "찾을 수 없음";
     final datetimeText = targetItem?.time ?? '';
+
+    if (titleText.length >= 17) {
+      titleText = '${titleText.substring(0, 17)}...';
+    }
+    if (urlText.length >= 43) {
+      urlText = '${urlText.substring(0, 43)}...';
+    }
+    
 
     return InkWell(
       child: Container(

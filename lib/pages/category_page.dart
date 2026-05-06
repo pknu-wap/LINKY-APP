@@ -163,7 +163,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                   );
                                 },
                               ),
-                              const SizedBox(height: 110),
+                              const SizedBox(height: 13),
                             ],
                           );
                         },

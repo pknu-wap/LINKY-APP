@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/provider/app_state.dart';
+import 'package:std/widgets/public_messagebox.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 
 class TripleFolderBottomSheet extends StatefulWidget {
@@ -126,8 +127,18 @@ class ContentDetailSheet extends StatelessWidget {
       (state) => state.contentById(contentID),
     );
 
-    final titleText = targetItem?.title ?? "찾을 수 없음";
+    String titleText = targetItem?.title ?? "찾을 수 없음";
     final urlText = targetItem?.url ?? "찾을 수 없음";
+    late final String fixedUrlText;
+
+    if (titleText.length >= 12) {
+      titleText = '${titleText.substring(0, 12)}...';
+    }
+    if (urlText.length >= 14) {
+      fixedUrlText = '${urlText.substring(0, 14)}...';
+    } else {
+      fixedUrlText = urlText;
+    }
 
     return Material(
       color: AppColors.transparent, // InkWell 에러 방지용 투명 Material
@@ -200,7 +211,7 @@ class ContentDetailSheet extends StatelessWidget {
                             ),
                             SizedBox(width: 20),
                             Text(
-                              urlText,
+                              fixedUrlText,
                               style: GoogleFonts.inter(
                                 color: AppColors.black,
                                 decoration: TextDecoration.none,
@@ -212,7 +223,20 @@ class ContentDetailSheet extends StatelessWidget {
                         ),
 
                         InkWell(
-                          onTap: () => print('이동 버튼 클릭'),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              barrierDismissible: true,
+                              builder: (context) {
+                                return DialogPopup(
+                                  title: '해당 링크로 이동하시겠어요?',
+                                  boxType: BoxType.warning,
+                                  onConfirm: () => print('링크 실행 완료'),
+                                  confirmText: '이동',
+                                );
+                              },
+                            );
+                          },
                           borderRadius: BorderRadius.circular(24),
                           child: Container(
                             width: 70,
