@@ -42,6 +42,12 @@ class _LoginPageState extends State<LoginPage> {
       final kakaoToken = await UserApi.instance.loginWithKakaoTalk();//테스트 진행시에는 이 코드 주석 처리하고 진행
       debugPrint('3. 카카오 로그인 성공');
 
+      final user = await UserApi.instance.me();
+      final kakaoId = user.id.toString();
+
+      await storage.write(key: 'kakaoId', value: kakaoId);
+      debugPrint('카카오ID 저장 완료: $kakaoId');
+
       await sendKakaoTokenToBackend(
         kakaoToken.accessToken,
       );
@@ -65,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('백엔드 요청 시작');
 
       final response = await dio.post(
-        'http://172.20.10.2:8081/auth/kakao',
+        'http://43.201.98.15:8080/auth/kakao',
         data: {
           'accessToken': kakaoAccessToken,
         },

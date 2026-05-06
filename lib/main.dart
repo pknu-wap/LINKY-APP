@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
+import 'package:std/pages/login_page.dart';
 // import 'package:std/pages/login_page.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting_page.dart';
@@ -14,6 +15,7 @@ import 'package:std/services/alarm_service.dart';
 import 'package:std/widgets/secret_page_guard.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'constants.dart';
 
@@ -77,13 +79,13 @@ void main() async {
           kEvents.cast<DateTime, List<dynamic>>(),
         )
         .then((_) {
-          print("알람 동기화 완료");
+          debugPrint("알람 동기화 완료");
         })
         .catchError((e) {
-          print("알람 동기화 중 에러 발생: $e");
+          debugPrint("알람 동기화 중 에러 발생: $e");
         });
   } else {
-    print("앱 실행 시 kEvents 데이터가 비어 있습니다.");
+    debugPrint("앱 실행 시 kEvents 데이터가 비어 있습니다.");
   }
 }
 
@@ -96,11 +98,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MainScreen(),
-      // home: const LoginPage(),
-      // routes: {
-      //   '/main': (context) => const MainScreen(),
-      // },
+      // home: const MainScreen(),
+      home: const LoginPage(),
+      routes: {
+        '/main': (context) => const MainScreen(),
+      },
     );
   }
 }
@@ -113,9 +115,27 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  final storage = const FlutterSecureStorage();
   // 현재 선택된 탭의 인덱스
   int _selectedIndex = 0;
   DateTime? _lastBackPressedTime;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final kakaoId = await storage.read(key: 'kakaoId');
+
+      if(kakaoId == null){
+        debugPrint('kakaoId 없음');
+        return;
+      }
+
+      if(!mounted) return;
+      await context.read<AppState>().loadContentsFromDb(kakaoId);
+    });
+  }
 
   // 이동할 페이지 리스트
   final List<Widget> _pages = [

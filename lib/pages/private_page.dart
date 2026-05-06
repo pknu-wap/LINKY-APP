@@ -5,6 +5,7 @@ import 'package:std/constants.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_select_category.dart';
 import 'package:std/widgets/public_contents_box.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class PrivatePage extends StatefulWidget {
   const PrivatePage({super.key});
@@ -14,6 +15,8 @@ class PrivatePage extends StatefulWidget {
 }
 
 class _PrivatePageState extends State<PrivatePage> {
+  final storage = const FlutterSecureStorage();
+
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -98,8 +101,21 @@ class _PrivatePageState extends State<PrivatePage> {
           child: ContentsBox(
             key: ValueKey(item.id),
             contentID: item.id,
-            onActionDone: () {
-              context.read<AppState>().removeContent(item.id);
+            onActionDone: () async {
+              final kakaoId = await storage.read(key: 'kakaoId');
+
+              if (kakaoId == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('로그인 정보가 없습니다. 다시 로그인해주세요.'),
+                  ),
+                );
+                return;
+              }
+              await context.read<AppState>().removeContent(
+                id: item.id,
+                kakaoId: kakaoId,
+              );
             },
           ),
         );

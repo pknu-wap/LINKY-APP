@@ -5,6 +5,7 @@ import 'package:std/constants.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_select_category.dart';
 import 'package:std/widgets/public_contents_box.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Linky extends StatelessWidget {
   const Linky({super.key});
@@ -26,6 +27,8 @@ class CategoryPage extends StatefulWidget {
 
 class _CategoryPageState extends State<CategoryPage> {
   String selectedCategory = '전체';
+
+  final storage = const FlutterSecureStorage();
 
   // void _updatePage(int index) {
   //   setState(() {
@@ -139,8 +142,22 @@ class _CategoryPageState extends State<CategoryPage> {
                     children: [
                       ContentsBox(
                         contentID: item.id,
-                        onActionDone: () =>
-                            context.read<AppState>().removeContent(item.id),
+                        onActionDone: () async {
+                          final kakaoId = await storage.read(key: 'kakaoId');
+
+                          if (kakaoId == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('로그인 정보가 없습니다. 다시 로그인해주세요.'),
+                              ),
+                            );
+                            return;
+                          }
+                          await context.read<AppState>().removeContent(
+                            id: item.id,
+                            kakaoId: kakaoId,
+                          );
+                        },
                       ),
                       SizedBox(height: 16),
                     ],
