@@ -136,6 +136,8 @@ class AppState extends ChangeNotifier {
     int index = _contents.indexWhere((item) => item.id == id);
 
     if (index != -1) {
+      String? oldTimeStr = _contents[index].time;
+
       _contents[index].title = newTitle;
       _contents[index].url = newUrl;
       _contents[index].time = newTime;
@@ -144,6 +146,38 @@ class AppState extends ChangeNotifier {
         _contents[index].category = _categories.contains(newCategory)
             ? newCategory
             : '전체';
+      }
+
+      if (oldTimeStr != null) {
+        DateTime oldDate = DateTime.parse(oldTimeStr);
+        DateTime oldDateKey = DateTime.utc(
+          oldDate.year,
+          oldDate.month,
+          oldDate.day,
+        );
+
+        if (kEvents.containsKey(oldDateKey)) {
+          kEvents[oldDateKey]!.removeWhere((event) => event.contentID == id);
+          if (kEvents[oldDateKey]!.isEmpty) kEvents.remove(oldDateKey);
+        }
+      }
+
+      // 3. 새로운 이벤트 등록 (newTime이 있을 경우에만)
+      if (newTime != null) {
+        DateTime newDate = DateTime.parse(newTime);
+        DateTime newDateKey = DateTime.utc(
+          newDate.year,
+          newDate.month,
+          newDate.day,
+        );
+
+        // 해당 날짜 리스트가 없으면 새로 만들고 이벤트 추가
+        kEvents.putIfAbsent(newDateKey, () => []);
+
+        // 중복 방지를 위해 안전하게 추가
+        kEvents[newDateKey]!.add(
+          Event(id, newTitle, hour: newDate.hour, minute: newDate.minute),
+        );
       }
 
       notifyListeners();

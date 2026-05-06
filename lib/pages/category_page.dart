@@ -134,31 +134,41 @@ class _CategoryPageState extends State<CategoryPage> {
                       ),
                     )
                   : Expanded(
-              child: ListView.builder(
-                itemCount: filteredItems.length,
-                itemBuilder: (context, index) {
-                  final item = filteredItems[index];
-                  return Column(
-                    children: [
-                      ContentsBox(
-                        contentID: item.id,
-                        onActionDone: () async {
-                          final kakaoId = await storage.read(key: 'kakaoId');
+                      child: ListView.builder(
+                        itemCount: filteredItems.length,
+                        itemBuilder: (context, index) {
+                          final item = filteredItems[index];
+                          return Column(
+                            children: [
+                              ContentsBox(
+                                contentID: item.id,
+                                onActionDone: () async {
+                                  final kakaoId = await storage.read(
+                                    key: 'kakaoId',
+                                  );
 
-                          if (kakaoId == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('로그인 정보가 없습니다. 다시 로그인해주세요.'),
+                                  if (kakaoId == null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          '로그인 정보가 없습니다. 다시 로그인해주세요.',
+                                        ),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  await context.read<AppState>().removeContent(
+                                    id: item.id,
+                                    kakaoId: kakaoId,
+                                  );
+                                },
                               ),
-                            );
-                            return;
-                          }
-                          await context.read<AppState>().removeContent(
-                            id: item.id,
-                            kakaoId: kakaoId,
+                              const SizedBox(height: 110),
+                            ],
                           );
                         },
-              const SizedBox(height: 110),
+                      ),
+                    ),
             ],
           ),
         ),
