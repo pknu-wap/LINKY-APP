@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:std/pages/calender_page.dart';
+import 'package:std/services/data_service.dart';
 
 class ContentItem extends ChangeNotifier {
   final int id;
@@ -31,27 +32,34 @@ class ContentItem extends ChangeNotifier {
 
 class AppState extends ChangeNotifier {
   final List<String> _categories = ['전체', '즐겨찾기'];
+  final DataService _dataService = DataService();
 
-  final List<ContentItem> _contents = [
-    // 초기 더미 데이터 (나중에 DB 연동 시 fetch함수로 대체)
-    ContentItem(
-      id: 1,
-      title: "Google",
-      url: "https://google.com",
-      isPrivate: true,
-      time: null,
-    ),
-    ContentItem(
-      id: 2,
-      title: "Flutter",
-      url: "https://flutter.dev",
-      isPrivate: true,
-      time: null,
-    ),
-  ];
+  final List<ContentItem> _contents = [];
 
   List<String> get categories => _categories;
   List<ContentItem> get contents => _contents;
+
+  Future<void> loadContentsFromDb(String kakaoId) async {
+    final rows = await _dataService.fetchLinksByKakaoId(kakaoId);
+
+    _contents.clear();
+
+    for (final row in rows) {
+      _contents.add(
+        ContentItem(
+          id: int.parse(row['id'].toString()),
+          title: row['title'] ?? '',
+          url: row['url'] ?? '',
+          category: row['category'] ?? '전체',
+          isPrivate: row['is_private'].toString() == '1',
+          time: row['selected_date']?.toString(),
+        ),
+      );
+    }
+
+    notifyListeners();
+  }
+
   // 비공개 아이템만 필터링해서 가져오기
   List<ContentItem> get privateContents =>
       _contents.where((item) => item.isPrivate).toList();
@@ -80,6 +88,7 @@ class AppState extends ChangeNotifier {
   // contents 관리 로직
 
   int addContent({
+    required int id,
     required String title,
     required String url,
     required bool isPrivate,
@@ -88,10 +97,8 @@ class AppState extends ChangeNotifier {
   }) {
     final verifiedCategory = _categories.contains(category) ? category : '전체';
 
-    final newID = _contents.length + 1;
-
     final newItem = ContentItem(
-      id: newID,
+      id: id,
       title: title,
       url: url,
       isPrivate: isPrivate,
@@ -102,17 +109,20 @@ class AppState extends ChangeNotifier {
     _contents.add(newItem);
     notifyListeners();
 
-    return newID;
+    return id;
   }
 
-  void removeContent(int id) {
+  Future<void> removeContent({required int id, required String kakaoId}) async {
+    await _dataService.deleteLink(id: id, kakaoId: kakaoId);
+
+    _contents.removeWhere((item) => item.id == id);
+
     kEvents.forEach((date, eventList) {
       eventList.removeWhere((event) => event.contentID == id);
     });
 
     kEvents.removeWhere((date, eventList) => eventList.isEmpty);
 
-    _contents.removeWhere((item) => item.id == id);
     notifyListeners();
   }
 

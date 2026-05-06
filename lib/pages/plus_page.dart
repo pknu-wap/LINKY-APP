@@ -8,6 +8,7 @@ import 'package:std/services/data_service.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
 import '../widgets/plus_page_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 final DataService _dataService = DataService();
 String? selectedCategory;
@@ -46,6 +47,7 @@ class PlusPage extends StatefulWidget {
 class _PlusPageState extends State<PlusPage> {
   final TextEditingController urlController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
+  final storage = const FlutterSecureStorage();
 
   String? selectedCategory;
   bool isPrivate = false;
@@ -60,7 +62,7 @@ class _PlusPageState extends State<PlusPage> {
     super.dispose();
   }
 
-  void saveLink() {
+  Future<void> saveLink() async {
     final url = urlController.text.trim();
     final title = titleController.text.trim();
 
@@ -103,31 +105,6 @@ class _PlusPageState extends State<PlusPage> {
       ).showSnackBar(const SnackBar(content: Text('유효한 URL을 입력하세요.')));
       return;
     }
-
-    final int newContentID = context.read<AppState>().addContent(
-      title: title,
-      url: url,
-      isPrivate: isPrivate,
-      category: selectedCategory ?? '전체',
-      datetime: selectedDate != null
-          ? DateFormat('yyyy-MM-dd HH:mm').format(selectedDate!)
-          : '',
-    );
-
-    if (selectedDate != null) {
-      addEventToMap(
-        newContentID,
-        title,
-        selectedDate!,
-      ); //리마인더에 이벤트 추가
-    }
-
-    print('url: $url');
-    print('title: $title');
-    print('category: $selectedCategory');
-    print('isPrivate: $isPrivate');
-    print('selectedDate: $selectedDate');
-
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -135,14 +112,48 @@ class _PlusPageState extends State<PlusPage> {
     );
 
     try {
-      // DB 저장 실행
-      _dataService.insertLink(
+      final kakaoId = await storage.read(key: 'kakaoId');
+
+      if (kakaoId == null) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('로그인 정보가 없습니다. 다시 로그인해주세요.')),
+        );
+        return;
+      }
+      final int dbId = await _dataService.insertLink(
+        kakaoId: kakaoId,
         url: url,
         title: title,
         category: selectedCategory,
         isPrivate: isPrivate,
         selectedDate: selectedDate,
       );
+
+      final int newContentID = context.read<AppState>().addContent(
+        id: dbId,
+        title: title,
+        url: url,
+        isPrivate: isPrivate,
+        category: selectedCategory ?? '전체',
+        datetime: selectedDate != null
+            ? DateFormat('yyyy-MM-dd HH:mm').format(selectedDate!)
+            : '',
+      );
+
+      if (selectedDate != null) {
+        addEventToMap(
+          newContentID,
+          title,
+          selectedDate!,
+        ); //리마인더에 이벤트 추가
+      }
+
+      print('url: $url');
+      print('title: $title');
+      print('category: $selectedCategory');
+      print('isPrivate: $isPrivate');
+      print('selectedDate: $selectedDate');
 
       Navigator.pop(context); // 로딩 닫기
 
@@ -165,13 +176,6 @@ class _PlusPageState extends State<PlusPage> {
       );
     }
 
-    setState(() {
-      urlController.clear();
-      titleController.clear();
-      selectedCategory = null;
-      isPrivate = false;
-      selectedDate = null;
-    });
   }
 
   @override
