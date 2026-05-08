@@ -61,6 +61,11 @@ void main() async {
   // 1. 알람 매니저 초기화
   await AndroidAlarmManager.initialize();
 
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   runApp(
     MultiProvider(
       providers: [
