@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
@@ -108,6 +109,9 @@ class ContentDetailSheet extends StatelessWidget {
   final int subWidth;
   final bool showContent;
   final int contentID;
+  final storage = const FlutterSecureStorage();
+
+  
 
   const ContentDetailSheet({
     super.key,
@@ -187,7 +191,24 @@ class ContentDetailSheet extends StatelessWidget {
 
                         PopupButton(
                           contentID: contentID,
-                          onActionDone: () => print('삭제 버튼 클릭됨'),
+                          onActionDone: () async {
+                            final kakaoId = await storage.read(key: 'kakaoId');
+
+                            if (kakaoId == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('로그인 정보가 없습니다. 다시 로그인해주세요.'),
+                                ),
+                              );
+                              Navigator.pop(context);
+                              return;
+                            }
+                            Navigator.pop(context);
+                            await context.read<AppState>().removeContent(
+                              id: contentID,
+                              kakaoId: kakaoId,
+                            );
+                          },
                           context: context,
                         ),
                       ],
