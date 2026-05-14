@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_sharing_intent/model/sharing_file.dart';
+import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:provider/provider.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
@@ -14,6 +17,7 @@ import 'package:std/provider/app_state.dart';
 import 'package:std/services/alarm_service.dart';
 import 'package:std/widgets/secret_page_guard.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -55,7 +59,7 @@ void alarmCallback(int id) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  KakaoSdk.init(
+  await KakaoSdk.init(
     nativeAppKey: '82e41c6f8193caa43b268cd5c33fe23a',
   );
   // 1. 알람 매니저 초기화
@@ -124,20 +128,39 @@ class _MainScreenState extends State<MainScreen> {
   // 현재 선택된 탭의 인덱스
   int _selectedIndex = 0;
   DateTime? _lastBackPressedTime;
+  late StreamSubscription _intentDataStreamSubscription;
+  List<SharedFile>? list;
 
   @override
   void initState() {
     super.initState();
 
+    _intentDataStreamSubscription = FlutterSharingIntent.instance.getMediaStream()
+        .listen((List<SharedFile> value) {
+      setState(() {
+        list = value;
+      });
+      print("Shared: getMediaStream ${value.map((f) => f.value).join(",")}");
+    }, onError: (err) {
+      print("getIntentDataStream error: $err");
+    });
+
+    FlutterSharingIntent.instance.getInitialSharing().then((List<SharedFile> value) {
+      print("Shared: getInitialMedia ${value.map((f) => f.value).join(",")}");
+      setState(() {
+        list = value;
+      });
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final kakaoId = await storage.read(key: 'kakaoId');
 
-      if(kakaoId == null){
+      if (kakaoId == null) {
         debugPrint('kakaoId 없음');
         return;
       }
 
-      if(!mounted) return;
+      if (!mounted) return;
       await context.read<AppState>().loadContentsFromDb(kakaoId);
     });
   }
@@ -277,7 +300,11 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
-
+  @override
+  void dispose() {
+    _intentDataStreamSubscription.cancel();
+    super.dispose();
+  }
   Widget _buildCommonItem(IconData icon, String label, bool isSelected) {
     return Column(
       mainAxisSize: MainAxisSize.min,
