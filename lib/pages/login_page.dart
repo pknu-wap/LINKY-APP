@@ -71,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('백엔드 요청 시작');
 
       final response = await dio.post(
-        'http://3.34.52.216:8080/auth/kakao',
+        '',
         data: {
           'accessToken': kakaoAccessToken,
         },
