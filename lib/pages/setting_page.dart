@@ -96,7 +96,9 @@ class SettingPageState extends State<SettingPage> {
 
                         _categoryController.clear(); // 입력창 비우기
                         FocusScope.of(context).unfocus(); // 키보드 닫기
-                        print("카테고리 추가 완료: $categoryValue");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("카테고리가 추가되었습니다.")),
+                          );
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -144,6 +146,9 @@ class SettingPageState extends State<SettingPage> {
                         context.read<AppState>().removeCategory(
                           selectedCategory!,
                         );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("카테고리가 삭제되었습니다.")),
+                          );
 
                         setState(() {
                           selectedCategory = '카테고리'; // 선택 초기화
