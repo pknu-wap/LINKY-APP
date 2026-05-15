@@ -7,12 +7,26 @@ import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_messagebox.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 
+class FolderModel {
+  final int id;
+  final int contentID;
+  final Color color;
+
+  FolderModel({
+    required this.id,
+    required this.contentID,
+    required this.color,
+  });
+}
+
 class TripleFolderBottomSheet extends StatefulWidget {
   final int contentID;
+  final String currentCategory;
 
   const TripleFolderBottomSheet({
     super.key,
     required this.contentID,
+    required this.currentCategory,
   });
 
   @override
@@ -21,24 +35,91 @@ class TripleFolderBottomSheet extends StatefulWidget {
 }
 
 class _TripleFolderBottomSheetState extends State<TripleFolderBottomSheet> {
-  // 처음에는 화면 아래(1000px)에 숨겨둡니다.
-  double _top1 = 1000;
-  double _top2 = 1000;
-  double _top3 = 1000;
+  final Duration _durationMove = const Duration(milliseconds: 100);
+  final Duration _durationHide = const Duration(milliseconds: 700);
+  final Duration _durationShow = const Duration(milliseconds: 300);
+
+  final List<double> _slotTops = [0, 38, 92, 1000];
+  final List<double> _slotSubWidths = [80, 33, 0, 0];
+  final List<double> _slotOffsetXs = [27, 16, 0, 0];
+  final List<double> _slotOpacities = [1.0, 1.0, 1.0, 0.0];
+
+  late List<FolderModel> _folders;
+  List<int> _currentSlots = [3, 3, 3];
+  bool _isAnimating = false;
+
+  late List<int> _targetIds;
+  late int _nextLoadIndex;
 
   @override
   void initState() {
     super.initState();
-    // 위젯이 그려진 직후에 순차적으로 위치(top) 값을 올려줍니다.
+
+    final appState = context.read<AppState>();
+
+    _targetIds = appState.getContentIdsByCategory(widget.currentCategory);
+
+    int currentIndex = _targetIds.indexOf(widget.contentID);
+    if (currentIndex == -1) currentIndex = 0;
+    int len = _targetIds.length;
+
+    _folders = [
+      FolderModel(
+        id: 1,
+        contentID: _targetIds[(currentIndex + 2) % len], // 맨 뒤 폴더
+        color: AppColors.lightGrey,
+      ),
+      FolderModel(
+        id: 2,
+        contentID: _targetIds[(currentIndex + 1) % len], // 중간 폴더
+        color: AppColors.outlineGrey,
+      ),
+      FolderModel(
+        id: 3,
+        contentID: _targetIds[currentIndex % len], // 맨 앞(현재 클릭한) 폴더
+        color: AppColors.mainGreen,
+      ),
+    ];
+
+    _nextLoadIndex = (currentIndex + 3) % len;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) setState(() => _top1 = 0);
-
+      if (mounted) setState(() => _currentSlots[0] = 0);
       Future.delayed(const Duration(milliseconds: 70), () {
-        if (mounted) setState(() => _top2 = 38); // 70px 아래 배치
+        if (mounted) setState(() => _currentSlots[1] = 1);
       });
-
       Future.delayed(const Duration(milliseconds: 110), () {
-        if (mounted) setState(() => _top3 = 92); // 140px 아래 배치
+        if (mounted) setState(() => _currentSlots[2] = 2);
+      });
+    });
+  }
+
+  void _cycleFolders() {
+    if (_isAnimating) return;
+    _isAnimating = true;
+
+    setState(() {
+      _currentSlots = [1, 2, 3];
+    });
+
+    Future.delayed(_durationHide - const Duration(milliseconds: 370), () {
+      if (!mounted) return;
+
+      setState(() {
+        FolderModel outFolder = _folders.removeLast();
+
+        FolderModel updatedFolder = FolderModel(
+          id: outFolder.id,
+          contentID: _targetIds[_nextLoadIndex],
+          color: outFolder.color,
+        );
+
+        _folders.insert(0, updatedFolder);
+
+        _nextLoadIndex = (_nextLoadIndex + 1) % _targetIds.length;
+
+        _currentSlots = [0, 1, 2];
+        _isAnimating = false;
       });
     });
   }
@@ -46,8 +127,6 @@ class _TripleFolderBottomSheetState extends State<TripleFolderBottomSheet> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-
-    // 시트 전체의 높이 지정 (폴더 높이 + 겹치는 여백 고려)
     double sheetHeight = screenSize.height - 100;
 
     return SizedBox(
@@ -55,50 +134,47 @@ class _TripleFolderBottomSheetState extends State<TripleFolderBottomSheet> {
       width: screenSize.width,
       child: Stack(
         alignment: Alignment.topCenter,
-        children: [
-          // 첫 번째 폴더 (맨 뒤)
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
+        children: _folders.asMap().entries.map((entry) {
+          int index = entry.key;
+          FolderModel folder = entry.value;
+          int slot = _currentSlots[index];
+
+          Duration currentDuration;
+          if (slot == 3) {
+            currentDuration = _durationHide; // 사라질 때
+          } else if (slot == 0) {
+            currentDuration = _durationShow; // 뒤에서 다시 나타날 때
+          } else {
+            currentDuration = _durationMove; // 앞으로 전진할 때
+          }
+
+          return AnimatedPositioned(
+            key: ValueKey(
+              folder.id,
+            ),
+            duration: currentDuration,
             curve: Curves.easeOutCubic,
-            top: _top1,
-            child: Transform.translate(
-              offset: const Offset(27, 0),
-              child: ContentDetailSheet(
-                contentID: widget.contentID,
-                showContent: false,
-                subWidth: 80,
-                color: AppColors.lightGrey,
+            top: _slotTops[slot],
+            child: AnimatedOpacity(
+              duration: currentDuration,
+              opacity: _slotOpacities[slot],
+              child: AnimatedContainer(
+                duration: currentDuration,
+                curve: Curves.easeOutCubic,
+                transform: Matrix4.translationValues(_slotOffsetXs[slot], 0, 0),
+                child: GestureDetector(
+                  onTap: _cycleFolders,
+                  child: ContentDetailSheet(
+                    contentID: folder.contentID,
+                    showContent: slot == 2, // 슬롯 2(맨 앞)일 때만 요약 내용 표시
+                    subWidth: _slotSubWidths[slot],
+                    color: folder.color,
+                  ),
+                ),
               ),
             ),
-          ),
-          // 두 번째 폴더 (중간)
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutCubic,
-            top: _top2,
-            child: Transform.translate(
-              offset: const Offset(16, 0),
-              child: ContentDetailSheet(
-                contentID: widget.contentID,
-                showContent: false,
-                subWidth: 33,
-                color: AppColors.outlineGrey,
-              ),
-            ),
-          ),
-          // 세 번째 폴더 (맨 앞)
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutCubic,
-            top: _top3,
-            child: ContentDetailSheet(
-              contentID: widget.contentID,
-              showContent: true,
-              subWidth: 0,
-              color: AppColors.mainGreen,
-            ),
-          ),
-        ],
+          );
+        }).toList(),
       ),
     );
   }
@@ -106,12 +182,10 @@ class _TripleFolderBottomSheetState extends State<TripleFolderBottomSheet> {
 
 class ContentDetailSheet extends StatelessWidget {
   final Color color;
-  final int subWidth;
+  final double subWidth;
   final bool showContent;
   final int contentID;
   final storage = const FlutterSecureStorage();
-
-  
 
   const ContentDetailSheet({
     super.key,
@@ -135,26 +209,26 @@ class ContentDetailSheet extends StatelessWidget {
     final urlText = targetItem?.url ?? "찾을 수 없음";
     late final String fixedUrlText;
 
-    if (titleText.length >= 12) {
-      titleText = '${titleText.substring(0, 12)}...';
-    }
-    if (urlText.length >= 14) {
-      fixedUrlText = '${urlText.substring(0, 14)}...';
-    } else {
-      fixedUrlText = urlText;
-    }
+    if (titleText.length >= 12) titleText = '${titleText.substring(0, 12)}...';
+    fixedUrlText = (urlText.length >= 14)
+        ? '${urlText.substring(0, 14)}...'
+        : urlText;
 
     return Material(
-      color: AppColors.transparent, // InkWell 에러 방지용 투명 Material
-      child: SizedBox(
+      color: Colors.transparent,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutCubic,
         width: folderWidth,
         height: folderHeight,
         child: Stack(
+          clipBehavior: Clip.hardEdge,
           children: [
             CustomPaint(
               size: Size(folderWidth, folderHeight),
               painter: FolderShapePainter(backColor: color),
             ),
+
             if (showContent)
               Padding(
                 padding: const EdgeInsets.only(top: 78, left: 26, right: 26),
@@ -167,42 +241,19 @@ class ContentDetailSheet extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              '제목',
-                              style: GoogleFonts.inter(
-                                color: AppColors.black,
-                                decoration: TextDecoration.none,
-                                fontSize: 20,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            SizedBox(width: 20),
+                            Text('제목', style: GoogleFonts.inter(fontSize: 20)),
+                            const SizedBox(width: 20),
                             Text(
                               titleText,
-                              style: GoogleFonts.inter(
-                                color: AppColors.black,
-                                decoration: TextDecoration.none,
-                                fontSize: 20,
-                                fontWeight: FontWeight.normal,
-                              ),
+                              style: GoogleFonts.inter(fontSize: 20),
                             ),
                           ],
                         ),
-
                         PopupButton(
                           contentID: contentID,
                           onActionDone: () async {
                             final kakaoId = await storage.read(key: 'kakaoId');
-
-                            if (kakaoId == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('로그인 정보가 없습니다. 다시 로그인해주세요.'),
-                                ),
-                              );
-                              Navigator.pop(context);
-                              return;
-                            }
+                            if (kakaoId == null) return;
                             Navigator.pop(context);
                             await context.read<AppState>().removeContent(
                               id: contentID,
@@ -214,84 +265,49 @@ class ContentDetailSheet extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    const Divider(thickness: 1, color: AppColors.black),
+                    const Divider(thickness: 1, color: Colors.black),
                     const SizedBox(height: 5),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
-                            Text(
-                              'URL',
-                              style: GoogleFonts.inter(
-                                color: AppColors.black,
-                                decoration: TextDecoration.none,
-                                fontSize: 20,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            SizedBox(width: 20),
+                            Text('URL', style: GoogleFonts.inter(fontSize: 20)),
+                            const SizedBox(width: 20),
                             Text(
                               fixedUrlText,
-                              style: GoogleFonts.inter(
-                                color: AppColors.black,
-                                decoration: TextDecoration.none,
-                                fontSize: 20,
-                                fontWeight: FontWeight.normal,
-                              ),
+                              style: GoogleFonts.inter(fontSize: 20),
                             ),
                           ],
                         ),
-
                         InkWell(
                           onTap: () {
                             showDialog(
                               context: context,
-                              barrierDismissible: true,
-                              builder: (context) {
-                                return DialogPopup(
-                                  title: '해당 링크로 이동하시겠어요?',
-                                  boxType: BoxType.warning,
-                                  onConfirm: () => print('링크 실행 완료'),
-                                  confirmText: '이동',
-                                );
-                              },
+                              builder: (context) => DialogPopup(
+                                title: '해당 링크로 이동하시겠어요?',
+                                boxType: BoxType.warning,
+                                onConfirm: () => print('링크 실행 완료'),
+                                confirmText: '이동',
+                              ),
                             );
                           },
-                          borderRadius: BorderRadius.circular(24),
                           child: Container(
                             width: 70,
                             height: 39,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(24),
-                              color: AppColors.white,
+                              color: Colors.white,
                             ),
-                            child: Center(
-                              child: Text(
-                                '이동',
-                                style: GoogleFonts.inter(
-                                  color: AppColors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                            ),
+                            child: const Center(child: Text('이동')),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 5),
-                    const Divider(thickness: 1, color: AppColors.black),
+                    const Divider(thickness: 1, color: Colors.black),
                     const SizedBox(height: 10),
-                    Text(
-                      '요약',
-                      style: GoogleFonts.inter(
-                        color: AppColors.black,
-                        decoration: TextDecoration.none,
-                        fontSize: 20,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
+                    Text('요약', style: GoogleFonts.inter(fontSize: 20)),
                   ],
                 ),
               ),
@@ -303,25 +319,21 @@ class ContentDetailSheet extends StatelessWidget {
 }
 
 class FolderShapePainter extends CustomPainter {
-  const FolderShapePainter({required this.backColor});
-
   final Color backColor;
+  const FolderShapePainter({required this.backColor});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = backColor
       ..style = PaintingStyle.fill;
-
     final path = Path();
-
     final double radius = 25.0;
     final double tabWidth = size.width * 0.45;
     final double tabHeight = 40.0;
 
     path.moveTo(0, radius);
     path.quadraticBezierTo(0, 0, radius, 0);
-
     path.lineTo(tabWidth - radius, 0);
     path.quadraticBezierTo(
       tabWidth,
@@ -329,16 +341,13 @@ class FolderShapePainter extends CustomPainter {
       tabWidth + size.width * 0.13,
       radius + tabHeight / 1.5,
     );
-
     path.lineTo(size.width - radius, radius + tabHeight / 1.5);
-
     path.quadraticBezierTo(
       size.width,
       radius + tabHeight / 1.5,
       size.width,
       tabHeight + radius * 1.5,
     );
-
     path.lineTo(size.width, size.height - radius);
     path.quadraticBezierTo(
       size.width,
@@ -346,12 +355,9 @@ class FolderShapePainter extends CustomPainter {
       size.width - radius,
       size.height,
     );
-
     path.lineTo(radius, size.height);
     path.quadraticBezierTo(0, size.height, 0, size.height - radius);
-
     path.close();
-
     canvas.drawPath(path, paint);
   }
 

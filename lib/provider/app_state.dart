@@ -101,6 +101,37 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<int> getContentIdsByCategory(String categoryName) {
+    // '전체' 카테고리일 경우 모든 (비공개가 아닌) id 반환
+    if (categoryName == '전체' || categoryName == 'All') {
+      return _contents
+          .where((item) => !item.isPrivate)
+          .map((item) => item.id)
+          .toList();
+    }
+
+    // '즐겨찾기' 카테고리일 경우
+    if (categoryName == '즐겨찾기' || categoryName == 'Favorites') {
+      return _contents
+          .where((item) => !item.isPrivate && item.isFavorite)
+          .map((item) => item.id)
+          .toList();
+    }
+
+    if (categoryName == '나만보기') {
+      return _contents
+          .where((item) => item.isPrivate)
+          .map((item) => item.id)
+          .toList();
+    }
+
+    // 특정 일반 카테고리일 경우
+    return _contents
+        .where((item) => !item.isPrivate && item.category == categoryName)
+        .map((item) => item.id) // 아이템 객체에서 id만 추출
+        .toList(); // 리스트로 변환
+  }
+
   // 비공개 아이템만 필터링해서 가져오기
   List<ContentItem> get privateContents =>
       _contents.where((item) => item.isPrivate).toList();

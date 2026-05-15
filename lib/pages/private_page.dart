@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
+import 'package:std/pages/plus_page.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_select_category.dart';
@@ -77,6 +78,7 @@ class _PrivatePageState extends State<PrivatePage> {
           child: ContentsBox(
             key: ValueKey(item.id),
             contentID: item.id,
+            currentCategory: selectedCategory!,
             onActionDone: () async {
               final kakaoId = await storage.read(key: 'kakaoId');
 
