@@ -141,7 +141,7 @@ class _PlusPageState extends State<PlusPage> {
             : '',
       );
 
-      if (selectedDate != null) {
+      if (selectedDate != null || isPrivate == false) {
         addEventToMap(
           newContentID,
           title,

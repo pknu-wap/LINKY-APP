@@ -39,7 +39,8 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      final kakaoToken = await UserApi.instance.loginWithKakaoTalk();//테스트 진행시에는 이 코드 주석 처리하고 진행
+      final kakaoToken = await UserApi.instance
+          .loginWithKakaoTalk(); //테스트 진행시에는 이 코드 주석 처리하고 진행
       debugPrint('3. 카카오 로그인 성공');
 
       final user = await UserApi.instance.me();
@@ -129,6 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Header(),
                   ),
 
+                  const Spacer(),
                   Expanded(
                     flex: 46,
                     child: ActionArea(),
@@ -143,37 +145,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget Header() {
-    return Stack(
-      children: [
-        ClipPath(
-          clipper: WhiteCircle(),
-          child: Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.black.withValues(alpha: 0.15),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
+    return PhysicalShape(
+      clipper: WhiteCircle(),
+      color: AppColors.white,
+      elevation: 15,
+      shadowColor: AppColors.black,
+      child: SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: Center(
+          child: Image.asset(
+            'assets/images/linky_logo.png',
+            width: 200,
+            height: 200,
           ),
         ),
-        ClipPath(
-          clipper: WhiteCircle(),
-          child: Container(
-            width: double.infinity,
-            color: AppColors.white,
-            child: Center(
-              child: Image.asset(
-                'assets/images/linky_logo.png',
-                width: 180,
-                height: 180,
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -191,14 +178,12 @@ class _LoginPageState extends State<LoginPage> {
               color: AppColors.white,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
 
           socialButton(
             label: '카카오로 계속하기',
             onPressed: handleKakaoLogin,
           ),
-
-          const SizedBox(height: 24),
         ],
       ),
     );
@@ -224,7 +209,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/images/kakao_logo.png', width: 20),
+            Image.asset('assets/images/kakao_logo.png', width: 25),
             const SizedBox(width: 10),
             Text(
               label,
