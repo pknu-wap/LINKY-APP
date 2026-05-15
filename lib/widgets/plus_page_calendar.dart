@@ -303,24 +303,16 @@ class _LinkyCalendarPickerState extends State<LinkyCalendarPicker> {
                           child: CupertinoPicker.builder(
                             scrollController: hourController,
                             itemExtent: 36,
-                            diameterRatio: 1.2,
-                            magnification: 1.1,
-                            useMagnifier: true,
-                            backgroundColor: AppColors.white,
                             onSelectedItemChanged: (index) {
-                              tempHour = index % 24;
+                              tempHour = index;
                             },
-                            childCount: null,
+                            childCount: 24,
                             itemBuilder: (context, index) {
-                              final hour = index % 24;
+                              final hour = index;
 
                               return Center(
                                 child: Text(
                                   hour.toString().padLeft(2, '0'),
-                                  style: const TextStyle(
-                                    color: AppColors.black,
-                                    fontSize: 24,
-                                  ),
                                 ),
                               );
                             },
@@ -343,24 +335,16 @@ class _LinkyCalendarPickerState extends State<LinkyCalendarPicker> {
                           child: CupertinoPicker.builder(
                             scrollController: minuteController,
                             itemExtent: 36,
-                            diameterRatio: 1.2,
-                            magnification: 1.1,
-                            useMagnifier: true,
-                            backgroundColor: AppColors.white,
                             onSelectedItemChanged: (index) {
                               tempMinute = index;
                             },
-                            childCount: null,
+                            childCount: 60,
                             itemBuilder: (context, index) {
-                              final minute = index % 60;
+                              final minute = index;
 
                               return Center(
                                 child: Text(
                                   minute.toString().padLeft(2, '0'),
-                                  style: const TextStyle(
-                                    color: AppColors.black,
-                                    fontSize: 24,
-                                  ),
                                 ),
                               );
                             },
@@ -490,7 +474,7 @@ class _LinkyCalendarPickerState extends State<LinkyCalendarPicker> {
                     Icons.chevron_right,
                     color: AppColors.logoBlue,
                     size: 17,
-                  ),
+                  ),  
                 ),
               ],
             ),
