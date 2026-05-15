@@ -1,5 +1,4 @@
 import 'dart:async';
-// import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -11,7 +10,6 @@ import 'package:std/pages/category_page.dart';
 import 'package:std/pages/login_page.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting_page.dart';
-import 'package:std/pages/slide_page.dart';
 import 'package:std/pages/plus_page.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/services/alarm_service.dart';
@@ -253,7 +251,7 @@ class _MainScreenState extends State<MainScreen> {
     const CategoryPage(),
     const SecretGuardWrapperPw(child: PrivatePage()), // 커스텀 패스워드 (현재 0000)
     const PlusPage(),
-    const Slidepage(),
+    const CalendarPage(),
     const SettingPage(),
   ];
 

@@ -3,23 +3,70 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:std/main.dart';
 
 class AlarmService {
-  // kEvents 데이터를 받아서 모든 미래 일정을 예약하는 함수
-  static Future<void> syncEventsWithAlarms(
-    Map<DateTime, List<dynamic>> events,
-  ) async {
+  static int earlyAlarmId(int contentID) => contentID * 2;
+  static int exactAlarmId(int contentID) => contentID * 2 + 1;
+
+  static Future<void> requestPermissions() async {
     if (!(await Permission.notification.isGranted)) {
       await Permission.notification.request();
     }
+
     if (await Permission.scheduleExactAlarm.isDenied) {
       await Permission.scheduleExactAlarm.request();
     }
+  }
 
-    int baseId = 0; // 고유 ID를 위한 기반 변수
+  static Future<void> scheduleEventAlarm({
+    required int contentID,
+    required String title,
+    required DateTime scheduledTime,
+  }) async {
+    await requestPermissions();
 
-    for (var entry in events.entries) {
-      DateTime date = entry.key;
-      for (var event in entry.value) {
-        // 정시(정각) 시간 계산
+    final now = DateTime.now();
+    final earlyTime = scheduledTime.subtract(const Duration(minutes: 30));
+
+    await cancelEventAlarm(contentID);
+
+    if (earlyTime.isAfter(now)) {
+      await AndroidAlarmManager.oneShotAt(
+        earlyTime,
+        earlyAlarmId(contentID),
+        alarmCallback,
+        exact: true,
+        wakeup: true,
+        rescheduleOnReboot: true,
+      );
+      print('30분 전 알람 예약: $title at $earlyTime');
+    }
+
+    if (scheduledTime.isAfter(now)) {
+      await AndroidAlarmManager.oneShotAt(
+        scheduledTime,
+        exactAlarmId(contentID),
+        alarmCallback,
+        exact: true,
+        wakeup: true,
+        rescheduleOnReboot: true,
+      );
+      print('정시 알람 예약: $title at $scheduledTime');
+    }
+  }
+
+  static Future<void> cancelEventAlarm(int contentID) async {
+    await AndroidAlarmManager.cancel(earlyAlarmId(contentID));
+    await AndroidAlarmManager.cancel(exactAlarmId(contentID));
+  }
+
+  static Future<void> syncEventsWithAlarms(
+    Map<DateTime, List<dynamic>> events,
+  ) async {
+    await requestPermissions();
+
+    for (final entry in events.entries) {
+      final date = entry.key;
+
+      for (final event in entry.value) {
         final scheduledTime = DateTime(
           date.year,
           date.month,
@@ -28,36 +75,11 @@ class AlarmService {
           event.minute,
         );
 
-        // 30분 전 시간 계산
-        final earlyTime = scheduledTime.subtract(const Duration(minutes: 30));
-
-        // 1. [30분 전 알람] 예약 (ID: baseId * 2)
-        if (earlyTime.isAfter(DateTime.now())) {
-          await AndroidAlarmManager.oneShotAt(
-            earlyTime,
-            baseId * 2, // 30분 전 알람용 고유 ID
-            alarmCallback,
-            exact: true,
-            wakeup: true,
-            rescheduleOnReboot: true,
-          );
-          print("30분 전 알람 예약: ${event.title} at $earlyTime");
-        }
-
-        // 2. [정시 알람] 예약 (ID: baseId * 2 + 1)
-        if (scheduledTime.isAfter(DateTime.now())) {
-          await AndroidAlarmManager.oneShotAt(
-            scheduledTime,
-            baseId * 2 + 1, // 정시 알람용 고유 ID
-            alarmCallback,
-            exact: true,
-            wakeup: true,
-            rescheduleOnReboot: true,
-          );
-          print("정시 알람 예약: ${event.title} at $scheduledTime");
-        }
-
-        baseId++; // 다음 이벤트를 위해 ID 증가
+        await scheduleEventAlarm(
+          contentID: event.contentID,
+          title: event.title,
+          scheduledTime: scheduledTime,
+        );
       }
     }
   }
