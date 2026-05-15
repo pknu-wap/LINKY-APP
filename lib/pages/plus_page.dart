@@ -5,6 +5,7 @@ import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/services/data_service.dart';
+import 'package:std/services/url_verification.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
 import '../widgets/plus_page_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -66,45 +67,25 @@ class _PlusPageState extends State<PlusPage> {
     final url = urlController.text.trim();
     final title = titleController.text.trim();
 
-    if (url.isEmpty || title.isEmpty) {
+    final verifier = UrlVerification();
+
+    if (title.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('링크와 제목은 꼭 입력해야 해요.')));
+      ).showSnackBar(SnackBar(content: Text('제목을 입력해주세요')));
       return;
     }
 
-    if (RegExp(r'\s').hasMatch(url)) {
+    try {
+      verifier.urlVerify(url);
+    } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('공백 불가')));
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
       return;
     }
 
-    final blockedScheme = RegExp(
-      r'^(javascript|data|file|ftp|mailto):',
-      caseSensitive: false,
-    );
-
-    if (blockedScheme.hasMatch(url)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        const SnackBar(content: Text('http 또는 https 링크만 입력할 수 있어요.')),
-      );
-      return;
-    }
-
-    final uri = Uri.tryParse(url);
-
-    if (uri == null ||
-        uri.scheme != 'http' && uri.scheme != 'https' ||
-        uri.host.isEmpty ||
-        uri.userInfo.isNotEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('유효한 URL을 입력하세요.')));
-      return;
-    }
+    // 로딩
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -112,17 +93,7 @@ class _PlusPageState extends State<PlusPage> {
     );
 
     try {
-      final kakaoId = await storage.read(key: 'kakaoId');
-
-      if (kakaoId == null) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('로그인 정보가 없습니다. 다시 로그인해주세요.')),
-        );
-        return;
-      }
-      final int dbId = await _dataService.insertLink(
-        kakaoId: kakaoId,
+      await context.read<AppState>().addContent(
         url: url,
         title: title,
         category: selectedCategory,
@@ -130,30 +101,9 @@ class _PlusPageState extends State<PlusPage> {
         selectedDate: selectedDate,
       );
 
-      final int newContentID = context.read<AppState>().addContent(
-        id: dbId,
-        title: title,
-        url: url,
-        isPrivate: isPrivate,
-        category: selectedCategory ?? '전체',
-        datetime: selectedDate != null
-            ? DateFormat('yyyy-MM-dd HH:mm').format(selectedDate!)
-            : '',
+      print(
+        'url: $url\ntitle: $title\ncategory: $selectedCategory\nisPrivate: $isPrivate\nselectedDate: $selectedDate',
       );
-
-      if (selectedDate != null || isPrivate == false) {
-        addEventToMap(
-          newContentID,
-          title,
-          selectedDate!,
-        ); //리마인더에 이벤트 추가
-      }
-
-      print('url: $url');
-      print('title: $title');
-      print('category: $selectedCategory');
-      print('isPrivate: $isPrivate');
-      print('selectedDate: $selectedDate');
 
       Navigator.pop(context); // 로딩 닫기
 
@@ -171,11 +121,13 @@ class _PlusPageState extends State<PlusPage> {
       });
     } catch (e) {
       Navigator.pop(context); // 로딩 닫기
+
+      final errorMessage = e.toString().replaceAll('Exception: ', '');
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('저장 실패: $e')),
+        SnackBar(content: Text('저장 실패: $errorMessage')),
       );
     }
-
   }
 
   @override
