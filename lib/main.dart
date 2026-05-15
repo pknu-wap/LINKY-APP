@@ -148,91 +148,14 @@ class _MainScreenState extends State<MainScreen> {
             print(
               "Shared: getMediaStream ${value.map((f) => f.value).join(",")}",
             );
+            _handleSharedFiles(value);
           },
           onError: (err) {
             print("getIntentDataStream error: $err");
           },
         );
 
-    Future<void> handleInitialSharing() async {
-      try {
-        final List<SharedFile> value = await FlutterSharingIntent.instance
-            .getInitialSharing();
-
-        if (value.isEmpty) {
-          print('-------공유된 데이터 없음------');
-          return;
-        }
-
-        final String sharedData = value.map((f) => f.value).join(",");
-
-        if (sharedData.isEmpty) {
-          print('---------내용 없음----------');
-          return;
-        }
-
-        String sharedLink = '';
-        String sharedContentTitle = '공유된 콘텐츠';
-
-        final lines = sharedData.split('\n');
-        for (String text in lines) {
-          if (text.trim().contains("http://") ||
-              text.trim().contains("https://")) {
-            sharedLink = text.trim();
-          } else if (text.trim().isNotEmpty) {
-            sharedContentTitle = text.trim();
-          }
-        }
-
-        if (sharedLink.isEmpty) {
-          print('-----URL을 찾을 수 없음------');
-          return;
-        }
-
-        final verifier = UrlVerification();
-        try {
-          verifier.urlVerify(sharedLink);
-        } catch (e) {
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString().replaceAll('FormatException: ', '')),
-            ),
-          );
-          return;
-        }
-
-        if (!mounted) return;
-        try {
-          await context.read<AppState>().addContent(
-            url: sharedLink,
-            title: sharedContentTitle,
-            category: '전체',
-            isPrivate: false,
-            selectedDate: null,
-          );
-
-          print('url: $sharedLink\ntitle: $sharedContentTitle');
-
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('링크가 성공적으로 DB에 저장되었습니다!')),
-          );
-
-          setState(() {});
-        } catch (e) {
-          if (!mounted) return;
-          final errorMessage = e.toString().replaceAll('Exception: ', '');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('저장 실패: $errorMessage')),
-          );
-        }
-      } catch (e) {
-        print("공유 데이터 처리 중 에러 발생: $e");
-      }
-    }
-
-    // 선언한 비동기 함수를 실행
+    //선언한 비동기 함수를 실행
     handleInitialSharing();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -246,6 +169,90 @@ class _MainScreenState extends State<MainScreen> {
       if (!mounted) return;
       await context.read<AppState>().loadContentsFromDb(kakaoId);
     });
+  }
+
+  Future<void> _handleSharedFiles(List<SharedFile> value) async {
+    try {
+      if (value.isEmpty) {
+        print('-------공유된 데이터 없음------');
+        return;
+      }
+
+      final String sharedData = value.map((f) => f.value).join(",");
+
+      if (sharedData.isEmpty) {
+        print('---------내용 없음----------');
+        return;
+      }
+
+      String sharedLink = '';
+      String sharedContentTitle = '공유된 콘텐츠';
+
+      final lines = sharedData.split('\n');
+      for (String text in lines) {
+        if (text.trim().contains("http://") ||
+            text.trim().contains("https://")) {
+          sharedLink = text.trim();
+        } else if (text.trim().isNotEmpty) {
+          sharedContentTitle = text.trim();
+        }
+      }
+
+      if (sharedLink.isEmpty) {
+        print('-----URL을 찾을 수 없음------');
+        return;
+      }
+
+      final verifier = UrlVerification();
+      try {
+        verifier.urlVerify(sharedLink);
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('FormatException: ', '')),
+          ),
+        );
+        return;
+      }
+
+      if (!mounted) return;
+      try {
+        await context.read<AppState>().addContent(
+          url: sharedLink,
+          title: sharedContentTitle,
+          category: '전체',
+          isPrivate: false,
+          selectedDate: null,
+        );
+
+        print('url: $sharedLink\ntitle: $sharedContentTitle');
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('링크가 성공적으로 DB에 저장되었습니다!')),
+        );
+
+        setState(() {});
+      } catch (e) {
+        if (!mounted) return;
+        final errorMessage = e.toString().replaceAll('Exception: ', '');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('저장 실패: $errorMessage')),
+        );
+      }
+    } catch (e) {
+      print("공유 데이터 처리 중 에러 발생: $e");
+    }
+  }
+
+  Future<void> handleInitialSharing() async {
+    try {
+      final value = await FlutterSharingIntent.instance.getInitialSharing();
+      await _handleSharedFiles(value);
+    } catch (e) {
+      print("공유 데이터 처리 중 에러 발생: $e");
+    }
   }
 
   // 이동할 페이지 리스트
