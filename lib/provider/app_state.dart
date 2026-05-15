@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/services/data_service.dart';
 
@@ -35,6 +37,8 @@ class AppState extends ChangeNotifier {
   final DataService _dataService = DataService();
 
   final List<ContentItem> _contents = [];
+
+  final storage = const FlutterSecureStorage();
 
   List<String> get categories => _categories;
   List<ContentItem> get contents => _contents;
@@ -86,30 +90,69 @@ class AppState extends ChangeNotifier {
   }
 
   // contents 관리 로직
-
-  int addContent({
-    required int id,
+  Future<void> addContent({
     required String title,
     required String url,
     required bool isPrivate,
-    required String? datetime,
-    String category = '전체',
-  }) {
-    final verifiedCategory = _categories.contains(category) ? category : '전체';
+    required DateTime? selectedDate,
+    String? category,
+  }) async {
+    // 1. 카카오 ID 확인
+    final kakaoId = await storage.read(key: 'kakaoId');
+    if (kakaoId == null) {
+      throw Exception('로그인 정보가 없습니다. 다시 로그인해주세요.'); // UI의 catch 블록으로 던짐
+    }
+
+    // 2. DB에 데이터 저장
+    final int dbId = await _dataService.insertLink(
+      kakaoId: kakaoId,
+      url: url,
+      title: title,
+      category: category,
+      isPrivate: isPrivate,
+      selectedDate: selectedDate,
+    );
+
+    // 3. 로컬 상태(_contents) 업데이트
+    final verifiedCategory =
+        (category != null && _categories.contains(category)) ? category : '전체';
+
+    final formattedTime = selectedDate != null
+        ? DateFormat('yyyy-MM-dd HH:mm').format(selectedDate)
+        : null; // 빈 문자열('')보다 null로 관리하는 것이 데이터 정합성에 좋습니다.
 
     final newItem = ContentItem(
-      id: id,
+      id: dbId,
       title: title,
       url: url,
       isPrivate: isPrivate,
-      time: datetime,
-
+      time: formattedTime,
       category: verifiedCategory,
     );
-    _contents.add(newItem);
-    notifyListeners();
 
-    return id;
+    _contents.add(newItem);
+
+    // 4. 달력/리마인더 이벤트 맵(kEvents)에 추가
+    if (selectedDate != null) {
+      DateTime dateKey = DateTime.utc(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+      );
+
+      kEvents.putIfAbsent(dateKey, () => []);
+      kEvents[dateKey]!.add(
+        Event(
+          dbId,
+          title,
+          hour: selectedDate.hour,
+          minute: selectedDate.minute,
+        ),
+      );
+    }
+
+    // 5. 화면 갱신 알림
+    notifyListeners();
   }
 
   Future<void> removeContent({required int id, required String kakaoId}) async {

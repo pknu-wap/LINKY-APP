@@ -20,6 +20,7 @@ class PopupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
+      popUpAnimationStyle: AnimationStyle.noAnimation,
       offset: const Offset(-5, 30),
       menuPadding: EdgeInsets.symmetric(vertical: 3),
       // 메뉴 전체의 최대 너비 제한

@@ -2,11 +2,11 @@ import 'package:mysql_client/mysql_client.dart';
 
 class DataService {
   // DB 설정 값들
-  final String _host = '';
+  final String _host = '3.34.52.216';
   final int _port = 3306;
-  final String _user = '';
-  final String _password = '';
-  final String _dbName = '';
+  final String _user = 'root';
+  final String _password = 'remnant260()!';
+  final String _dbName = 'linky_db';
 
   // 공통 커넥션 생성 메서드
   Future<MySQLConnection> _getConnection() async {
@@ -79,10 +79,13 @@ class DataService {
     final conn = await _getConnection();
     try {
       //await conn.execute("SET SQL_SAFE_UPDATES = 0"); // ->id 뿐만아니라 title, url 등 다른 컬럼으로도 삭제 가능하도록 설정 변경
-      await conn.execute("DELETE FROM link WHERE id = :id AND kakao_id = :kakao_id", {
-        "id": id,
-        "kakao_id": kakaoId,
-      }); //->id를 이용해 행 삭제 -> 바꿀수 있음
+      await conn.execute(
+        "DELETE FROM link WHERE id = :id AND kakao_id = :kakao_id",
+        {
+          "id": id,
+          "kakao_id": kakaoId,
+        },
+      ); //->id를 이용해 행 삭제 -> 바꿀수 있음
       print("DB 삭제 요청 완료");
       //await conn.execute("SET SQL_SAFE_UPDATES = 1"); // ->id 뿐만아니라 title, url 등 다른 컬럼으로도 삭제 못하게 설정 변경
     } finally {
