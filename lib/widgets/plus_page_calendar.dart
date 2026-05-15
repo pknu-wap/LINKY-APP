@@ -1,6 +1,6 @@
-import 'dart:math' as math;
-import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:std/constants.dart';
 
 class CalendarWidget extends StatelessWidget {
@@ -16,6 +16,7 @@ class CalendarWidget extends StatelessWidget {
   String _formatDate(DateTime date) {
     final month = date.month.toString().padLeft(2, '0');
     final day = date.day.toString().padLeft(2, '0');
+
     return '${date.year}-$month-$day';
   }
 
@@ -65,18 +66,10 @@ class CalendarWidget extends StatelessWidget {
 }
 
 Future<void> showLinkyCalendarPicker(
-  BuildContext buttonContext, {
+  BuildContext context, {
   required DateTime? initialDate,
   required ValueChanged<DateTime> onChanged,
 }) async {
-  final renderObject = buttonContext.findRenderObject();
-
-  if (renderObject is! RenderBox) return;
-
-  final buttonBox = renderObject;
-  final buttonOffset = buttonBox.localToGlobal(Offset.zero);
-  final screenSize = MediaQuery.of(buttonContext).size;
-
   final now = DateTime.now();
 
   final baseDate =
@@ -89,39 +82,28 @@ Future<void> showLinkyCalendarPicker(
         0,
       );
 
-  final popupWidth = math.min(buttonBox.size.width, 320.0);
-  final safePopupWidth = math.max(240.0, popupWidth);
-
-  final left = (buttonOffset.dx + (buttonBox.size.width - safePopupWidth) / 2)
-      .clamp(8.0, screenSize.width - safePopupWidth - 8.0)
-      .toDouble();
-
-  final top = (buttonOffset.dy + buttonBox.size.height - 10)
-      .clamp(0.0, screenSize.height - 230)
-      .toDouble();
-
   await showGeneralDialog<void>(
-    context: buttonContext,
+    context: context,
     barrierDismissible: true,
     barrierLabel: 'calendar',
     barrierColor: AppColors.transparent,
     transitionDuration: Duration.zero,
     pageBuilder: (context, animation, secondaryAnimation) {
-      return Material(
-        type: MaterialType.transparency,
-        child: Stack(
-          children: [
-            Positioned(
-              left: left,
-              top: top,
-              width: safePopupWidth,
-              child: LinkyCalendarPicker(
-                initialDate: baseDate,
-                onChanged: onChanged,
+      return Stack(
+        children: [
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 7, sigmaY: 7),
+            child: Container(
+              color: AppColors.black.withValues(alpha: 0.1),
+              child: Center(
+                child: LinkyCalendarPicker(
+                  initialDate: baseDate,
+                  onChanged: onChanged,
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       );
     },
   );
@@ -259,7 +241,7 @@ class _LinkyCalendarPickerState extends State<LinkyCalendarPicker> {
                     const Text(
                       '시간 선택',
                       style: TextStyle(
-                        color: AppColors.mainBlue,
+                        color: AppColors.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -273,8 +255,6 @@ class _LinkyCalendarPickerState extends State<LinkyCalendarPicker> {
                             minute: tempMinute,
                           );
                         });
-
-                        notifyChanged();
                         Navigator.pop(context);
                       },
                       child: const Text(
@@ -290,67 +270,55 @@ class _LinkyCalendarPickerState extends State<LinkyCalendarPicker> {
                   ],
                 ),
               ),
-
               Expanded(
-                child: Stack(
-                  alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 80,
-                          child: CupertinoPicker.builder(
-                            scrollController: hourController,
-                            itemExtent: 36,
-                            onSelectedItemChanged: (index) {
-                              tempHour = index;
-                            },
-                            childCount: 24,
-                            itemBuilder: (context, index) {
-                              final hour = index;
-
-                              return Center(
-                                child: Text(
-                                  hour.toString().padLeft(2, '0'),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(width: 8),
-                        const Text(
-                          ':',
-                          style: TextStyle(
-                            color: AppColors.black,
-                            fontSize: 26,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-
-                        SizedBox(
-                          width: 80,
-                          child: CupertinoPicker.builder(
-                            scrollController: minuteController,
-                            itemExtent: 36,
-                            onSelectedItemChanged: (index) {
-                              tempMinute = index;
-                            },
-                            childCount: 60,
-                            itemBuilder: (context, index) {
-                              final minute = index;
-
-                              return Center(
-                                child: Text(
-                                  minute.toString().padLeft(2, '0'),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
+                    SizedBox(
+                      width: 80,
+                      child: CupertinoPicker.builder(
+                        scrollController: hourController,
+                        itemExtent: 36,
+                        onSelectedItemChanged: (index) {
+                          tempHour = index;
+                        },
+                        childCount: 24,
+                        itemBuilder: (context, index) {
+                          return Center(
+                            child: Text(
+                              index.toString().padLeft(2, '0'),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      ':',
+                      style: TextStyle(
+                        color: AppColors.black,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 80,
+                      child: CupertinoPicker.builder(
+                        scrollController: minuteController,
+                        itemExtent: 36,
+                        onSelectedItemChanged: (index) {
+                          tempMinute = index;
+                        },
+                        childCount: 60,
+                        itemBuilder: (context, index) {
+                          return Center(
+                            child: Text(
+                              index.toString().padLeft(2, '0'),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -380,9 +348,6 @@ class _LinkyCalendarPickerState extends State<LinkyCalendarPicker> {
     );
 
     final daysCount = daysInMonth(visibleMonth);
-
-    // DateTime.weekday: Mon=1, Tue=2, ..., Sun=7
-    // Sunday start calendar, so if Sunday, 0 empty cells
     final leadingEmptyCells = firstDay.weekday % 7;
 
     final totalCells = leadingEmptyCells + daysCount;
@@ -407,7 +372,6 @@ class _LinkyCalendarPickerState extends State<LinkyCalendarPicker> {
                 setState(() {
                   selectedDate = date;
                 });
-                notifyChanged();
               },
         child: Opacity(
           opacity: isPast ? 0.3 : 1.0,
@@ -439,198 +403,179 @@ class _LinkyCalendarPickerState extends State<LinkyCalendarPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _CalendarBubblePainter(),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+    final screenSize = MediaQuery.of(context).size;
+
+    return Material(
+      color: AppColors.transparent,
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        width: screenSize.width * 0.95,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(30),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Month header
-            Row(
-              children: [
-                Text(
-                  '${months[visibleMonth.month - 1]} ${visibleMonth.year}',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.black,
-                  ),
-                ),
-                const SizedBox(width: 1),
-                const Spacer(),
-                GestureDetector(
-                  onTap: goPreviousMonth,
-                  child: const Icon(
-                    Icons.chevron_left,
-                    color: AppColors.logoBlue,
-                    size: 17,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: goNextMonth,
-                  child: const Icon(
-                    Icons.chevron_right,
-                    color: AppColors.logoBlue,
-                    size: 17,
-                  ),  
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 8),
-
-            // Weekdays
-            SizedBox(
-              height: 12,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 7),
               child: Row(
-                children: weekDays.map((day) {
-                  return Expanded(
-                    child: Center(
-                      child: Text(
-                        day,
-                        style: const TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.textGrey,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-
-            // Dates
-            GridView.count(
-              crossAxisCount: 7,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 1.35,
-              padding: EdgeInsets.zero,
-              children: buildDateCells(),
-            ),
-
-            const Divider(
-              height: 1,
-              thickness: 0.5,
-              color: AppColors.bottNavTextGrey,
-            ),
-
-            SizedBox(
-              height: 36,
-              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Ends',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.black,
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      '취소',
+                      style: TextStyle(
+                        color: AppColors.mainBlue,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: pickTime,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 7,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.outlineGrey,
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                      child: Text(
-                        formatTime(selectedTime),
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.black,
-                        ),
+                  
+                  TextButton(
+                    onPressed: () {
+                      notifyChanged();
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      '완료',
+                      style: TextStyle(
+                        color: AppColors.mainBlue,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                // borderRadius: BorderRadius.circular(21),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        '${months[visibleMonth.month - 1]} ${visibleMonth.year}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.black,
+                        ),
+                      ),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: goPreviousMonth,
+                        child: const Icon(
+                          Icons.chevron_left,
+                          color: AppColors.logoBlue,
+                          size: 17,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: goNextMonth,
+                        child: const Icon(
+                          Icons.chevron_right,
+                          color: AppColors.logoBlue,
+                          size: 17,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  SizedBox(
+                    height: 12,
+                    child: Row(
+                      children: weekDays.map((day) {
+                        return Expanded(
+                          child: Center(
+                            child: Text(
+                              day,
+                              style: const TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w900,
+                                color: AppColors.textGrey,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+                  GridView.count(
+                    crossAxisCount: 7,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    childAspectRatio: 1.35,
+                    padding: EdgeInsets.zero,
+                    children: buildDateCells(),
+                  ),
+
+                  const Divider(
+                    height: 1,
+                    thickness: 0.5,
+                    color: AppColors.bottNavTextGrey,
+                  ),
+
+                  SizedBox(
+                    height: 36,
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Ends',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.black,
+                          ),
+                        ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: pickTime,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 7,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.outlineGrey,
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: Text(
+                              formatTime(selectedTime),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
-  }
-}
-
-class _CalendarBubblePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    const radius = 16.0;
-    const notchWidth = 16.0;
-    const notchHeight = 10.0;
-
-    final notchCenter = size.width / 2 + 45;
-    final path = Path();
-
-    path.moveTo(radius, notchHeight);
-
-    // path.lineTo(notchCenter - notchWidth / 2, notchHeight);
-    // path.lineTo(notchCenter, 0);
-    // path.lineTo(notchCenter + notchWidth / 2, notchHeight);
-
-    path.lineTo(size.width - radius, notchHeight);
-
-    path.quadraticBezierTo(
-      size.width,
-      notchHeight,
-      size.width,
-      notchHeight + radius,
-    );
-
-    path.lineTo(size.width, size.height - radius);
-
-    path.quadraticBezierTo(
-      size.width,
-      size.height,
-      size.width - radius,
-      size.height,
-    );
-
-    path.lineTo(radius, size.height);
-
-    path.quadraticBezierTo(
-      0,
-      size.height,
-      0,
-      size.height - radius,
-    );
-
-    path.lineTo(0, notchHeight + radius);
-
-    path.quadraticBezierTo(
-      0,
-      notchHeight,
-      radius,
-      notchHeight,
-    );
-
-    path.close();
-
-    final fillPaint = Paint()
-      ..color = AppColors.white
-      ..style = PaintingStyle.fill;
-
-    final borderPaint = Paint()
-      ..color = AppColors.black
-      ..strokeWidth = 0.6
-      ..style = PaintingStyle.stroke;
-
-    canvas.drawPath(path, fillPaint);
-    canvas.drawPath(path, borderPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
   }
 }
