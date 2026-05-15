@@ -48,7 +48,7 @@ class AppBarDesign extends StatelessWidget {
                 SizedBox(width: 11),
                 Text(
                   appbarText,
-                  style: GoogleFonts.inter(fontSize: 24),
+                  style: GoogleFonts.inter(fontSize: 24, color: AppColors.black, decoration: TextDecoration.none, fontWeight: FontWeight.w600),
                 ),
               ],
             ),

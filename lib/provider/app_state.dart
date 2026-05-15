@@ -47,19 +47,56 @@ class AppState extends ChangeNotifier {
     final rows = await _dataService.fetchLinksByKakaoId(kakaoId);
 
     _contents.clear();
+    kEvents.clear();
 
     for (final row in rows) {
+      final id = int.parse(row['id'].toString());
+      final title = row['title'] ?? '';
+      final selectedDateText = row['selected_date']?.toString();
+
       _contents.add(
         ContentItem(
-          id: int.parse(row['id'].toString()),
-          title: row['title'] ?? '',
+          id: id,
+          title: title,
           url: row['url'] ?? '',
           category: row['category'] ?? '전체',
           isPrivate: row['is_private'].toString() == '1',
-          time: row['selected_date']?.toString(),
+          time: selectedDateText,
         ),
       );
+
+      if (selectedDateText != null && selectedDateText.isNotEmpty) {
+        final selectedDate = DateTime.tryParse(selectedDateText);
+
+        if (selectedDate != null) {
+          final dateKey = DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+          );
+
+          kEvents.putIfAbsent(dateKey, () => []);
+
+          kEvents[dateKey]!.add(
+            Event(
+              id,
+              title,
+              hour: selectedDate.hour,
+              minute: selectedDate.minute,
+            ),
+          );
+        }
+      }
     }
+
+    kEvents.forEach((date, events) {
+      print('날짜: $date');
+      for (final e in events) {
+        print(
+          '  contentID: ${e.contentID}, hour: ${e.hour}, minute: ${e.minute}',
+        );
+      }
+    });
 
     notifyListeners();
   }
@@ -134,7 +171,7 @@ class AppState extends ChangeNotifier {
 
     // 4. 달력/리마인더 이벤트 맵(kEvents)에 추가
     if (selectedDate != null) {
-      DateTime dateKey = DateTime.utc(
+      DateTime dateKey = DateTime(
         selectedDate.year,
         selectedDate.month,
         selectedDate.day,
@@ -193,7 +230,7 @@ class AppState extends ChangeNotifier {
 
       if (oldTimeStr != null) {
         DateTime oldDate = DateTime.parse(oldTimeStr);
-        DateTime oldDateKey = DateTime.utc(
+        DateTime oldDateKey = DateTime(
           oldDate.year,
           oldDate.month,
           oldDate.day,
@@ -208,7 +245,7 @@ class AppState extends ChangeNotifier {
       // 3. 새로운 이벤트 등록 (newTime이 있을 경우에만)
       if (newTime != null) {
         DateTime newDate = DateTime.parse(newTime);
-        DateTime newDateKey = DateTime.utc(
+        DateTime newDateKey = DateTime(
           newDate.year,
           newDate.month,
           newDate.day,
@@ -240,11 +277,12 @@ class AppState extends ChangeNotifier {
   // 일정 관리 로직
 
   List<Event> getEventsForDay(DateTime day) {
-    return kEvents[day] ?? [];
+    final dateKey = DateTime(day.year, day.month, day.day);
+    return kEvents[dateKey] ?? [];
   }
 
   void removeEvent(DateTime day, int contentID) {
-    final dateOnly = DateTime.utc(day.year, day.month, day.day);
+    final dateOnly = DateTime(day.year, day.month, day.day);
 
     if (kEvents.containsKey(dateOnly)) {
       // 1. 전역 변수 kEvents에서 해당 contentID를 가진 이벤트만 찾아서 삭제 (안전한 방식)
