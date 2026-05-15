@@ -142,6 +142,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             children: [
                               ContentsBox(
                                 contentID: item.id,
+                                currentCategory: selectedCategory,
                                 onActionDone: () async {
                                   final kakaoId = await storage.read(
                                     key: 'kakaoId',
