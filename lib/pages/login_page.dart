@@ -5,6 +5,7 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:std/constants.dart';
+import 'package:std/snackbar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -33,9 +34,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!installed) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('카카오톡이 설치되어 있지 않습니다.')),
-        );
+        showCustomSnackBar(context, message: '카카오톡이 설치되어 있지 않습니다.');
         return;
       }
 
@@ -61,9 +60,7 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('카카오 로그인/백엔드 전송 실패: $error');
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('카카오 로그인 실패: $error')),
-      );
+      showCustomSnackBar(context, message: '카카오 로그인 실패: $error');
     }
   }
 

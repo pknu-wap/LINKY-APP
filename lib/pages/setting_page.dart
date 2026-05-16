@@ -8,6 +8,7 @@ import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
 import 'package:std/widgets/public_messagebox.dart';
+import 'package:std/snackbar.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -86,9 +87,7 @@ class SettingPageState extends State<SettingPage> {
                       String categoryValue = _categoryController.text.trim();
                       if (categoryValue.isNotEmpty) {
                         if (categories.contains(categoryValue)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('이미 존재하는 카테고리입니다.')),
-                          );
+                          showCustomSnackBar(context, message: '이미 존재하는 카테고리입니다.');
                           return;
                         }
 
@@ -96,9 +95,7 @@ class SettingPageState extends State<SettingPage> {
 
                         _categoryController.clear(); // 입력창 비우기
                         FocusScope.of(context).unfocus(); // 키보드 닫기
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("카테고리가 추가되었습니다.")),
-                          );
+                          showCustomSnackBar(context, message: "카테고리가 추가되었습니다.");
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -146,19 +143,13 @@ class SettingPageState extends State<SettingPage> {
                         context.read<AppState>().removeCategory(
                           selectedCategory!,
                         );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("카테고리가 삭제되었습니다.")),
-                          );
+                        showCustomSnackBar(context, message: "카테고리가 삭제되었습니다.");
 
                         setState(() {
                           selectedCategory = '카테고리'; // 선택 초기화
                         });
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('카테고리를 먼저 선택해주세요. (전체, 즐겨찾기 제외)'),
-                          ),
-                        );
+                        showCustomSnackBar(context, message: '카테고리를 먼저 선택해주세요. (전체, 즐겨찾기 제외)');
                       }
                     },
                     style: ElevatedButton.styleFrom(

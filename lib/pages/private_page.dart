@@ -7,6 +7,7 @@ import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_select_category.dart';
 import 'package:std/widgets/public_contents_box.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:std/snackbar.dart';
 
 class PrivatePage extends StatefulWidget {
   const PrivatePage({super.key});
@@ -81,11 +82,7 @@ class _PrivatePageState extends State<PrivatePage> {
               final kakaoId = await storage.read(key: 'kakaoId');
 
               if (kakaoId == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('로그인 정보가 없습니다. 다시 로그인해주세요.'),
-                  ),
-                );
+                showCustomSnackBar(context, message: '로그인 정보가 없습니다. 다시 로그인해주세요.');
                 return;
               }
               await context.read<AppState>().removeContent(

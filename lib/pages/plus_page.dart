@@ -10,6 +10,7 @@ import 'package:std/widgets/public_dropdown_menu.dart';
 import '../widgets/plus_page_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:std/snackbar.dart';
 
 final DataService _dataService = DataService();
 String? selectedCategory;
@@ -70,9 +71,7 @@ class _PlusPageState extends State<PlusPage> {
     final verifier = UrlVerification();
 
     if (title.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('제목을 입력해주세요')));
+      showCustomSnackBar(context, message: '제목을 입력해주세요');
       return;
     }
 
@@ -107,9 +106,7 @@ class _PlusPageState extends State<PlusPage> {
 
       Navigator.pop(context); // 로딩 닫기
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('링크가 성공적으로 DB에 저장되었습니다!')),
-      );
+      showCustomSnackBar(context, message: '링크가 성공적으로 DB에 저장되었습니다!');
 
       // 필드 초기화
       setState(() {
@@ -124,9 +121,7 @@ class _PlusPageState extends State<PlusPage> {
 
       final errorMessage = e.toString().replaceAll('Exception: ', '');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('저장 실패: $errorMessage')),
-      );
+      showCustomSnackBar(context, message: '저장 실패: $errorMessage');
     }
   }
 
