@@ -20,22 +20,22 @@ class FolderModel {
   });
 }
 
-class TripleFolderBottomSheet extends StatefulWidget {
+class ContentDetailBottomSheet extends StatefulWidget {
   final int contentID;
   final String currentCategory;
 
-  const TripleFolderBottomSheet({
+  const ContentDetailBottomSheet({
     super.key,
     required this.contentID,
     required this.currentCategory,
   });
 
   @override
-  State<TripleFolderBottomSheet> createState() =>
-      _TripleFolderBottomSheetState();
+  State<ContentDetailBottomSheet> createState() =>
+      _ContentDetailBottomSheetState();
 }
 
-class _TripleFolderBottomSheetState extends State<TripleFolderBottomSheet> {
+class _ContentDetailBottomSheetState extends State<ContentDetailBottomSheet> {
   final Duration _durationMove = const Duration(milliseconds: 100);
   final Duration _durationHide = const Duration(milliseconds: 700);
   final Duration _durationShow = const Duration(milliseconds: 300);
@@ -210,10 +210,10 @@ class ContentDetailSheet extends StatelessWidget {
     final urlText = targetItem?.url ?? "찾을 수 없음";
     late final String fixedUrlText;
 
-    if (titleText.length >= 12) titleText = '${titleText.substring(0, 12)}...';
-    fixedUrlText = (urlText.length >= 14)
-        ? '${urlText.substring(0, 14)}...'
-        : urlText;
+    // if (titleText.length >= 12) titleText = '${titleText.substring(0, 12)}...';
+    // fixedUrlText = (urlText.length >= 10)
+    //     ? '${urlText.substring(0, 14)}...'
+    //     : urlText;
 
     return Material(
       color: Colors.transparent,
@@ -280,17 +280,16 @@ class ContentDetailSheet extends StatelessWidget {
                     const Divider(thickness: 1, color: Colors.black),
                     const SizedBox(height: 5),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Row(
-                          children: [
-                            Text('URL', style: GoogleFonts.inter(fontSize: 20)),
-                            const SizedBox(width: 20),
-                            Text(
-                              fixedUrlText,
-                              style: GoogleFonts.inter(fontSize: 20),
-                            ),
-                          ],
+                        Text('URL', style: GoogleFonts.inter(fontSize: 20)),
+                        const SizedBox(width: 18),
+                        Expanded(
+                          child: Text(
+                            urlText,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(fontSize: 20),
+                          ),
                         ),
                         InkWell(
                           onTap: () {
@@ -311,7 +310,12 @@ class ContentDetailSheet extends StatelessWidget {
                               borderRadius: BorderRadius.circular(24),
                               color: Colors.white,
                             ),
-                            child: const Center(child: Text('이동')),
+                            child: const Center(
+                              child: Text(
+                                '이동',
+                                style: TextStyle(fontSize: 10),
+                              ),
+                            ),
                           ),
                         ),
                       ],
