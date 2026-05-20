@@ -1,8 +1,7 @@
 import 'dart:async';
-// import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'; 
 import 'package:flutter_sharing_intent/model/sharing_file.dart';
 import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:provider/provider.dart';
@@ -11,10 +10,8 @@ import 'package:std/pages/category_page.dart';
 import 'package:std/pages/login_page.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting_page.dart';
-import 'package:std/pages/slide_page.dart';
 import 'package:std/pages/plus_page.dart';
 import 'package:std/provider/app_state.dart';
-import 'package:std/services/alarm_service.dart';
 import 'package:std/services/url_verification.dart';
 import 'package:std/widgets/secret_page_guard.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
@@ -81,22 +78,6 @@ void main() async {
       child: const MyApp(),
     ),
   );
-
-  // 2. kEvents 데이터 자동 동기화 (앱 실행 시마다 수행)
-  // 데이터가 있는 위치에 맞춰 kEvents를 넣어주세요.
-  if (kEvents.isNotEmpty) {
-    AlarmService.syncEventsWithAlarms(
-          kEvents.cast<DateTime, List<dynamic>>(),
-        )
-        .then((_) {
-          debugPrint("알람 동기화 완료");
-        })
-        .catchError((e) {
-          debugPrint("알람 동기화 중 에러 발생: $e");
-        });
-  } else {
-    debugPrint("앱 실행 시 kEvents 데이터가 비어 있습니다.");
-  }
 }
 
 class MyApp extends StatelessWidget {
@@ -260,7 +241,7 @@ class _MainScreenState extends State<MainScreen> {
     const CategoryPage(),
     const SecretGuardWrapperPw(child: PrivatePage()), // 커스텀 패스워드 (현재 0000)
     const PlusPage(),
-    const Slidepage(),
+    const CalendarPage(),
     const SettingPage(),
   ];
 

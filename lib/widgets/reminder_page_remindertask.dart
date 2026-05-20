@@ -23,9 +23,9 @@ class RemindertaskWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final targetItem = context.select<AppState, ContentItem?>(
-      (state) => state.contentById(contentID),
-    );
+    print('RemindertaskWidget build 시작 - contentID: $contentID');
+    final targetItem = context.read<AppState>().contentById(contentID);
+    print('targetItem: $targetItem');
 
     final titleText = targetItem?.title ?? "제목 없음";
     final urlText = targetItem?.url ?? "url 없음";

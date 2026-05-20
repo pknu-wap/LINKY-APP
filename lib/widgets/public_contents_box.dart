@@ -9,11 +9,13 @@ import 'package:std/constants.dart';
 class ContentsBox extends StatelessWidget {
   final int contentID;
   final VoidCallback onActionDone;
+  final String currentCategory;
 
   const ContentsBox({
     super.key,
     required this.contentID,
     required this.onActionDone,
+    required this.currentCategory,
   });
 
   @override
@@ -32,7 +34,6 @@ class ContentsBox extends StatelessWidget {
     if (urlText.length >= 43) {
       urlText = '${urlText.substring(0, 43)}...';
     }
-    
 
     return InkWell(
       child: Container(
@@ -157,7 +158,10 @@ class ContentsBox extends StatelessWidget {
           context: context,
           isScrollControlled: true,
           backgroundColor: AppColors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
-          builder: (context) => TripleFolderBottomSheet(contentID: contentID),
+          builder: (context) => TripleFolderBottomSheet(
+            contentID: contentID,
+            currentCategory: currentCategory,
+          ),
         );
       },
     );

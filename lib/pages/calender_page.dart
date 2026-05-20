@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
-import 'package:std/pages/category_page.dart';
+import 'package:std/pages/reminder_page.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
 import 'package:std/widgets/reminder_page_calender.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -99,15 +100,13 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   List<Event> _getEventsForDay(DateTime day) {
-    final dateOnly = DateTime.utc(day.year, day.month, day.day);
+    final dateOnly = DateTime(day.year, day.month, day.day);
     return kEvents[dateOnly] ?? [];
   }
 
   Widget today_reminder(BuildContext context, Event event, int index) {
     return Builder(
       builder: (innerContext) {
-        // 새로운 innerContext를 생성
-        // 💡 부모의 context가 아닌 Builder의 innerContext에서 select를 호출합니다.
         final currentContent = innerContext.select<AppState, ContentItem?>(
           (state) => state.contentById(event.contentID),
         );
@@ -169,17 +168,6 @@ class _CalendarPageState extends State<CalendarPage> {
                 onActionDone: () => _updatePage(event.contentID),
                 context: context,
               ),
-              // if (event.url.isNotEmpty)
-              //   PopupButton(
-              //     contentID: event.contentID,
-              //     onActionDone: () => _updatePage(index, event.contentID),
-              //     context: context,
-              //   )
-              // else
-              //   IconButton(
-              //     onPressed: () => _updatePage(index, event.contentID),
-              //     icon: const Icon(Icons.more_vert),
-              //   ),
             ],
           ),
         );
@@ -196,162 +184,191 @@ class _CalendarPageState extends State<CalendarPage> {
           Expanded(
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    // 1. Reminder 헤더 추가
-                    AppBarDesign(
-                      appbarText: 'Reminder',
-                      appbarIcon: Icons.calendar_today_outlined,
-                    ),
-                    const SizedBox(height: 20),
-                    // 연도 및 월 표시
-                    Text(
-                      "${_focusedDay.year}",
-                      style: TextStyle(
-                        fontSize: 28,
-                        color: AppColors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      getMonthName(_focusedDay.month).toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -1,
-                        height: 1,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    // 연/월 선택 및 컨트롤러
-                    Row(
-                      children: [
-                        IconButton(
-                          visualDensity: VisualDensity.compact,
-                          icon: const Icon(Icons.chevron_left, size: 30),
-                          onPressed: () => setState(() {
-                            DateTime newDate = DateTime(
-                              _focusedDay.year,
-                              _focusedDay.month - 1,
-                            );
-                            if (newDate.year >= startYear) {
-                              _focusedDay = newDate;
-                            }
-                          }),
-                        ),
-                        const SizedBox(width: 25),
-                        Container(
-                          width: 87,
-                          padding: EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.outlineGrey),
+                padding: const EdgeInsets.symmetric(horizontal: 17),
+                child: CustomScrollView(
+                  slivers: [
+                    // ✅ 헤더 ~ TODAY 텍스트까지
+                    SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 20),
+                          AppBarDesign(
+                            appbarText: 'Reminder',
+                            appbarIcon: Icons.calendar_today_outlined,
                           ),
-                          child: DropdownWidget(
-                            itemsList: months,
-                            onCategorySelected: (value) {
-                              setState(
-                                () => _focusedDay = DateTime(
-                                  _focusedDay.year,
-                                  months.indexOf(value) + 1,
+                          const SizedBox(height: 20),
+                          Text(
+                            "${_focusedDay.year}",
+                            style: const TextStyle(
+                              fontSize: 28,
+                              color: AppColors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            getMonthName(_focusedDay.month).toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -1,
+                              height: 1,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              IconButton(
+                                visualDensity: VisualDensity.compact,
+                                icon: const Icon(Icons.chevron_left, size: 30),
+                                onPressed: () => setState(() {
+                                  DateTime newDate = DateTime(
+                                    _focusedDay.year,
+                                    _focusedDay.month - 1,
+                                  );
+                                  if (newDate.year >= startYear) {
+                                    _focusedDay = newDate;
+                                  }
+                                }),
+                              ),
+                              const SizedBox(width: 25),
+                              Container(
+                                width: 87,
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: AppColors.outlineGrey,
+                                  ),
                                 ),
-                              );
+                                child: DropdownWidget(
+                                  itemsList: months,
+                                  onCategorySelected: (value) {
+                                    setState(
+                                      () => _focusedDay = DateTime(
+                                        _focusedDay.year,
+                                        months.indexOf(value) + 1,
+                                      ),
+                                    );
+                                  },
+                                  menuWidget: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        months[_focusedDay.month - 1],
+                                        style: GoogleFonts.inter(fontSize: 16),
+                                      ),
+                                      const Icon(
+                                        Icons.arrow_drop_down_outlined,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 87,
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: AppColors.outlineGrey,
+                                  ),
+                                ),
+                                child: DropdownWidget(
+                                  itemsList: List.generate(
+                                    endYear - startYear + 1,
+                                    (index) => (startYear + index).toString(),
+                                  ),
+                                  onCategorySelected: (value) {
+                                    setState(
+                                      () => _focusedDay = DateTime(
+                                        int.parse(value),
+                                        _focusedDay.month,
+                                      ),
+                                    );
+                                  },
+                                  menuWidget: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        _focusedDay.year.toString(),
+                                        style: GoogleFonts.inter(fontSize: 16),
+                                      ),
+                                      const Icon(
+                                        Icons.arrow_drop_down_outlined,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 25),
+                              IconButton(
+                                visualDensity: VisualDensity.compact,
+                                icon: const Icon(Icons.chevron_right, size: 30),
+                                onPressed: () => setState(() {
+                                  DateTime newDate = DateTime(
+                                    _focusedDay.year,
+                                    _focusedDay.month + 1,
+                                  );
+                                  if (newDate.year <= endYear) {
+                                    _focusedDay = newDate;
+                                  }
+                                }),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          CalenderWidget(
+                            focusedDay: _focusedDay,
+                            selectedDay: _selectedDay,
+                            eventLoader: _getEventsForDay,
+                            onDaySelected: (selectedDay, focusedDay) {
+                              if (isSameDay(_selectedDay, selectedDay)) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ReminderScreen(
+                                      selectedDate: selectedDay,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                setState(() {
+                                  _selectedDay = selectedDay;
+                                  _focusedDay = focusedDay;
+                                  _selectedEvents.value = _getEventsForDay(
+                                    selectedDay,
+                                  );
+                                });
+                              }
                             },
-                            menuWidget: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  months[_focusedDay.month - 1],
-                                  style: GoogleFonts.inter(fontSize: 16),
-                                ),
-                                const Icon(Icons.arrow_drop_down_outlined),
-                              ],
+                            onPageChanged: (focusedDay) =>
+                                setState(() => _focusedDay = focusedDay),
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            "TODAY",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 22,
+                              letterSpacing: 1.2,
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          width: 87,
-                          padding: EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.outlineGrey),
-                          ),
-                          child: DropdownWidget(
-                            itemsList: List.generate(
-                              endYear - startYear + 1,
-                              (index) => (startYear + index).toString(),
-                            ),
-                            onCategorySelected: (value) {
-                              setState(
-                                () => _focusedDay = DateTime(
-                                  int.parse(value),
-                                  _focusedDay.month,
-                                ),
-                              );
-                            },
-                            menuWidget: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  _focusedDay.year.toString(),
-                                  style: GoogleFonts.inter(fontSize: 16),
-                                ),
-                                const Icon(Icons.arrow_drop_down_outlined),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 25),
-                        IconButton(
-                          visualDensity: VisualDensity.compact,
-                          icon: const Icon(Icons.chevron_right, size: 30),
-                          onPressed: () => setState(() {
-                            DateTime newDate = DateTime(
-                              _focusedDay.year,
-                              _focusedDay.month + 1,
-                            );
-                            if (newDate.year <= endYear) {
-                              _focusedDay = newDate;
-                            }
-                          }),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    CalenderWidget(
-                      focusedDay: _focusedDay,
-                      selectedDay: _selectedDay,
-                      eventLoader: _getEventsForDay,
-                      onDaySelected: (selectedDay, focusedDay) {
-                        setState(() {
-                          _selectedDay = selectedDay;
-                          _focusedDay = focusedDay;
-                          _selectedEvents.value = _getEventsForDay(selectedDay);
-                        });
-                      },
-                      onPageChanged: (focusedDay) =>
-                          setState(() => _focusedDay = focusedDay),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "TODAY",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 22,
-                        letterSpacing: 1.2,
+                          const SizedBox(height: 10),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    Expanded(
-                      child: ValueListenableBuilder<List<Event>>(
-                        valueListenable: _selectedEvents,
-                        builder: (context, events, _) {
-                          if (events.isEmpty) {
-                            return Center(
+
+                    // ✅ 일정 리스트 (Expanded 없이 SliverList로)
+                    ValueListenableBuilder<List<Event>>(
+                      valueListenable: _selectedEvents,
+                      builder: (context, events, _) {
+                        if (events.isEmpty) {
+                          return SliverToBoxAdapter(
+                            child: Center(
                               child: Text(
                                 "등록된 일정이 없습니다.",
                                 style: TextStyle(
@@ -359,46 +376,23 @@ class _CalendarPageState extends State<CalendarPage> {
                                   fontSize: 16,
                                 ),
                               ),
-                            );
-                          }
-                          return ListView.builder(
-                            padding: EdgeInsets.zero,
-                            itemCount: events.length,
-                            itemBuilder: (context, index) {
-                              final event = events[index];
-
-                              return today_reminder(
-                                context,
-                                event,
-                                index,
-                              );
-                            },
+                            ),
                           );
-                        },
-                      ),
+                        }
+                        return SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) => today_reminder(
+                              context,
+                              events[index],
+                              index,
+                            ),
+                            childCount: events.length,
+                          ),
+                        );
+                      },
                     ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 20)),
                   ],
-                ),
-              ),
-            ),
-          ),
-          // 2. 우측 초록색 바 (Sidebar)
-          Container(
-            width: 30,
-            decoration: const BoxDecoration(
-              color: AppColors.mainGreen,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                bottomLeft: Radius.circular(20),
-              ),
-            ),
-            child: Center(
-              child: Container(
-                width: 4,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: AppColors.white.withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
@@ -417,7 +411,5 @@ class Event {
   const Event(this.contentID, this.title, {this.hour = 9, this.minute = 0});
 }
 
-final Map<DateTime, List<Event>> kEvents =
-    {}; // -> 알림 30분 전에 한번 울리고 정시간에 한번 더 울림
-//데이터 하루 지나면 삭제 -> 만료시 색깔 변경
-//년도 2099년
+final Map<DateTime, List<Event>> kEvents = {
+};
