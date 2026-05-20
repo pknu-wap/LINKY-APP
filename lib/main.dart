@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart'; 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_sharing_intent/model/sharing_file.dart';
 import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:provider/provider.dart';
@@ -89,11 +89,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MainScreen(),
-      // home: const LoginPage(),
-      // routes: {
-      //   '/main': (context) => const MainScreen(),
-      // },
+      // home: const MainScreen(),
+      home: const LoginPage(),
+      routes: {
+        '/main': (context) => const MainScreen(),
+      },
     );
   }
 }

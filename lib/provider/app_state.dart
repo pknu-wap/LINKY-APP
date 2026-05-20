@@ -224,13 +224,13 @@ class AppState extends ChangeNotifier {
           minute: selectedDate.minute,
         ),
       );
-    }
 
-    await AlarmService.scheduleEventAlarm(
-      contentID: dbId,
-      title: title,
-      scheduledTime: selectedDate!,
-    );
+      await AlarmService.scheduleEventAlarm(
+        contentID: dbId,
+        title: title,
+        scheduledTime: selectedDate,
+      );
+    }
 
     // 화면 갱신 알림
     notifyListeners();
@@ -263,10 +263,15 @@ class AppState extends ChangeNotifier {
 
     if (index != -1) {
       String? oldTimeStr = _contents[index].time;
+      if (newTime == '') {
+        newTime = null;
+      }
 
       _contents[index].title = newTitle;
       _contents[index].url = newUrl;
-      _contents[index].time = newTime;
+      if (newTime != null) {
+        _contents[index].time = newTime;
+      }
 
       if (newCategory != null) {
         _contents[index].category = _categories.contains(newCategory)

@@ -238,24 +238,23 @@ class ContentDetailSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Row(
-                          children: [
-                            Text('제목', style: GoogleFonts.inter(fontSize: 20)),
-                            const SizedBox(width: 20),
-                            Text(
-                              titleText,
-                              style: GoogleFonts.inter(fontSize: 20),
-                            ),
-                          ],
+                        Text('제목', style: GoogleFonts.inter(fontSize: 20)),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Text(
+                            titleText,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(fontSize: 16),
+                          ),
                         ),
                         PopupButton(
                           contentID: contentID,
                           onActionDone: () async {
                             final kakaoId = await storage.read(key: 'kakaoId');
 
-                            if(!context.mounted) return;
+                            if (!context.mounted) return;
 
                             if (kakaoId == null) {
                               showCustomSnackBar(
@@ -288,9 +287,10 @@ class ContentDetailSheet extends StatelessWidget {
                           child: Text(
                             urlText,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.inter(fontSize: 20),
+                            style: GoogleFonts.inter(fontSize: 16),
                           ),
                         ),
+                        const SizedBox(width: 7),
                         InkWell(
                           onTap: () {
                             showDialog(
@@ -313,7 +313,6 @@ class ContentDetailSheet extends StatelessWidget {
                             child: const Center(
                               child: Text(
                                 '이동',
-                                style: TextStyle(fontSize: 10),
                               ),
                             ),
                           ),
