@@ -20,12 +20,15 @@ void showCustomSnackBar(
           const SizedBox(
             width: 10,
           ),
-          Text(
-            message,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
+          Expanded(
+            child: Text(
+              message,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
         ],

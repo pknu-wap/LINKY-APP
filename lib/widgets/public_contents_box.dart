@@ -64,12 +64,14 @@ class ContentsBox extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        titleText,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(
-                          color: AppColors.black,
-                          fontSize: 16,
+                      Expanded(
+                        child: Text(
+                          titleText,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.inter(
+                            color: AppColors.black,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                       PopupButton(
