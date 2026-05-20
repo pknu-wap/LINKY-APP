@@ -6,6 +6,7 @@ import 'package:std/constants.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_messagebox.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
+import 'package:std/snackbar.dart';
 
 class FolderModel {
   final int id;
@@ -253,7 +254,18 @@ class ContentDetailSheet extends StatelessWidget {
                           contentID: contentID,
                           onActionDone: () async {
                             final kakaoId = await storage.read(key: 'kakaoId');
-                            if (kakaoId == null) return;
+
+                            if(!context.mounted) return;
+
+                            if (kakaoId == null) {
+                              showCustomSnackBar(
+                                context,
+                                message: '로그인 정보가 없습니다. 다시 로그인해주세요.',
+                                isError: true,
+                              );
+                              Navigator.pop(context);
+                              return;
+                            }
                             Navigator.pop(context);
                             await context.read<AppState>().removeContent(
                               id: contentID,

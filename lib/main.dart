@@ -18,7 +18,7 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
+import 'package:std/snackbar.dart';
 import 'constants.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -89,11 +89,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      // home: const MainScreen(),
-      home: const LoginPage(),
-      routes: {
-        '/main': (context) => const MainScreen(),
-      },
+      home: const MainScreen(),
+      // home: const LoginPage(),
+      // routes: {
+      //   '/main': (context) => const MainScreen(),
+      // },
     );
   }
 }
@@ -210,16 +210,16 @@ class _MainScreenState extends State<MainScreen> {
         print('url: $sharedLink\ntitle: $sharedContentTitle');
 
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('링크가 성공적으로 DB에 저장되었습니다!')),
-        );
+        showCustomSnackBar(context, message: '링크가 성공적으로 DB에 저장되었습니다!');
 
         setState(() {});
       } catch (e) {
         if (!mounted) return;
         final errorMessage = e.toString().replaceAll('Exception: ', '');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('저장 실패: $errorMessage')),
+        showCustomSnackBar(
+          context,
+          message: '저장 실패: $errorMessage',
+          isError: true,
         );
       }
     } catch (e) {
@@ -265,11 +265,10 @@ class _MainScreenState extends State<MainScreen> {
         now.difference(_lastBackPressedTime!) > const Duration(seconds: 2)) {
       _lastBackPressedTime = now;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('종료하려면 한번더 누르세요'),
-          duration: Duration(seconds: 2),
-        ),
+      showCustomSnackBar(
+        context,
+        message: '종료하려면 한번더 누르세요',
+        duration: Duration(seconds: 2),
       );
       return;
     }
