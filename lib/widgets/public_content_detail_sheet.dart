@@ -6,6 +6,7 @@ import 'package:std/constants.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_messagebox.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:std/snackbar.dart';
 
 class FolderModel {
@@ -208,12 +209,6 @@ class ContentDetailSheet extends StatelessWidget {
 
     String titleText = targetItem?.title ?? "찾을 수 없음";
     final urlText = targetItem?.url ?? "찾을 수 없음";
-    late final String fixedUrlText;
-
-    // if (titleText.length >= 12) titleText = '${titleText.substring(0, 12)}...';
-    // fixedUrlText = (urlText.length >= 10)
-    //     ? '${urlText.substring(0, 14)}...'
-    //     : urlText;
 
     return Material(
       color: Colors.transparent,
@@ -298,7 +293,7 @@ class ContentDetailSheet extends StatelessWidget {
                               builder: (context) => DialogPopup(
                                 title: '해당 링크로 이동하시겠어요?',
                                 boxType: BoxType.warning,
-                                onConfirm: () => print('링크 실행 완료'),
+                                onConfirm: () => launchUrl(Uri.parse(urlText)),
                                 confirmText: '이동',
                               ),
                             );
