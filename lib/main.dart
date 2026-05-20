@@ -22,7 +22,6 @@ import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:std/snackbar.dart';
-
 import 'constants.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -109,11 +108,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      // home: const MainScreen(),
-      home: const LoginPage(),
-      routes: {
-        '/main': (context) => const MainScreen(),
-      },
+      home: const MainScreen(),
+      // home: const LoginPage(),
+      // routes: {
+      //   '/main': (context) => const MainScreen(),
+      // },
     );
   }
 }
@@ -236,7 +235,11 @@ class _MainScreenState extends State<MainScreen> {
       } catch (e) {
         if (!mounted) return;
         final errorMessage = e.toString().replaceAll('Exception: ', '');
-        showCustomSnackBar(context, message: '저장 실패: $errorMessage');
+        showCustomSnackBar(
+          context,
+          message: '저장 실패: $errorMessage',
+          isError: true,
+        );
       }
     } catch (e) {
       print("공유 데이터 처리 중 에러 발생: $e");

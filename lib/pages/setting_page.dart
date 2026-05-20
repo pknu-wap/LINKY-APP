@@ -87,7 +87,7 @@ class SettingPageState extends State<SettingPage> {
                       String categoryValue = _categoryController.text.trim();
                       if (categoryValue.isNotEmpty) {
                         if (categories.contains(categoryValue)) {
-                          showCustomSnackBar(context, message: '이미 존재하는 카테고리입니다.');
+                          showCustomSnackBar(context, message: '이미 존재하는 카테고리입니다.', isError: true);
                           return;
                         }
 
@@ -149,7 +149,7 @@ class SettingPageState extends State<SettingPage> {
                           selectedCategory = '카테고리'; // 선택 초기화
                         });
                       } else {
-                        showCustomSnackBar(context, message: '카테고리를 먼저 선택해주세요. (전체, 즐겨찾기 제외)');
+                        showCustomSnackBar(context, message: '카테고리를 먼저 선택해주세요.', isError: true);
                       }
                     },
                     style: ElevatedButton.styleFrom(

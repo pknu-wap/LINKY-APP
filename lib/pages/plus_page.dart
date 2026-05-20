@@ -6,6 +6,7 @@ import 'package:std/pages/calender_page.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/services/data_service.dart';
 import 'package:std/services/url_verification.dart';
+import 'package:std/snackbar.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
 import '../widgets/plus_page_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -71,16 +72,14 @@ class _PlusPageState extends State<PlusPage> {
     final verifier = UrlVerification();
 
     if (title.isEmpty) {
-      showCustomSnackBar(context, message: '제목을 입력해주세요');
+      showCustomSnackBar(context, message: '제목을 입력해주세요', isError: true);
       return;
     }
 
     try {
       verifier.urlVerify(url);
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      showCustomSnackBar(context, message: e.toString(), isError: true);
       return;
     }
 
@@ -121,7 +120,11 @@ class _PlusPageState extends State<PlusPage> {
 
       final errorMessage = e.toString().replaceAll('Exception: ', '');
 
-      showCustomSnackBar(context, message: '저장 실패: $errorMessage');
+      showCustomSnackBar(
+        context,
+        message: '저장 실패: $errorMessage',
+        isError: true,
+      );
     }
   }
 

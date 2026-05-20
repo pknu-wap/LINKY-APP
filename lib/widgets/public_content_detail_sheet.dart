@@ -112,8 +112,6 @@ class ContentDetailSheet extends StatelessWidget {
   final int contentID;
   final storage = const FlutterSecureStorage();
 
-  
-
   const ContentDetailSheet({
     super.key,
     required this.color,
@@ -195,8 +193,14 @@ class ContentDetailSheet extends StatelessWidget {
                           onActionDone: () async {
                             final kakaoId = await storage.read(key: 'kakaoId');
 
+                            if(!context.mounted) return;
+
                             if (kakaoId == null) {
-                              showCustomSnackBar(context, message: '로그인 정보가 없습니다. 다시 로그인해주세요.');
+                              showCustomSnackBar(
+                                context,
+                                message: '로그인 정보가 없습니다. 다시 로그인해주세요.',
+                                isError: true,
+                              );
                               Navigator.pop(context);
                               return;
                             }

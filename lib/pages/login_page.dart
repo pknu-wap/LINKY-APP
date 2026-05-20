@@ -34,7 +34,11 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!installed) {
         if (!mounted) return;
-        showCustomSnackBar(context, message: '카카오톡이 설치되어 있지 않습니다.');
+        showCustomSnackBar(
+          context,
+          message: '카카오톡이 설치되어 있지 않습니다.',
+          isError: true,
+        );
         return;
       }
 
@@ -60,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('카카오 로그인/백엔드 전송 실패: $error');
 
       if (!mounted) return;
-      showCustomSnackBar(context, message: '카카오 로그인 실패: $error');
+      showCustomSnackBar(context, message: '카카오 로그인 실패: $error', isError: true);
     }
   }
 
