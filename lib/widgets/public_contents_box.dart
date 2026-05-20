@@ -31,7 +31,7 @@ class ContentsBox extends StatelessWidget {
     return InkWell(
       child: Container(
         width: 375,
-        height: 138,
+        // height: 138,
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(23),
@@ -131,7 +131,10 @@ class ContentsBox extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 10),
-                        Icon(Icons.calendar_today_outlined, size: 24),
+                        Image.asset(
+                          'assets/images/CalendarIcon.png',
+                          width: 20,
+                        ),
                         SizedBox(width: 7),
                         Text(
                           datetimeText.isEmpty
