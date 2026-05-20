@@ -86,67 +86,6 @@ class Reminder extends State<ReminderScreen> {
     );
   }
 
-  // 타임라인 리스트
-  // Widget Timeline() {
-  //   final appState = context.watch<AppState>();
-  //   final selectedDate = DateTime(
-  //     DateTime.now().year,
-  //     selectedMonth,
-  //     selectedDay + 1,
-  //   );
-  //   print(selectedDate);
-  //   // 2. 해당 날짜에 저장된 이벤트 리스트 가져오기
-  //   final List<Event> dayEvents = appState.getEventsForDay(selectedDate);
-
-  //   print(dayEvents.length);
-
-  //   return ListView.builder(
-  //     padding: const EdgeInsets.symmetric(horizontal: 20),
-  //     itemCount: 24, // 0시부터 23시까지
-  //     itemBuilder: (context, index) {
-  //       // 3. 현재 index(시간)와 일치하는 이벤트가 있는지 필터링
-  //       final hourEvents = dayEvents.where((e) => e.hour == index).toList();
-
-  //       // 시간 표시용 텍스트 (0시 -> 12am, 13시 -> 1pm 등)
-  //       int displayHour = index == 0 || index == 12 ? 12 : index % 12;
-  //       String amPm = index < 12 ? 'am' : 'pm';
-  //       String timeStr = '$displayHour$amPm';
-
-  //       return Padding(
-  //         padding: const EdgeInsets.symmetric(vertical: 15),
-  //         child: Row(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             SizedBox(
-  //               width: 50,
-  //               child: Text(
-  //                 timeStr,
-  //                 style: GoogleFonts.inter(
-  //                   color: AppColors.textGrey,
-  //                   fontSize: 12,
-  //                   decoration: TextDecoration.none,
-  //                 ),
-  //               ),
-  //             ),
-  //             // 4. 핵심 로직: 일정이 있으면 위젯을 보여주고, 없으면 투명한 빈 칸을 보여줌
-  //             Expanded(
-  //               child: hourEvents.isNotEmpty
-  //                   ? RemindertaskWidget(
-  //                       backgroundColor: AppColors.mainGreen,
-  //                       // 여기서는 첫 번째 이벤트의 제목을 전달하는 식으로 커스텀 가능
-  //                       contentID:
-  //                           hourEvents.first.contentID, // 고유 id 가져오는 로직 추가 필요
-  //                       eventDate: selectedDate,
-  //                     )
-  //                   : const SizedBox(height: 40), // 일정이 없을 때의 높이 확보
-  //             ),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
   int getLastDayOfMonth(int year, int month) {
     DateTime lastDay = DateTime(year, month + 1, 0);
     return lastDay.day;

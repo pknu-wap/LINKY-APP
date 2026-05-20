@@ -12,14 +12,14 @@ import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting_page.dart';
 import 'package:std/pages/plus_page.dart';
 import 'package:std/provider/app_state.dart';
-import 'package:std/services/alarm_service.dart';
 import 'package:std/services/url_verification.dart';
 import 'package:std/widgets/secret_page_guard.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:std/snackbar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'constants.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -79,22 +79,6 @@ void main() async {
       child: const MyApp(),
     ),
   );
-
-  // 2. kEvents 데이터 자동 동기화 (앱 실행 시마다 수행)
-  // 데이터가 있는 위치에 맞춰 kEvents를 넣어주세요.
-  if (kEvents.isNotEmpty) {
-    AlarmService.syncEventsWithAlarms(
-          kEvents.cast<DateTime, List<dynamic>>(),
-        )
-        .then((_) {
-          debugPrint("알람 동기화 완료");
-        })
-        .catchError((e) {
-          debugPrint("알람 동기화 중 에러 발생: $e");
-        });
-  } else {
-    debugPrint("앱 실행 시 kEvents 데이터가 비어 있습니다.");
-  }
 }
 
 class MyApp extends StatelessWidget {
@@ -106,11 +90,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MainScreen(),
-      // home: const LoginPage(),
-      // routes: {
-      //   '/main': (context) => const MainScreen(),
-      // },
+      // home: const MainScreen(),
+      home: const LoginPage(),
+      routes: {
+        '/main': (context) => const MainScreen(),
+      },
     );
   }
 }
