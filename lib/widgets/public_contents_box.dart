@@ -28,13 +28,6 @@ class ContentsBox extends StatelessWidget {
     String urlText = targetItem?.url ?? "찾을 수 없음";
     final datetimeText = targetItem?.time ?? '';
 
-    if (titleText.length >= 17) {
-      titleText = '${titleText.substring(0, 17)}...';
-    }
-    if (urlText.length >= 43) {
-      urlText = '${urlText.substring(0, 43)}...';
-    }
-
     return InkWell(
       child: Container(
         width: 375,
@@ -73,6 +66,7 @@ class ContentsBox extends StatelessWidget {
                     children: [
                       Text(
                         titleText,
+                        overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.inter(
                           color: AppColors.black,
                           fontSize: 16,
@@ -97,6 +91,7 @@ class ContentsBox extends StatelessWidget {
                 height: 17,
                 child: Text(
                   urlText,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
                     fontSize: 13,
                     color: AppColors.textGrey,
@@ -158,7 +153,7 @@ class ContentsBox extends StatelessWidget {
           context: context,
           isScrollControlled: true,
           backgroundColor: AppColors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
-          builder: (context) => TripleFolderBottomSheet(
+          builder: (context) => ContentDetailBottomSheet(
             contentID: contentID,
             currentCategory: currentCategory,
           ),
