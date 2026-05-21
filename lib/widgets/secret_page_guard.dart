@@ -63,79 +63,84 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        widget.child, // 실제 앱 콘텐츠
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Stack(
+        children: [
+          widget.child, // 실제 앱 콘텐츠
 
-        if (_isLocked) // 잠금 상태일 때만 덮어씌움
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // 배경 블러 처리
-            child: Container(
-              color: AppColors.black.withValues(alpha: 0.1),
-              child: Center(
-                child: Container(
-                  width: 362,
-                  height: 186,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(21),
-                    border: Border.all(color: AppColors.black, width: 1),
-                    color: AppColors.white,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(height: 25),
-                      const Text(
-                        "비밀번호 입력",
-                        style: TextStyle(
-                          color: AppColors.black,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 21),
-                      SizedBox(
-                        width: 293,
-                        height: 44,
-                        child: TextField(
-                          textAlign: TextAlign.center,
-                          textAlignVertical: TextAlignVertical.center,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.zero,
-                            border: OutlineInputBorder(),
+          if (_isLocked) // 잠금 상태일 때만 덮어씌움
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // 배경 블러 처리
+              child: Container(
+                color: AppColors.black.withValues(alpha: 0.1),
+                child: Center(
+                  child: Container(
+                    width: 362,
+                    height: 186,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(21),
+                      border: Border.all(color: AppColors.black, width: 1),
+                      color: AppColors.white,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 25),
+                        const Text(
+                          "비밀번호 입력",
+                          style: TextStyle(
+                            color: AppColors.black,
+                            fontSize: 16,
                           ),
-                          style: TextStyle(fontSize: 16),
-                          controller: myController,
                         ),
-                      ),
-                      const SizedBox(height: 13),
-                      InkWell(
-                        onTap: () => _tryUnlock(myController.text),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 25,
-                            vertical: 10,
+                        const SizedBox(height: 21),
+                        SizedBox(
+                          width: 293,
+                          height: 44,
+                          child: TextField(
+                            textAlign: TextAlign.center,
+                            textAlignVertical: TextAlignVertical.center,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.zero,
+                              border: OutlineInputBorder(),
+                            ),
+                            style: TextStyle(fontSize: 16),
+                            controller: myController,
                           ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(19.5),
-                            border: Border.all(
-                              color: AppColors.outlineGrey,
-                              width: 0.5,
+                        ),
+                        const SizedBox(height: 13),
+                        InkWell(
+                          onTap: () => _tryUnlock(myController.text),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 25,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(19.5),
+                              border: Border.all(
+                                color: AppColors.outlineGrey,
+                                width: 0.5,
+                              ),
+                            ),
+                            child: Text(
+                              '확인',
+                              style: GoogleFonts.inter(
+                                color: AppColors.mainRed,
+                              ),
                             ),
                           ),
-                          child: Text(
-                            '확인',
-                            style: GoogleFonts.inter(color: AppColors.mainRed),
-                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }
