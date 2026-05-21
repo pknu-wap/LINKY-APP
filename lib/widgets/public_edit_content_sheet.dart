@@ -78,260 +78,265 @@ class _EditContentSheetState extends State<EditContentSheet> {
       _isInitialized = true;
     }
 
-    return Container(
-      height: screenSize.height * 0.9,
-      width: screenSize.width,
-      decoration: BoxDecoration(
-        color: AppColors.popupBackGrey,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Container(
+        height: screenSize.height * 0.9,
+        width: screenSize.width,
+        decoration: BoxDecoration(
+          color: AppColors.popupBackGrey,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
         ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(height: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 15),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _circleButton(
-                Icons.close_rounded,
-                AppColors.mainRed,
-                () => Navigator.pop(context),
-              ),
-              _circleButton(
-                Icons.check_rounded,
-                AppColors.mainGreen,
-                () {
-                  context.read<AppState>().updateContent(
-                    id: widget.contentID,
-                    newTitle: titleController.text,
-                    newUrl: urlController.text,
-                    newTime: _dateController.text,
-                    newCategory: _selectedCategory,
-                  );
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-
-          SizedBox(height: 23),
-
-          _WhiteContainer(
-            screenSize: screenSize,
-            insideWidget: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: titleController,
-                        focusNode: titleFocusNode,
-                        decoration: InputDecoration(
-                          hintText: '제목 수정',
-                          border: InputBorder.none,
-                          isDense: true,
-                          hintStyle: GoogleFonts.inter(
-                            color: AppColors.textGrey,
-                          ),
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () => titleController.text = '',
-                      child: Icon(
-                        Icons.cancel_outlined,
-                        color: AppColors.textGrey,
-                      ),
-                    ),
-                  ],
-                ),
-                Divider(),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: urlController,
-                        focusNode: urlFocusNode,
-                        decoration: InputDecoration(
-                          hintText: "URL 수정",
-                          border: InputBorder.none,
-                          isDense: true,
-                          hintStyle: GoogleFonts.inter(
-                            color: AppColors.textGrey,
-                          ),
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () => urlController.text = '',
-                      child: Icon(
-                        Icons.cancel_outlined,
-                        color: AppColors.textGrey,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          SizedBox(height: 23),
-
-          _WhiteContainer(
-            screenSize: screenSize,
-            insideWidget: Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // 선택된 날짜 텍스트 (없으면 '날짜 수정')
-                Text(
-                  _dateController.text.isEmpty || _dateController.text == 'null'
-                      ? '날짜 수정'
-                      : _dateController.text,
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    color:
-                        _dateController.text.isEmpty ||
-                            _dateController.text == 'null'
-                        ? AppColors.textGrey
-                        : AppColors.black,
-                  ),
+                _circleButton(
+                  Icons.close_rounded,
+                  AppColors.mainRed,
+                  () => Navigator.pop(context),
                 ),
-                Transform.translate(
-                  offset: const Offset(-3, 25),
-                  child: Container(
-                    key: _calendarAnchorKey,
-                  ),
-                ),
-
-                Builder(
-                  builder: (buttonContext) {
-                    return GestureDetector(
-                      behavior: HitTestBehavior.opaque, // 빈 공간 터치 방지용
-                      onTap: () {
-                        final anchorContext = _calendarAnchorKey.currentContext;
-
-                        if (anchorContext != null) {
-                          DateTime? parsedDate = DateTime.tryParse(
-                            _dateController.text,
-                          );
-                          showLinkyCalendarPicker(
-                            anchorContext,
-                            initialDate: parsedDate ?? DateTime.now(),
-                            onChanged: (date) {
-                              setState(() {
-                                _dateController.text = DateFormat(
-                                  'yyyy-MM-dd HH:mm',
-                                ).format(date);
-                              });
-                            },
-                          );
-                        }
-                      },
-                      child: Image.asset('assets/images/CalendarIcon.png'),
+                _circleButton(
+                  Icons.check_rounded,
+                  AppColors.mainGreen,
+                  () {
+                    context.read<AppState>().updateContent(
+                      id: widget.contentID,
+                      newTitle: titleController.text,
+                      newUrl: urlController.text,
+                      newTime: _dateController.text,
+                      newCategory: _selectedCategory,
                     );
+                    Navigator.pop(context);
                   },
                 ),
-                // PopupMenuButton<void>(
-                //   padding: EdgeInsets.zero,
-                //   position: PopupMenuPosition.under,
-                //   offset: const Offset(0, 10),
-                //   elevation: 4,
-                //   color: Colors.white,
-                //   shape: RoundedRectangleBorder(
-                //     borderRadius: BorderRadius.circular(16),
-                //     side: BorderSide(color: Colors.grey.shade200),
-                //   ),
-                //   itemBuilder: (BuildContext context) => [
-                //     PopupMenuItem<void>(
-                //       enabled: false, // 메뉴 자체 클릭 방지
-                //       child: SizedBox(
-                //         width: 320, // 캘린더 크기 명시
-                //         height: 380,
-                //         child: CalendarWidget(
-                //           selectedDate: _selectedDay,
-                //           onChanged: (date) {
-                //             setState(() {
-                //               _selectedDay = date;
-                //             });
-                //           },
-                //         ),
-                //       ),
-                //     ),
-                //   ],
-                //   child: Image.asset(
-                //     'assets/images/calendar_img.png', // 이미지 경로
-                //     width: 24, // 아이콘 크기에 맞춰 적절히 조절
-                //     height: 24,
-                //     fit: BoxFit.contain,
-                //     // 이미지가 없을 때를 대비한 에러 처리 (선택사항)
-                //     errorBuilder: (context, error, stackTrace) => const Icon(
-                //       Icons.calendar_today,
-                //       color: AppColors.textGrey,
-                //     ),
-                //   ),
-                // ),
               ],
             ),
-          ),
 
-          SizedBox(height: 23),
+            SizedBox(height: 23),
 
-          _WhiteContainer(
-            screenSize: screenSize,
-            insideWidget: DropdownWidget(
-              itemsList: categories,
-              onCategorySelected: (value) {
-                setState(() {
-                  _selectedCategory = value;
-                });
-              },
-              menuWidget: Row(
+            _WhiteContainer(
+              screenSize: screenSize,
+              insideWidget: Column(
                 children: [
-                  Expanded(
-                    child: Text(
-                      _selectedCategory ?? categoryText,
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        color: categoryText == "카테고리 추가"
-                            ? AppColors.textGrey
-                            : AppColors.black,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: titleController,
+                          focusNode: titleFocusNode,
+                          decoration: InputDecoration(
+                            hintText: '제목 수정',
+                            border: InputBorder.none,
+                            isDense: true,
+                            hintStyle: GoogleFonts.inter(
+                              color: AppColors.textGrey,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      InkWell(
+                        onTap: () => titleController.text = '',
+                        child: Icon(
+                          Icons.cancel_outlined,
+                          color: AppColors.textGrey,
+                        ),
+                      ),
+                    ],
                   ),
-                  const Icon(Icons.arrow_drop_down_outlined),
+                  Divider(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: urlController,
+                          focusNode: urlFocusNode,
+                          decoration: InputDecoration(
+                            hintText: "URL 수정",
+                            border: InputBorder.none,
+                            isDense: true,
+                            hintStyle: GoogleFonts.inter(
+                              color: AppColors.textGrey,
+                            ),
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () => urlController.text = '',
+                        child: Icon(
+                          Icons.cancel_outlined,
+                          color: AppColors.textGrey,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
-          ),
 
-          SizedBox(height: 23),
+            SizedBox(height: 23),
 
-          _WhiteContainer(
-            screenSize: screenSize,
-            insideWidget: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '요약 수정',
-                  style: TextStyle(color: AppColors.textGrey, fontSize: 16),
-                ),
-                TextField(
-                  controller: summaryController,
-                  maxLines: 13,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
+            _WhiteContainer(
+              screenSize: screenSize,
+              insideWidget: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // 선택된 날짜 텍스트 (없으면 '날짜 수정')
+                  Text(
+                    _dateController.text.isEmpty ||
+                            _dateController.text == 'null'
+                        ? '날짜 수정'
+                        : _dateController.text,
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      color:
+                          _dateController.text.isEmpty ||
+                              _dateController.text == 'null'
+                          ? AppColors.textGrey
+                          : AppColors.black,
+                    ),
                   ),
-                ),
-              ],
+                  Transform.translate(
+                    offset: const Offset(-3, 25),
+                    child: Container(
+                      key: _calendarAnchorKey,
+                    ),
+                  ),
+
+                  Builder(
+                    builder: (buttonContext) {
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque, // 빈 공간 터치 방지용
+                        onTap: () {
+                          final anchorContext =
+                              _calendarAnchorKey.currentContext;
+
+                          if (anchorContext != null) {
+                            DateTime? parsedDate = DateTime.tryParse(
+                              _dateController.text,
+                            );
+                            showLinkyCalendarPicker(
+                              anchorContext,
+                              initialDate: parsedDate ?? DateTime.now(),
+                              onChanged: (date) {
+                                setState(() {
+                                  _dateController.text = DateFormat(
+                                    'yyyy-MM-dd HH:mm',
+                                  ).format(date);
+                                });
+                              },
+                            );
+                          }
+                        },
+                        child: Image.asset('assets/images/CalendarIcon.png'),
+                      );
+                    },
+                  ),
+                  // PopupMenuButton<void>(
+                  //   padding: EdgeInsets.zero,
+                  //   position: PopupMenuPosition.under,
+                  //   offset: const Offset(0, 10),
+                  //   elevation: 4,
+                  //   color: Colors.white,
+                  //   shape: RoundedRectangleBorder(
+                  //     borderRadius: BorderRadius.circular(16),
+                  //     side: BorderSide(color: Colors.grey.shade200),
+                  //   ),
+                  //   itemBuilder: (BuildContext context) => [
+                  //     PopupMenuItem<void>(
+                  //       enabled: false, // 메뉴 자체 클릭 방지
+                  //       child: SizedBox(
+                  //         width: 320, // 캘린더 크기 명시
+                  //         height: 380,
+                  //         child: CalendarWidget(
+                  //           selectedDate: _selectedDay,
+                  //           onChanged: (date) {
+                  //             setState(() {
+                  //               _selectedDay = date;
+                  //             });
+                  //           },
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  //   child: Image.asset(
+                  //     'assets/images/calendar_img.png', // 이미지 경로
+                  //     width: 24, // 아이콘 크기에 맞춰 적절히 조절
+                  //     height: 24,
+                  //     fit: BoxFit.contain,
+                  //     // 이미지가 없을 때를 대비한 에러 처리 (선택사항)
+                  //     errorBuilder: (context, error, stackTrace) => const Icon(
+                  //       Icons.calendar_today,
+                  //       color: AppColors.textGrey,
+                  //     ),
+                  //   ),
+                  // ),
+                ],
+              ),
             ),
-          ),
-        ],
+
+            SizedBox(height: 23),
+
+            _WhiteContainer(
+              screenSize: screenSize,
+              insideWidget: DropdownWidget(
+                itemsList: categories,
+                onCategorySelected: (value) {
+                  setState(() {
+                    _selectedCategory = value;
+                  });
+                },
+                menuWidget: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _selectedCategory ?? categoryText,
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          color: categoryText == "카테고리 추가"
+                              ? AppColors.textGrey
+                              : AppColors.black,
+                        ),
+                      ),
+                    ),
+                    const Icon(Icons.arrow_drop_down_outlined),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(height: 23),
+
+            _WhiteContainer(
+              screenSize: screenSize,
+              insideWidget: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '요약 수정',
+                    style: TextStyle(color: AppColors.textGrey, fontSize: 16),
+                  ),
+                  TextField(
+                    controller: summaryController,
+                    maxLines: 13,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

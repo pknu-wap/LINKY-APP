@@ -3,16 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/provider/app_state.dart';
-import 'package:std/services/data_service.dart';
 import 'package:std/services/url_verification.dart';
 import 'package:std/snackbar.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
 import '../widgets/plus_page_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:std/snackbar.dart';
 
-final DataService _dataService = DataService();
 String? selectedCategory;
 
 void addEventToMap(int contentID, String title, DateTime selectedDate) {
@@ -134,195 +131,201 @@ class _PlusPageState extends State<PlusPage> {
 
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Padding(
-              padding: const EdgeInsets.all(20),
-              child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Image.asset(
-                                'assets/images/linky_logo.png',
-                                width: 50,
-                                height: 65,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Padding(
+                padding: const EdgeInsets.all(20),
+                child: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  'assets/images/linky_logo.png',
+                                  width: 50,
+                                  height: 65,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'LINKY',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 60,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+                          Text(
+                            '새 링크 저장',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          TextField(
+                            controller: urlController,
+                            maxLength: 1024,
+                            //maxLength: 2048,
+                            decoration: InputDecoration(
+                              labelStyle: GoogleFonts.inter(
+                                color: AppColors.textGrey,
                               ),
-                              const SizedBox(width: 4),
+                              labelText: '링크 URL',
+                              hintText: 'https://example.com',
+                              //counterText: '',
+                              filled: true,
+                              fillColor: AppColors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+
+                          TextField(
+                            controller: titleController,
+                            maxLength: 50,
+                            decoration: InputDecoration(
+                              labelStyle: GoogleFonts.inter(
+                                color: AppColors.textGrey,
+                              ),
+                              labelText: '제목',
+                              filled: true,
+                              fillColor: AppColors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(
+                                color: AppColors.bottNavTextGrey,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            width: double.infinity,
+                            padding: EdgeInsets.only(left: 13, right: 12),
+                            height: 56,
+                            child: DropdownWidget(
+                              itemsList: categoryList,
+                              onCategorySelected: (value) {
+                                setState(() {
+                                  selectedCategory = value;
+                                });
+                              },
+                              menuWidget: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    selectedCategory ?? '카테고리',
+                                    style: GoogleFonts.inter(
+                                      color:
+                                          selectedCategory == '카테고리' ||
+                                              selectedCategory == null
+                                          ? AppColors.textGrey
+                                          : AppColors.black,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const Icon(Icons.arrow_drop_down_outlined),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
                               Text(
-                                'LINKY',
+                                '나만 보기로 저장',
                                 style: GoogleFonts.inter(
-                                  fontSize: 60,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.black,
+                                  fontSize: 15,
+                                  color: AppColors.textGrey,
+                                ),
+                              ),
+                              Transform.scale(
+                                scale: 0.8,
+                                child: Switch(
+                                  value: isPrivate,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isPrivate = value;
+                                    });
+                                  },
                                 ),
                               ),
                             ],
                           ),
-                        ),
+                          const SizedBox(height: 75),
 
-                        const SizedBox(height: 10),
-                        Text(
-                          '새 링크 저장',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        TextField(
-                          controller: urlController,
-                          maxLength: 1024,
-                          //maxLength: 2048,
-                          decoration: InputDecoration(
-                            labelStyle: GoogleFonts.inter(
-                              color: AppColors.textGrey,
-                            ),
-                            labelText: '링크 URL',
-                            hintText: 'https://example.com',
-                            //counterText: '',
-                            filled: true,
-                            fillColor: AppColors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-
-                        TextField(
-                          controller: titleController,
-                          maxLength: 50,
-                          decoration: InputDecoration(
-                            labelStyle: GoogleFonts.inter(
-                              color: AppColors.textGrey,
-                            ),
-                            labelText: '제목',
-                            filled: true,
-                            fillColor: AppColors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                              color: AppColors.bottNavTextGrey,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          width: double.infinity,
-                          padding: EdgeInsets.only(left: 13, right: 12),
-                          height: 56,
-                          child: DropdownWidget(
-                            itemsList: categoryList,
-                            onCategorySelected: (value) {
+                          CalendarWidget(
+                            selectedDate: selectedDate,
+                            onChanged: (date) {
                               setState(() {
-                                selectedCategory = value;
+                                selectedDate = date;
                               });
                             },
-                            menuWidget: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  selectedCategory ?? '카테고리',
-                                  style: GoogleFonts.inter(
-                                    color:
-                                        selectedCategory == '카테고리' ||
-                                            selectedCategory == null
-                                        ? AppColors.textGrey
-                                        : AppColors.black,
-                                    fontSize: 16,
+                          ),
+                          const SizedBox(height: 15),
+
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              onPressed: saveLink,
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: AppColors.mainGreen,
+                                foregroundColor: AppColors.black,
+                                side: BorderSide(color: AppColors.black),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(23),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 13,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '저장',
+                                    style: GoogleFonts.inter(fontSize: 20),
                                   ),
-                                ),
-                                const Icon(Icons.arrow_drop_down_outlined),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '나만 보기로 저장',
-                              style: GoogleFonts.inter(
-                                fontSize: 15,
-                                color: AppColors.textGrey,
-                              ),
-                            ),
-                            Transform.scale(
-                              scale: 0.8,
-                              child: Switch(
-                                value: isPrivate,
-                                onChanged: (value) {
-                                  setState(() {
-                                    isPrivate = value;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 75),
-
-                        CalendarWidget(
-                          selectedDate: selectedDate,
-                          onChanged: (date) {
-                            setState(() {
-                              selectedDate = date;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 15),
-
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: saveLink,
-                            style: OutlinedButton.styleFrom(
-                              backgroundColor: AppColors.mainGreen,
-                              foregroundColor: AppColors.black,
-                              side: BorderSide(color: AppColors.black),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(23),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 13),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '저장',
-                                  style: GoogleFonts.inter(fontSize: 20),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

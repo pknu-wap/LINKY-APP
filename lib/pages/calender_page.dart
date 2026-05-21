@@ -187,7 +187,6 @@ class _CalendarPageState extends State<CalendarPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 17),
                 child: CustomScrollView(
                   slivers: [
-                    // ✅ 헤더 ~ TODAY 텍스트까지
                     SliverToBoxAdapter(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
