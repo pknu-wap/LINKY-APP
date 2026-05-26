@@ -90,11 +90,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      // home: const MainScreen(),
-      home: const LoginPage(),
-      routes: {
-        '/main': (context) => const MainScreen(),
-      },
+      home: const MainScreen(),
+      // home: const LoginPage(),
+      // routes: {
+      //   '/main': (context) => const MainScreen(),
+      // },
     );
   }
 }
@@ -217,9 +217,10 @@ class _MainScreenState extends State<MainScreen> {
       } catch (e) {
         if (!mounted) return;
         final errorMessage = e.toString().replaceAll('Exception: ', '');
+        debugPrint('저장 실패: $errorMessage');
         showCustomSnackBar(
           context,
-          message: '저장 실패: $errorMessage',
+          message: '저장 실패: 링크 저장 중 문제가 발생했습니다.',
           isError: true,
         );
       }
@@ -237,14 +238,21 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  // 이동할 페이지 리스트
-  final List<Widget> _pages = [
-    const CategoryPage(),
-    const SecretGuardWrapperPw(child: PrivatePage()), // 커스텀 패스워드 (현재 0000)
-    const PlusPage(),
-    const CalendarPage(),
-    const SettingPage(),
-  ];
+  List<Widget> _buildPages() {
+    return [
+      const CategoryPage(),
+      const SecretGuardWrapperPw(child: PrivatePage()), // 커스텀 패스워드 (현재 0000)
+      PlusPage(
+        onSaved: () {
+          setState(() {
+            _selectedIndex = 0;
+          });
+        },
+      ),
+      const CalendarPage(),
+      const SettingPage(),
+    ];
+  }
 
   // 탭 클릭 시 인덱스 변경 함수
   void _onItemTapped(int index) {
@@ -288,7 +296,10 @@ class _MainScreenState extends State<MainScreen> {
       child: Scaffold(
         extendBody: true,
         // 현재 인덱스에 맞는 페이지 표시
-        body: _pages[_selectedIndex],
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _buildPages(),
+        ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(

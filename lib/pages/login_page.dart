@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('카카오 로그인/백엔드 전송 실패: $error');
 
       if (!mounted) return;
-      showCustomSnackBar(context, message: '카카오 로그인 실패: $error', isError: true);
+      showCustomSnackBar(context, message: '카카오 로그인 실패', isError: true);
     }
   }
 
@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('백엔드 요청 시작');
 
       final response = await dio.post(
-        'http://3.34.52.216:8080/auth/kakao',
+        'https://3.34.52.216:8080/auth/kakao',
         data: {
           'accessToken': kakaoAccessToken,
         },

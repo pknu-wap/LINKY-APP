@@ -1,3 +1,5 @@
+//import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
@@ -37,7 +39,9 @@ void addEventToMap(int contentID, String title, DateTime selectedDate) {
 }
 
 class PlusPage extends StatefulWidget {
-  const PlusPage({super.key});
+  final VoidCallback? onSaved;
+
+  const PlusPage({super.key, this.onSaved});
 
   @override
   State<PlusPage> createState() => _PlusPageState();
@@ -111,14 +115,17 @@ class _PlusPageState extends State<PlusPage> {
         isPrivate = false;
         selectedDate = null;
       });
+
+      widget.onSaved?.call();
     } catch (e) {
       Navigator.pop(context); // 로딩 닫기
 
       final errorMessage = e.toString().replaceAll('Exception: ', '');
+      debugPrint("저장 실패: $errorMessage");
 
       showCustomSnackBar(
         context,
-        message: '저장 실패: $errorMessage',
+        message: '저장 실패: 링크 저장 중 문제가 발생했습니다.',
         isError: true,
       );
     }

@@ -5,7 +5,7 @@ void showCustomSnackBar(
   BuildContext context, {
   required String message,
   bool isError = false,
-  Duration duration = const Duration(seconds: 1),
+  Duration duration = const Duration(seconds: 2),
 }) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -23,7 +23,9 @@ void showCustomSnackBar(
           Expanded(
             child: Text(
               message,
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
+              softWrap: true,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
