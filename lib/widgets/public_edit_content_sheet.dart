@@ -79,7 +79,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
     }
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Container(
         height: screenSize.height * 0.9,
         width: screenSize.width,
