@@ -58,7 +58,7 @@ class SettingPageState extends State<SettingPage> {
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey, // 연한 그레이 배경색
       body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -109,7 +109,7 @@ class SettingPageState extends State<SettingPage> {
                             context.read<AppState>().addCategory(categoryValue);
 
                             _categoryController.clear(); // 입력창 비우기
-                            FocusScope.of(context).unfocus(); // 키보드 닫기
+                            FocusManager.instance.primaryFocus?.unfocus(); // 키보드 닫기
                             showCustomSnackBar(
                               context,
                               message: "카테고리가 추가되었습니다.",

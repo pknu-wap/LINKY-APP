@@ -132,7 +132,7 @@ class _PlusPageState extends State<PlusPage> {
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey,
       body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
