@@ -75,11 +75,18 @@ class _PlusPageState extends State<PlusPage> {
       showCustomSnackBar(context, message: '제목을 입력해주세요', isError: true);
       return;
     }
-
+    late final String verifiedUrl;
     try {
-      verifier.urlVerify(url);
-    } catch (e) {
-      showCustomSnackBar(context, message: e.toString(), isError: true);
+      verifiedUrl = verifier.urlVerify(url);
+    } on FormatException catch (e) {
+      showCustomSnackBar(context, message: e.message, isError: true);
+      return;
+    } catch (_) {
+      showCustomSnackBar(
+        context,
+        message: 'URL을 확인하는 중 문제가 발생했어요',
+        isError: true,
+      );
       return;
     }
 
@@ -92,7 +99,7 @@ class _PlusPageState extends State<PlusPage> {
 
     try {
       await context.read<AppState>().addContent(
-        url: url,
+        url: verifiedUrl,
         title: title,
         category: selectedCategory,
         isPrivate: isPrivate,
@@ -100,7 +107,7 @@ class _PlusPageState extends State<PlusPage> {
       );
 
       print(
-        'url: $url\ntitle: $title\ncategory: $selectedCategory\nisPrivate: $isPrivate\nselectedDate: $selectedDate',
+        'url: $verifiedUrl\ntitle: $title\ncategory: $selectedCategory\nisPrivate: $isPrivate\nselectedDate: $selectedDate',
       );
 
       Navigator.pop(context); // 로딩 닫기

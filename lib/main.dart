@@ -188,13 +188,9 @@ class _MainScreenState extends State<MainScreen> {
       final verifier = UrlVerification();
       try {
         verifier.urlVerify(sharedLink);
-      } catch (e) {
+      } on FormatException catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('FormatException: ', '')),
-          ),
-        );
+        showCustomSnackBar(context, message: e.message, isError: true);
         return;
       }
 
