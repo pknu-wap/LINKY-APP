@@ -87,41 +87,78 @@ class _CategoryPageState extends State<CategoryPage> {
                 appbarIcon: 'assets/images/CategoryIcon.png',
               ),
               const SizedBox(height: 13),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Row(
-                  children: currentCategories.map((cat) {
-                    final String? categoryTitle = cat["title"];
-                    final String? categoryCount = cat["count"];
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    child: Row(
+                      children: currentCategories.map((cat) {
+                        final String? categoryTitle = cat["title"];
+                        final String? categoryCount = cat["count"];
 
-                    bool isSelected = selectedCategory == categoryTitle;
+                        bool isSelected = selectedCategory == categoryTitle;
 
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedCategory = cat["title"]!;
-                          });
-                        },
-                        child: SelectCategoryHome(
-                          categoryCount: categoryCount!,
-                          categoryTitle: categoryTitle!,
-                          backgroundColor: isSelected
-                              ? AppColors.mainGreen
-                              : AppColors.white,
-                          countBackgroundColor: isSelected
-                              ? const Color(0xffffffff)
-                              : const Color(0xFFC5C5C5),
-                          textColor: isSelected ? Colors.white : Colors.black,
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedCategory = cat["title"]!;
+                              });
+                            },
+                            child: SelectCategoryHome(
+                              categoryCount: categoryCount!,
+                              categoryTitle: categoryTitle!,
+                              backgroundColor: isSelected
+                                  ? AppColors.mainGreen
+                                  : AppColors.white,
+                              countBackgroundColor: isSelected
+                                  ? const Color(0xffffffff)
+                                  : const Color(0xFFC5C5C5),
+                              textColor: isSelected
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  Positioned(
+                    child: GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text("알림"),
+                              content: const Text("버튼 클릭"),
+                            );
+                          },
+                        );
+                      },
+                      child: Container(
+                        width: 38,
+                        height: 38,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          border: Border.fromBorderSide(
+                            BorderSide(color: Colors.black),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          color: AppColors.mainGreen,
+                          size: 22,
                         ),
                       ),
-                    );
-                  }).toList(),
-                ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 13),
               filteredItems.isEmpty
                   ? Expanded(
                       child: Center(
@@ -148,7 +185,6 @@ class _CategoryPageState extends State<CategoryPage> {
                                   final kakaoId = await storage.read(
                                     key: 'kakaoId',
                                   );
-
                                   if (kakaoId == null) {
                                     showCustomSnackBar(
                                       context,
