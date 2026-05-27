@@ -1,3 +1,5 @@
+//import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
@@ -37,7 +39,9 @@ void addEventToMap(int contentID, String title, DateTime selectedDate) {
 }
 
 class PlusPage extends StatefulWidget {
-  const PlusPage({super.key});
+  final VoidCallback? onSaved;
+
+  const PlusPage({super.key, this.onSaved});
 
   @override
   State<PlusPage> createState() => _PlusPageState();
@@ -71,11 +75,18 @@ class _PlusPageState extends State<PlusPage> {
       showCustomSnackBar(context, message: '제목을 입력해주세요', isError: true);
       return;
     }
-
+    late final String verifiedUrl;
     try {
-      verifier.urlVerify(url);
-    } catch (e) {
-      showCustomSnackBar(context, message: e.toString(), isError: true);
+      verifiedUrl = verifier.urlVerify(url);
+    } on FormatException catch (e) {
+      showCustomSnackBar(context, message: e.message, isError: true);
+      return;
+    } catch (_) {
+      showCustomSnackBar(
+        context,
+        message: 'URL을 확인하는 중 문제가 발생했어요',
+        isError: true,
+      );
       return;
     }
 
@@ -88,7 +99,7 @@ class _PlusPageState extends State<PlusPage> {
 
     try {
       await context.read<AppState>().addContent(
-        url: url,
+        url: verifiedUrl,
         title: title,
         category: selectedCategory,
         isPrivate: isPrivate,
@@ -96,7 +107,7 @@ class _PlusPageState extends State<PlusPage> {
       );
 
       print(
-        'url: $url\ntitle: $title\ncategory: $selectedCategory\nisPrivate: $isPrivate\nselectedDate: $selectedDate',
+        'url: $verifiedUrl\ntitle: $title\ncategory: $selectedCategory\nisPrivate: $isPrivate\nselectedDate: $selectedDate',
       );
 
       Navigator.pop(context); // 로딩 닫기
@@ -111,14 +122,17 @@ class _PlusPageState extends State<PlusPage> {
         isPrivate = false;
         selectedDate = null;
       });
+
+      widget.onSaved?.call();
     } catch (e) {
       Navigator.pop(context); // 로딩 닫기
 
       final errorMessage = e.toString().replaceAll('Exception: ', '');
+      debugPrint("저장 실패: $errorMessage");
 
       showCustomSnackBar(
         context,
-        message: '저장 실패: $errorMessage',
+        message: '저장 실패: 링크 저장 중 문제가 발생했습니다.',
         isError: true,
       );
     }

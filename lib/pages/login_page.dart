@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('카카오 로그인/백엔드 전송 실패: $error');
 
       if (!mounted) return;
-      showCustomSnackBar(context, message: '카카오 로그인 실패: $error', isError: true);
+      showCustomSnackBar(context, message: '카카오 로그인 실패', isError: true);
     }
   }
 
