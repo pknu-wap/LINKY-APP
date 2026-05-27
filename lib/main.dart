@@ -90,11 +90,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      //home: const MainScreen(),
-      home: const LoginPage(),
-      routes: {
-        '/main': (context) => const MainScreen(),
-      },
+      home: const MainScreen(),
+      // home: const LoginPage(),
+      // routes: {
+      //   '/main': (context) => const MainScreen(),
+      // },
     );
   }
 }

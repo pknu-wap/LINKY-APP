@@ -16,10 +16,6 @@ class SettingPage extends StatefulWidget {
 }
 
 class SettingPageState extends State<SettingPage> {
-  final TextEditingController _categoryController = TextEditingController();
-
-  String? selectedCategory;
-
   // 입력창 스타일을 위한 공통 함수
   InputDecoration inputBox(String hint) {
     return InputDecoration(
@@ -45,16 +41,11 @@ class SettingPageState extends State<SettingPage> {
 
   @override
   void dispose() {
-    _categoryController.dispose();
     super.dispose();
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
-    final appState = context.watch<AppState>();
-    final categories = appState.categories;
-
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey, // 연한 그레이 배경색
       body: GestureDetector(
@@ -72,180 +63,6 @@ class SettingPageState extends State<SettingPage> {
                     appbarIcon: Icons.settings_outlined,
                   ),
                   const SizedBox(height: 25),
-
-                  // 카테고리 추가 섹션
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.add,
-                        color: AppColors.mainGreen,
-                        size: 28,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        "카테고리 추가",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-
-                      const SizedBox(width: 150),
-
-                      ElevatedButton(
-                        onPressed: () {
-                          String categoryValue = _categoryController.text
-                              .trim();
-                          if (categoryValue.isNotEmpty) {
-                            if (categories.contains(categoryValue)) {
-                              showCustomSnackBar(
-                                context,
-                                message: '이미 존재하는 카테고리입니다.',
-                                isError: true,
-                              );
-                              return;
-                            }
-
-                            context.read<AppState>().addCategory(categoryValue);
-
-                            _categoryController.clear(); // 입력창 비우기
-                            FocusManager.instance.primaryFocus?.unfocus(); // 키보드 닫기
-                            showCustomSnackBar(
-                              context,
-                              message: "카테고리가 추가되었습니다.",
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.white,
-                          foregroundColor: AppColors.black,
-                          textStyle: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        child: const Text("확인"),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _categoryController,
-                    decoration: inputBox("카테고리 입력해주세요."),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // 카테고리 선택 드롭다운 박스
-                  // 1. 라벨 및 확인 버튼 섹션
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.remove,
-                        color: AppColors.mainGreen,
-                        size: 28,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        "카테고리 삭제", // TextField를 없앴으므로 '추가' 대신 '선택' 혹은 '설정'이 적절합니다.
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 150),
-                      ElevatedButton(
-                        onPressed: () {
-                          // 확인 버튼 클릭 시 로직
-                          if (selectedCategory != null &&
-                              selectedCategory != '카테고리' &&
-                              selectedCategory != '전체' &&
-                              selectedCategory != '즐겨찾기') {
-                            //카테고리 삭제
-                            context.read<AppState>().removeCategory(
-                              selectedCategory!,
-                            );
-                            showCustomSnackBar(
-                              context,
-                              message: "카테고리가 삭제되었습니다.",
-                            );
-
-                            setState(() {
-                              selectedCategory = '카테고리'; // 선택 초기화
-                            });
-                          } else {
-                            showCustomSnackBar(
-                              context,
-                              message: '카테고리를 먼저 선택해주세요.',
-                              isError: true,
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.white,
-                          foregroundColor: AppColors.black,
-                          elevation: 0, // 입체감을 줄이려면 0, 원하시면 유지
-                          side: BorderSide(
-                            color: AppColors.lightGrey,
-                            width: 1,
-                          ), // 테두리 추가 가능
-                          textStyle: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        child: const Text("확인"),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  Container(
-                    width: double.infinity,
-                    height: 56, // 일반적인 TextField의 기본 높이
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                    ), // 내부 여백
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(
-                        22,
-                      ),
-                      border: Border.all(
-                        color: AppColors.lightGrey, // TextField 테두리 색상
-                        width: 1.3,
-                      ),
-                    ),
-                    child: DropdownWidget(
-                      itemsList: categories,
-                      onCategorySelected: (value) {
-                        setState(() {
-                          selectedCategory = value;
-                        });
-                      },
-                      menuWidget: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            selectedCategory ?? '카테고리를 선택하세요',
-                            style: GoogleFonts.inter(
-                              color:
-                                  selectedCategory == null ||
-                                      selectedCategory == '카테고리' ||
-                                      selectedCategory == '전체' ||
-                                      selectedCategory == '즐겨찾기'
-                                  ? AppColors.textGrey
-                                  : AppColors.black,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const Icon(Icons.arrow_drop_down_outlined),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
                   // 비밀번호 설정 섹션
                   Row(
                     children: const [
@@ -271,6 +88,7 @@ class SettingPageState extends State<SettingPage> {
                   ),
 
                   const SizedBox(height: 30),
+
                   // 데이터 초기화 버튼
                   GestureDetector(
                     onTap: () {

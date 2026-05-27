@@ -164,6 +164,19 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateCategory({
+    required String oldCategoryName,
+    required String newCategoryName,
+  }) {
+    int categoryIndex = _categories.indexOf(oldCategoryName);
+    _categories[categoryIndex] = newCategoryName;
+    notifyListeners();
+  }
+
+  bool categoryNameCheck(String categoryName) {
+    return _categories.contains(categoryName);
+  }
+
   // contents 관리 로직
   Future<void> addContent({
     required String title,
