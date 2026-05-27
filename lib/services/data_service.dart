@@ -55,19 +55,19 @@ class DataService {
   }
 
   // 2. 데이터 조회 (Read)
-  Future<List<Map<String, dynamic>>> fetchLinksByKakaoId(String kakaoId) async {
-    final conn = await _getConnection();
-    try {
-      final result = await conn.execute(
-        "SELECT * FROM link WHERE kakao_id = :kakao_id ORDER BY id DESC",
-        {"kakao_id": kakaoId},
-      );
+  // Future<List<Map<String, dynamic>>> fetchLinksByKakaoId(String kakaoId) async {
+  //   final conn = await _getConnection();
+  //   try {
+  //     final result = await conn.execute(
+  //       "SELECT * FROM link WHERE kakao_id = :kakao_id ORDER BY id DESC",
+  //       {"kakao_id": kakaoId},
+  //     );
 
-      return result.rows.map((row) => row.assoc()).toList();
-    } finally {
-      await conn.close();
-    }
-  }
+  //     return result.rows.map((row) => row.assoc()).toList();
+  //   } finally {
+  //     await conn.close();
+  //   }
+  // }
 
   // 3. 특정 데이터 삭제 (Delete)
   Future<void> deleteLink({

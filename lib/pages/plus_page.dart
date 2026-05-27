@@ -124,6 +124,8 @@ class _PlusPageState extends State<PlusPage> {
         }),
       ).timeout(const Duration(seconds: 5)); // 🌟 5초 타임아웃 안전망
 
+      await context.read<AppState>().addContent(title: title, url: verifiedUrl, isPrivate: isPrivate, selectedDate: selectedDate);
+
       // 3. 통신이 완료되면 에러/성공 상관없이 일단 로딩팝업 먼저 무조건 닫기
       if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context);

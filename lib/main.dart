@@ -146,7 +146,7 @@ class _MainScreenState extends State<MainScreen> {
       }
 
       if (!mounted) return;
-      await context.read<AppState>().loadContentsFromDb(kakaoId);
+      await context.read<AppState>().loadContentsFromDb();
     });
   }
 
@@ -228,7 +228,7 @@ class _MainScreenState extends State<MainScreen> {
           // 저장 후 화면 갱신을 위해 DB 데이터를 새로고침 해줍니다.
           final kakaoId = await storage.read(key: 'kakaoId');
           if (kakaoId != null && mounted) {
-            await context.read<AppState>().loadContentsFromDb(kakaoId);
+            await context.read<AppState>().loadContentsFromDb();
           }
           
           if (mounted) setState(() {});

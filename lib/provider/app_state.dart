@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:std/main.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/services/alarm_service.dart';
 import 'package:std/services/data_service.dart';
+import 'package:std/services/link_model.dart';
 
 class ContentItem extends ChangeNotifier {
   final int id;
@@ -44,68 +48,85 @@ class AppState extends ChangeNotifier {
   List<String> get categories => _categories;
   List<ContentItem> get contents => _contents;
 
-  Future<void> loadContentsFromDb(String kakaoId) async {
-    final rows = await _dataService.fetchLinksByKakaoId(kakaoId);
+  Future<Map<String, String>> _getHeaders() async {
+    final accessToken = await storage.read(key: 'accessToken');
+    return {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken",
+    };
+  }
 
-    _contents.clear();
-    kEvents.clear();
+  Future<void> loadContentsFromDb() async {
+    try {
+      // 만약 LinkResponse.fetchLinksFromApi() 가 static으로 잘 구현되어 있다면 그것을 쓰셔도 되지만,
+      // DataService를 안 쓰기로 했으므로 안정성을 위해 아래와 같이 직접 HTTP 통신을 작성하는 것을 추천합니다.
+      final serverUrl = Uri.parse("${baseUrl}/links");
+      final headers = await _getHeaders();
+      final response = await http.get(serverUrl, headers: headers);
 
-    for (final row in rows) {
-      final id = int.parse(row['id'].toString());
-      final title = row['title'] ?? '';
-      final selectedDateText = row['selected_date']?.toString();
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final List<dynamic> linkList = responseData['data'] ?? responseData;
 
-      _contents.add(
-        ContentItem(
-          id: id,
-          title: title,
-          url: row['url'] ?? '',
-          category: row['category'] ?? '전체',
-          isPrivate: row['is_private'].toString() == '1',
-          time: selectedDateText,
-        ),
-      );
+        _contents.clear();
+        kEvents.clear();
 
-      if (selectedDateText != null && selectedDateText.isNotEmpty) {
-        final selectedDate = DateTime.tryParse(selectedDateText);
+        // 💡 핵심 수정: row는 이제 Map이 아니라 LinkResponse 객체입니다!
+        for (final jsonMap in linkList) {
+          final row = LinkResponse.fromJson(jsonMap); // 객체화
 
-        if (selectedDate != null) {
-          final dateKey = DateTime(
-            selectedDate.year,
-            selectedDate.month,
-            selectedDate.day,
-          );
+          final id = row.id;
+          final title = row.title ?? '제목 없음';
+          final selectedDateText = row.selectedDate;
 
-          kEvents.putIfAbsent(dateKey, () => []);
-
-          kEvents[dateKey]!.add(
-            Event(
-              id,
-              title,
-              hour: selectedDate.hour,
-              minute: selectedDate.minute,
+          _contents.add(
+            ContentItem(
+              id: id,
+              title: title,
+              url: row.url,
+              category: row.category ?? '전체',
+              isPrivate: row.isPrivate,
+              summary: row.summary ?? '',
+              time: selectedDateText,
             ),
           );
+
+          if (selectedDateText != null && selectedDateText.isNotEmpty) {
+            final selectedDate = DateTime.tryParse(selectedDateText);
+
+            if (selectedDate != null) {
+              final dateKey = DateTime(
+                selectedDate.year,
+                selectedDate.month,
+                selectedDate.day,
+              );
+
+              kEvents.putIfAbsent(dateKey, () => []);
+              kEvents[dateKey]!.add(
+                Event(
+                  id,
+                  title,
+                  hour: selectedDate.hour,
+                  minute: selectedDate.minute,
+                ),
+              );
+            }
+          }
         }
+
+        if (kEvents.isNotEmpty) {
+          await AlarmService.syncEventsWithAlarms(
+            kEvents.cast<DateTime, List<dynamic>>(),
+          );
+        }
+
+        notifyListeners();
+      } else {
+        throw Exception("서버 조회 실패 코드: ${response.statusCode}");
       }
+    } catch (e) {
+      print("🚨 로드 에러 발생: $e");
     }
-
-    kEvents.forEach((date, events) {
-      print('날짜: $date');
-      for (final e in events) {
-        print(
-          '  contentID: ${e.contentID}, hour: ${e.hour}, minute: ${e.minute}',
-        );
-      }
-    });
-
-    if (kEvents.isNotEmpty) {
-      await AlarmService.syncEventsWithAlarms(
-        kEvents.cast<DateTime, List<dynamic>>(),
-      );
-    }
-
-    notifyListeners();
   }
 
   List<int> getContentIdsByCategory(String categoryName) {
