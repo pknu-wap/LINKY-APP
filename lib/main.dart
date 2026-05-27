@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert'; 
+import 'package:http/http.dart' as http; 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -23,6 +25,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'constants.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+const String baseUrl = "http://3.34.52.216:8080";
+final serverUrl = Uri.parse("${baseUrl}/links"); 
 
 @pragma('vm:entry-point')
 void alarmCallback(int id) async {
@@ -33,7 +37,6 @@ void alarmCallback(int id) async {
     ),
   );
 
-  // ID를 통해 30분 전인지 정시인지 판별
   bool isEarlyAlarm = (id % 2 == 0);
   String message = isEarlyAlarm
       ? "일정 시작 30분 전입니다! 준비하세요."
@@ -61,7 +64,6 @@ void main() async {
   await KakaoSdk.init(
     nativeAppKey: '82e41c6f8193caa43b268cd5c33fe23a',
   );
-  // 1. 알람 매니저 초기화
   await AndroidAlarmManager.initialize();
 
   SystemChrome.setPreferredOrientations([
@@ -90,7 +92,6 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      // home: const MainScreen(),
       home: const LoginPage(),
       routes: {
         '/main': (context) => const MainScreen(),
@@ -108,7 +109,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final storage = const FlutterSecureStorage();
-  // 현재 선택된 탭의 인덱스
   int _selectedIndex = 0;
   DateTime? _lastBackPressedTime;
   late StreamSubscription _intentDataStreamSubscription;
@@ -127,9 +127,7 @@ class _MainScreenState extends State<MainScreen> {
             setState(() {
               list = value;
             });
-            print(
-              "Shared: getMediaStream ${value.map((f) => f.value).join(",")}",
-            );
+            print("Shared: getMediaStream ${value.map((f) => f.value).join(",")}");
             _handleSharedFiles(value);
           },
           onError: (err) {
@@ -137,12 +135,11 @@ class _MainScreenState extends State<MainScreen> {
           },
         );
 
-    //선언한 비동기 함수를 실행
-    handleInitialSharing();
-
+    // 🌟 수정 1: 첫 화면 빌드가 완벽히 끝난 후 초기 공유 링크를 처리하도록 시점 조절
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await handleInitialSharing();
+      
       final kakaoId = await storage.read(key: 'kakaoId');
-
       if (kakaoId == null) {
         debugPrint('kakaoId 없음');
         return;
@@ -172,8 +169,7 @@ class _MainScreenState extends State<MainScreen> {
 
       final lines = sharedData.split('\n');
       for (String text in lines) {
-        if (text.trim().contains("http://") ||
-            text.trim().contains("https://")) {
+        if (text.trim().contains("http://") || text.trim().contains("https://")) {
           sharedLink = text.trim();
         } else if (text.trim().isNotEmpty) {
           sharedContentTitle = text.trim();
@@ -199,32 +195,73 @@ class _MainScreenState extends State<MainScreen> {
       }
 
       if (!mounted) return;
+
+      // 🌟 [서버 전송 로딩 시작]
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
       try {
-        await context.read<AppState>().addContent(
-          url: sharedLink,
-          title: sharedContentTitle,
-          category: '전체',
-          isPrivate: false,
-          selectedDate: null,
-        );
+        
+        final response = await http.post(
+          serverUrl,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: json.encode({
+            "url": sharedLink,
+            "title": sharedContentTitle,
+            "category": "전체", 
+            "isPrivate": false,
+            "selectedDate": null, 
+          }),
+        ).timeout(const Duration(seconds: 5));
 
-        print('url: $sharedLink\ntitle: $sharedContentTitle');
-
+        // 🌟 수정 2: 로딩창을 닫기 전 화면이 여전히 살아있는지(mounted) 확인
         if (!mounted) return;
-        showCustomSnackBar(context, message: '링크가 성공적으로 DB에 저장되었습니다!');
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context); 
+        }
 
-        setState(() {});
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          print('url: $sharedLink\ntitle: $sharedContentTitle');
+          showCustomSnackBar(context, message: '공유된 링크가 성공적으로 DB에 저장되었습니다!');
+          
+          // 저장 후 화면 갱신을 위해 DB 데이터를 새로고침 해줍니다.
+          final kakaoId = await storage.read(key: 'kakaoId');
+          if (kakaoId != null && mounted) {
+            await context.read<AppState>().loadContentsFromDb(kakaoId);
+          }
+          
+          if (mounted) setState(() {});
+        } else {
+          throw Exception('서버 에러 (코드: ${response.statusCode})');
+        }
       } catch (e) {
+        // 🌟 수정 3: 에러 발생 시에도 화면 존재 확인 후 로딩창 닫기
         if (!mounted) return;
-        final errorMessage = e.toString().replaceAll('Exception: ', '');
-        showCustomSnackBar(
-          context,
-          message: '저장 실패: $errorMessage',
-          isError: true,
-        );
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context); 
+        }
+        print("🚨 외부 공유 링크 서버 저장 실패: $e");
+        
+        String errorMessage = e.toString().replaceAll('Exception: ', '');
+        if (e is TimeoutException) {
+          errorMessage = "서버 연결 시간이 초과되었습니다.";
+        }
+
+        if (mounted) {
+          showCustomSnackBar(
+            context,
+            message: '저장 실패: $errorMessage',
+            isError: true,
+          );
+        }
       }
     } catch (e) {
-      print("공유 데이터 처리 중 에러 발생: $e");
+      print("공유 데이터 처리 중 치명적 에러 발생: $e");
     }
   }
 
@@ -237,16 +274,14 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  // 이동할 페이지 리스트
   final List<Widget> _pages = [
     const CategoryPage(),
-    const SecretGuardWrapperPw(child: PrivatePage()), // 커스텀 패스워드 (현재 0000)
+    const SecretGuardWrapperPw(child: PrivatePage()),
     const PlusPage(),
     const CalendarPage(),
     const SettingPage(),
   ];
 
-  // 탭 클릭 시 인덱스 변경 함수
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -282,23 +317,21 @@ class _MainScreenState extends State<MainScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-
         _handleBackButton();
       },
       child: Scaffold(
         extendBody: true,
-        // 현재 인덱스에 맞는 페이지 표시
         body: _pages[_selectedIndex],
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topRight: Radius.circular(19),
               topLeft: Radius.circular(19),
             ),
             border: Border.all(color: AppColors.outlineGrey, width: 1),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(19),
               topRight: Radius.circular(19),
             ),
@@ -317,22 +350,14 @@ class _MainScreenState extends State<MainScreen> {
                   label: '',
                 ),
                 BottomNavigationBarItem(
-                  icon: _buildCommonItem(
-                    Icons.account_circle_outlined,
-                    '나만보기',
-                    false,
-                  ),
-                  activeIcon: _buildCommonItem(
-                    Icons.account_circle_outlined,
-                    '나만보기',
-                    true,
-                  ),
+                  icon: _buildCommonItem(Icons.account_circle_outlined, '나만보기', false),
+                  activeIcon: _buildCommonItem(Icons.account_circle_outlined, '나만보기', true),
                   label: '',
                 ),
                 BottomNavigationBarItem(
-                  icon: SizedBox(
-                    height: 45, // 조정 필요
-                    child: const Center(
+                  icon: const SizedBox(
+                    height: 45,
+                    child: Center(
                       child: Icon(
                         Icons.add,
                         color: AppColors.mainGreen,
@@ -343,25 +368,13 @@ class _MainScreenState extends State<MainScreen> {
                   label: '',
                 ),
                 BottomNavigationBarItem(
-                  icon: _buildCommonItem(
-                    Icons.calendar_today_rounded,
-                    '리마인더',
-                    false,
-                  ),
-                  activeIcon: _buildCommonItem(
-                    Icons.calendar_today_rounded,
-                    '리마인더',
-                    true,
-                  ),
+                  icon: _buildCommonItem(Icons.calendar_today_rounded, '리마인더', false),
+                  activeIcon: _buildCommonItem(Icons.calendar_today_rounded, '리마인더', true),
                   label: '',
                 ),
                 BottomNavigationBarItem(
                   icon: _buildCommonItem(Icons.settings_outlined, '설정', false),
-                  activeIcon: _buildCommonItem(
-                    Icons.settings_outlined,
-                    '설정',
-                    true,
-                  ),
+                  activeIcon: _buildCommonItem(Icons.settings_outlined, '설정', true),
                   label: '',
                 ),
               ],
