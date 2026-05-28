@@ -310,21 +310,8 @@ class _CategoryPageState extends State<CategoryPage> {
                                 contentID: item.id,
                                 currentCategory: selectedCategory,
                                 onActionDone: () async {
-                                  final kakaoId = await storage.read(
-                                    key: 'kakaoId',
-                                  );
-
-                                  if (kakaoId == null) {
-                                    showCustomSnackBar(
-                                      context,
-                                      message: '로그인 정보가 없습니다. 다시 로그인해주세요.',
-                                      isError: true,
-                                    );
-                                    return;
-                                  }
                                   await context.read<AppState>().removeContent(
                                     id: item.id,
-                                    kakaoId: kakaoId,
                                   );
                                 },
                               ),

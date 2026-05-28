@@ -68,7 +68,6 @@ class _PlusPageState extends State<PlusPage> {
     final url = urlController.text.trim();
     final title = titleController.text.trim();
     final verifier = UrlVerification();
-    
 
     if (title.isEmpty) {
       showCustomSnackBar(context, message: '제목을 입력해주세요', isError: true);
@@ -89,14 +88,6 @@ class _PlusPageState extends State<PlusPage> {
       return;
     }
 
-    final accessToken = await storage.read(key: 'accessToken');
-    final kakaoId = await storage.read(key: 'kakaoId');
-
-    if (kakaoId == null) {
-      showCustomSnackBar(context, message: '로그인 정보가 유실되었습니다. 다시 로그인 해주세요.', isError: true);
-      return;
-    }
-
     // 2. 화면 선제 로딩 시작
     showDialog(
       context: context,
@@ -104,81 +95,50 @@ class _PlusPageState extends State<PlusPage> {
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
+    final newItem = ContentItem.create(
+      title: titleController.text,
+      url: urlController.text,
+      time: selectedDate?.toString(),
+      isPrivate: isPrivate,
+      category: selectedCategory ?? "전체",
+    );
+
     try {
-      final serverUrl = Uri.parse("${baseUrl}/links"); 
-      print("🚀 [서버 요청 전송] 주소: $serverUrl");
-      
-      final response = await http.post(
-        serverUrl,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $accessToken",
-        },
-        body: json.encode({
-          "kakaoId": kakaoId, // 🌟 필수 추가: 서버 DTO에 맞는 유저 식별 식별자 변수명
-          "url": url,
-          "title": title,
-          "category": selectedCategory ?? "전체", // null 방어
-          "isPrivate": isPrivate,
-          "selectedDate": selectedDate?.toIso8601String(), 
-        }),
-      ).timeout(const Duration(seconds: 5)); // 🌟 5초 타임아웃 안전망
+      // AppState의 함수 실행
+      await context.read<AppState>().addContent(newItem);
 
-      await context.read<AppState>().addContent(title: title, url: verifiedUrl, isPrivate: isPrivate, selectedDate: selectedDate);
-
-      // 3. 통신이 완료되면 에러/성공 상관없이 일단 로딩팝업 먼저 무조건 닫기
+      // 성공 시 UI 처리
       if (mounted && Navigator.canPop(context)) {
-        Navigator.pop(context);
+        Navigator.pop(context); // 로딩창 또는 바텀시트 닫기
       }
+      showCustomSnackBar(context, message: '링크가 성공적으로 저장되었습니다!');
 
-      print("ℹ️ [서버 응답 수신] 상태 코드: ${response.statusCode}");
-      print("ℹ️ [서버 응답 본문]: ${response.body}");
+      // 폼 초기화
+      setState(() {
+        urlController.clear();
+        titleController.clear();
+        selectedCategory = null;
+        isPrivate = false;
+        selectedDate = null;
+      });
 
-      // 4. 서버 응답 결과 판별
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        showCustomSnackBar(context, message: '링크가 성공적으로 DB에 저장되었습니다!');
-
-        if (selectedDate != null) {
-          addEventToMap(0, title, selectedDate!); 
-        }
-
-        // 입력 폼 클리어
-        if (mounted) {
-          setState(() {
-            urlController.clear();
-            titleController.clear();
-            selectedCategory = null;
-            isPrivate = false;
-            selectedDate = null;
-          });
-
-          widget.onSaved?.call();
-        }
-      } else {
-        // 백엔드 에러 코드 핸들링 (400, 404, 500 등)
-        throw HttpException('서버가 요청을 거부했습니다. 코드: ${response.statusCode}');
-      }
-
+      widget.onSaved?.call();
     } catch (e) {
-      // 5. 예외 캐치 시 아직 로딩창이 열려있다면 즉시 닫아서 앱 먹통 방지
+      // 실패 시 UI 처리 (AppState에서 던진 에러를 여기서 잡습니다)
       if (mounted && Navigator.canPop(context)) {
-        Navigator.pop(context);
+        Navigator.pop(context); // 로딩창 닫기
       }
-
-      print("🚨 [PlusPage 저장 에러 로그]: $e");
 
       String errorMessage = e.toString().replaceAll('Exception: ', '');
       if (e is TimeoutException) {
-        errorMessage = "서버 연결 시간이 초과되었습니다. (AWS 보안그룹 또는 포트 점검 필요)";
+        errorMessage = "서버 연결 시간이 초과되었습니다.";
       }
 
-      if (mounted) {
-        showCustomSnackBar(
-          context,
-          message: '저장 실패: $errorMessage',
-          isError: true,
-        );
-      }
+      showCustomSnackBar(
+        context,
+        message: '저장 실패: $errorMessage',
+        isError: true,
+      );
     }
   }
 
@@ -295,7 +255,8 @@ class _PlusPageState extends State<PlusPage> {
                                   Text(
                                     selectedCategory ?? '카테고리',
                                     style: GoogleFonts.inter(
-                                      color: selectedCategory == '카테고리' ||
+                                      color:
+                                          selectedCategory == '카테고리' ||
                                               selectedCategory == null
                                           ? AppColors.textGrey
                                           : AppColors.black,
