@@ -104,7 +104,7 @@ class _ContentDetailBottomSheetState extends State<ContentDetailBottomSheet> {
       _currentSlots = [1, 2, 3];
     });
 
-    Future.delayed(_durationHide - const Duration(milliseconds: 370), () {
+    Future.delayed(_durationHide - const Duration(milliseconds: 600), () {
       if (!mounted) return;
 
       setState(() {
@@ -251,19 +251,9 @@ class ContentDetailSheet extends StatelessWidget {
 
                             if (!context.mounted) return;
 
-                            if (kakaoId == null) {
-                              showCustomSnackBar(
-                                context,
-                                message: '로그인 정보가 없습니다. 다시 로그인해주세요.',
-                                isError: true,
-                              );
-                              Navigator.pop(context);
-                              return;
-                            }
                             Navigator.pop(context);
                             await context.read<AppState>().removeContent(
                               id: contentID,
-                              kakaoId: kakaoId,
                             );
                           },
                           context: context,

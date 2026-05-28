@@ -1,20 +1,23 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:std/main.dart';
+import 'package:uuid/uuid.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/services/alarm_service.dart';
-import 'package:std/services/data_service.dart';
-import 'package:std/services/link_model.dart';
+import 'package:std/services/db_service.dart';
 
 class ContentItem extends ChangeNotifier {
   final int id;
   String category;
   String title;
   String url;
-  String summary;
+  String? summary;
   String? time;
   bool isPrivate;
   bool isFavorite;
@@ -25,10 +28,20 @@ class ContentItem extends ChangeNotifier {
     required this.url,
     required this.time,
     this.category = '전체',
-    this.summary = '',
+    this.summary,
     required this.isPrivate,
     this.isFavorite = false,
   });
+
+  ContentItem.create({
+    required this.title,
+    required this.url,
+    required this.time,
+    this.category = '전체',
+    this.summary,
+    required this.isPrivate,
+    this.isFavorite = false,
+  }) : id = -1;
 
   void updateContent(String newTitle, String newUrl) {
     title = newTitle;
@@ -39,7 +52,6 @@ class ContentItem extends ChangeNotifier {
 
 class AppState extends ChangeNotifier {
   final List<String> _categories = ['전체', '즐겨찾기'];
-  final DataService _dataService = DataService();
 
   final List<ContentItem> _contents = [];
 
@@ -48,20 +60,21 @@ class AppState extends ChangeNotifier {
   List<String> get categories => _categories;
   List<ContentItem> get contents => _contents;
 
-  Future<Map<String, String>> _getHeaders() async {
-    final accessToken = await storage.read(key: 'accessToken');
-    return {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer $accessToken",
-    };
-  }
-
   Future<void> loadContentsFromDb() async {
+    final deviceUuid = await getDeviceUuid();
+
+    // print("UUUUUUUUUUUUID      $deviceUuid");
+
     try {
       // 만약 LinkResponse.fetchLinksFromApi() 가 static으로 잘 구현되어 있다면 그것을 쓰셔도 되지만,
       // DataService를 안 쓰기로 했으므로 안정성을 위해 아래와 같이 직접 HTTP 통신을 작성하는 것을 추천합니다.
-      final serverUrl = Uri.parse("${baseUrl}/links");
-      final headers = await _getHeaders();
+      final serverUrl = Uri.parse("$baseUrl/links");
+
+      final headers = {
+        "Content-Type": "application/json",
+        "X-Device-UUID": deviceUuid,
+      };
+
       final response = await http.get(serverUrl, headers: headers);
 
       if (response.statusCode == 200) {
@@ -198,80 +211,122 @@ class AppState extends ChangeNotifier {
     return _categories.contains(categoryName);
   }
 
-  // contents 관리 로직
-  Future<void> addContent({
-    required String title,
-    required String url,
-    required bool isPrivate,
-    required DateTime? selectedDate,
-    String? category,
-  }) async {
-    // 카카오 ID 확인
-    final kakaoId = await storage.read(key: 'kakaoId');
-    if (kakaoId == null) {
-      throw Exception('로그인 정보가 없습니다. 다시 로그인해주세요.'); // UI의 catch 블록으로 던짐
+  Future<String> getDeviceUuid() async {
+    final prefs = await SharedPreferences.getInstance();
+    var deviceUuid = prefs.getString('device_uuid');
+
+    if (deviceUuid == null) {
+      deviceUuid = const Uuid().v4();
+      await prefs.setString('device_uuid', deviceUuid);
     }
 
-    // DB에 데이터 저장
-    final int dbId = await _dataService.insertLink(
-      kakaoId: kakaoId,
-      url: url,
-      title: title,
-      category: category,
-      isPrivate: isPrivate,
-      selectedDate: selectedDate,
-    );
-
-    // 3. 로컬 상태(_contents) 업데이트
-    final verifiedCategory =
-        (category != null && _categories.contains(category)) ? category : '전체';
-
-    final formattedTime = selectedDate != null
-        ? DateFormat('yyyy-MM-dd HH:mm').format(selectedDate)
-        : null;
-
-    final newItem = ContentItem(
-      id: dbId,
-      title: title,
-      url: url,
-      isPrivate: isPrivate,
-      time: formattedTime,
-      category: verifiedCategory,
-    );
-
-    _contents.add(newItem);
-
-    // 달력/리마인더 이벤트 맵(kEvents)에 추가
-    if (selectedDate != null) {
-      DateTime dateKey = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-      );
-
-      kEvents.putIfAbsent(dateKey, () => []);
-      kEvents[dateKey]!.add(
-        Event(
-          dbId,
-          title,
-          hour: selectedDate.hour,
-          minute: selectedDate.minute,
-        ),
-      );
-
-      await AlarmService.scheduleEventAlarm(
-        contentID: dbId,
-        title: title,
-        scheduledTime: selectedDate,
-      );
-    }
-
-    // 화면 갱신 알림
-    notifyListeners();
+    return deviceUuid;
   }
 
-  Future<void> removeContent({required int id, required String kakaoId}) async {
-    await _dataService.deleteLink(id: id, kakaoId: kakaoId);
+  // contents 관리 로직
+  Future<void> addContent(ContentItem item) async {
+    final deviceUuid = await getDeviceUuid();
+
+    try {
+      final serverUrl = Uri.parse("$baseUrl/links");
+      print("🚀 [서버 요청 전송] 주소: $serverUrl");
+
+      // 1. 서버에 POST 요청
+      final response = await http
+          .post(
+            serverUrl,
+            headers: {
+              "Content-Type": "application/json",
+              "X-Device-UUID": deviceUuid,
+            },
+            body: json.encode({
+              "url": item.url,
+              "title": item.title,
+              "category": item.category,
+              "isPrivate": item.isPrivate,
+              "selectedDate": item.time != null
+                  ? DateTime.parse(item.time!).toIso8601String()
+                  : null,
+            }),
+          )
+          .timeout(const Duration(seconds: 5));
+
+      print("ℹ️ [서버 응답 수신] 상태 코드: ${response.statusCode}");
+      print("ℹ️ [서버 응답 본문]: ${response.body}");
+
+      // 2. 응답 확인
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // 🌟 새 ID 자동 할당 로직: 리스트가 비어있으면 1, 아니면 기존 최대 ID + 1
+        int nextId = 1;
+        if (_contents.isNotEmpty) {
+          nextId =
+              _contents.map((e) => e.id).reduce((a, b) => a > b ? a : b) + 1;
+        }
+
+        final verifiedCategory = (_categories.contains(item.category))
+            ? item.category
+            : '전체';
+
+        DateTime? parsedTime;
+        if (item.time != null) parsedTime = DateTime.parse(item.time!);
+
+        final formattedTime = parsedTime != null
+            ? DateFormat('yyyy-MM-dd HH:mm').format(parsedTime)
+            : null;
+
+        // 3. 갱신된 ID로 새로운 로컬 아이템 생성
+        final newItem = ContentItem(
+          id: nextId, // 생성한 nextId 삽입
+          title: item.title,
+          url: item.url,
+          isPrivate: item.isPrivate,
+          time: formattedTime,
+          category: verifiedCategory,
+        );
+
+        _contents.add(newItem);
+
+        // 4. 달력/리마인더 이벤트 맵(kEvents)에 추가 및 알람 설정
+        if (parsedTime != null) {
+          DateTime dateKey = DateTime(
+            parsedTime.year,
+            parsedTime.month,
+            parsedTime.day,
+          );
+
+          kEvents.putIfAbsent(dateKey, () => []);
+          kEvents[dateKey]!.add(
+            Event(
+              nextId, // 생성한 nextId 삽입
+              item.title,
+              hour: parsedTime.hour,
+              minute: parsedTime.minute,
+            ),
+          );
+
+          await AlarmService.scheduleEventAlarm(
+            contentID: nextId, // 생성한 nextId 삽입
+            title: item.title,
+            scheduledTime: parsedTime,
+          );
+        }
+
+        // 화면 갱신 알림
+        notifyListeners();
+      } else {
+        throw HttpException('서버가 요청을 거부했습니다. 코드: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("🚨 [AppState 저장 에러 로그]: $e");
+      // UI 쪽에서 이 에러를 잡아서 SnackBar를 띄울 수 있도록 에러를 다시 던집니다 (rethrow).
+      rethrow;
+    }
+  }
+
+  Future<void> removeContent({required int id}) async {
+    final DeviceUuid = await getDeviceUuid();
+
+    await deleteLink(id: id, deviceUuid: DeviceUuid);
 
     _contents.removeWhere((item) => item.id == id);
 

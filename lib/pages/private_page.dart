@@ -81,21 +81,9 @@ class _PrivatePageState extends State<PrivatePage> {
             contentID: item.id,
             currentCategory: selectedCategory!,
             onActionDone: () async {
-              final kakaoId = await storage.read(key: 'kakaoId');
-
               if (!context.mounted) return;
-
-              if (kakaoId == null) {
-                showCustomSnackBar(
-                  context,
-                  message: '로그인 정보가 없습니다. 다시 로그인해주세요.',
-                  isError: true,
-                );
-                return;
-              }
               await context.read<AppState>().removeContent(
                 id: item.id,
-                kakaoId: kakaoId,
               );
             },
           ),

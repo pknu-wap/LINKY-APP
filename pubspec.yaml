@@ -53,6 +53,8 @@ dependencies:
   intl: ^0.20.2
   flutter_sharing_intent: ^2.0.4
   http: ^1.2.0
+  uuid: ^4.5.3
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:

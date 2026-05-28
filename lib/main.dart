@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:convert'; 
-import 'package:http/http.dart' as http; 
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -9,7 +9,7 @@ import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:provider/provider.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
-import 'package:std/pages/login_page.dart';
+import 'package:std/pages/disabled/login_page.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting_page.dart';
 import 'package:std/pages/plus_page.dart';
@@ -17,7 +17,6 @@ import 'package:std/provider/app_state.dart';
 import 'package:std/services/url_verification.dart';
 import 'package:std/widgets/secret_page_guard.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter/services.dart';
 import 'package:std/snackbar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -26,7 +25,7 @@ import 'constants.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 const String baseUrl = "http://3.34.52.216:8080";
-final serverUrl = Uri.parse("${baseUrl}/links"); 
+final serverUrl = Uri.parse("$baseUrl/links");
 
 @pragma('vm:entry-point')
 void alarmCallback(int id) async {
@@ -92,10 +91,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const LoginPage(),
-      routes: {
-        '/main': (context) => const MainScreen(),
-      },
+      // home: const LoginPage(),
+      // routes: {
+      //   '/main': (context) => const MainScreen(),
+      // },
+      home: const MainScreen(),
     );
   }
 }
@@ -127,7 +127,9 @@ class _MainScreenState extends State<MainScreen> {
             setState(() {
               list = value;
             });
-            print("Shared: getMediaStream ${value.map((f) => f.value).join(",")}");
+            print(
+              "Shared: getMediaStream ${value.map((f) => f.value).join(",")}",
+            );
             _handleSharedFiles(value);
           },
           onError: (err) {
@@ -138,12 +140,12 @@ class _MainScreenState extends State<MainScreen> {
     // 🌟 수정 1: 첫 화면 빌드가 완벽히 끝난 후 초기 공유 링크를 처리하도록 시점 조절
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await handleInitialSharing();
-      
-      final kakaoId = await storage.read(key: 'kakaoId');
-      if (kakaoId == null) {
-        debugPrint('kakaoId 없음');
-        return;
-      }
+
+      // final kakaoId = await storage.read(key: 'kakaoId');
+      // if (kakaoId == null) {
+      //   debugPrint('kakaoId 없음');
+      //   return;
+      // }
 
       if (!mounted) return;
       await context.read<AppState>().loadContentsFromDb();
@@ -169,7 +171,8 @@ class _MainScreenState extends State<MainScreen> {
 
       final lines = sharedData.split('\n');
       for (String text in lines) {
-        if (text.trim().contains("http://") || text.trim().contains("https://")) {
+        if (text.trim().contains("http://") ||
+            text.trim().contains("https://")) {
           sharedLink = text.trim();
         } else if (text.trim().isNotEmpty) {
           sharedContentTitle = text.trim();
@@ -192,6 +195,8 @@ class _MainScreenState extends State<MainScreen> {
 
       if (!mounted) return;
 
+      final deviceUuid = await context.read<AppState>().getDeviceUuid();
+
       // 🌟 [서버 전송 로딩 시작]
       showDialog(
         context: context,
@@ -200,37 +205,42 @@ class _MainScreenState extends State<MainScreen> {
       );
 
       try {
-        
-        final response = await http.post(
-          serverUrl,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: json.encode({
-            "url": sharedLink,
-            "title": sharedContentTitle,
-            "category": "전체", 
-            "isPrivate": false,
-            "selectedDate": null, 
-          }),
-        ).timeout(const Duration(seconds: 5));
+        final response = await http
+            .post(
+              serverUrl,
+              headers: {
+                "Content-Type": "application/json",
+                "X-Device-UUID": deviceUuid,
+              },
+              body: json.encode({
+                "url": sharedLink,
+                "title": sharedContentTitle,
+                "category": "전체",
+                "isPrivate": false,
+                "selectedDate": null,
+              }),
+            )
+            .timeout(const Duration(seconds: 5));
 
         // 🌟 수정 2: 로딩창을 닫기 전 화면이 여전히 살아있는지(mounted) 확인
         if (!mounted) return;
         if (Navigator.canPop(context)) {
-          Navigator.pop(context); 
+          Navigator.pop(context);
         }
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           print('url: $sharedLink\ntitle: $sharedContentTitle');
           showCustomSnackBar(context, message: '공유된 링크가 성공적으로 DB에 저장되었습니다!');
-          
+
           // 저장 후 화면 갱신을 위해 DB 데이터를 새로고침 해줍니다.
-          final kakaoId = await storage.read(key: 'kakaoId');
-          if (kakaoId != null && mounted) {
+          // final kakaoId = await storage.read(key: 'kakaoId');
+          // if (kakaoId != null && mounted) {
+          //   await context.read<AppState>().loadContentsFromDb();
+          // }
+          if (mounted) {
             await context.read<AppState>().loadContentsFromDb();
           }
-          
+
           if (mounted) setState(() {});
         } else {
           throw Exception('서버 에러 (코드: ${response.statusCode})');
@@ -239,10 +249,10 @@ class _MainScreenState extends State<MainScreen> {
         // 🌟 수정 3: 에러 발생 시에도 화면 존재 확인 후 로딩창 닫기
         if (!mounted) return;
         if (Navigator.canPop(context)) {
-          Navigator.pop(context); 
+          Navigator.pop(context);
         }
         print("🚨 외부 공유 링크 서버 저장 실패: $e");
-        
+
         String errorMessage = e.toString().replaceAll('Exception: ', '');
         if (e is TimeoutException) {
           errorMessage = "서버 연결 시간이 초과되었습니다.";
@@ -358,8 +368,16 @@ class _MainScreenState extends State<MainScreen> {
                   label: '',
                 ),
                 BottomNavigationBarItem(
-                  icon: _buildCommonItem(Icons.account_circle_outlined, '나만보기', false),
-                  activeIcon: _buildCommonItem(Icons.account_circle_outlined, '나만보기', true),
+                  icon: _buildCommonItem(
+                    Icons.account_circle_outlined,
+                    '나만보기',
+                    false,
+                  ),
+                  activeIcon: _buildCommonItem(
+                    Icons.account_circle_outlined,
+                    '나만보기',
+                    true,
+                  ),
                   label: '',
                 ),
                 BottomNavigationBarItem(
@@ -376,13 +394,25 @@ class _MainScreenState extends State<MainScreen> {
                   label: '',
                 ),
                 BottomNavigationBarItem(
-                  icon: _buildCommonItem(Icons.calendar_today_rounded, '리마인더', false),
-                  activeIcon: _buildCommonItem(Icons.calendar_today_rounded, '리마인더', true),
+                  icon: _buildCommonItem(
+                    Icons.calendar_today_rounded,
+                    '리마인더',
+                    false,
+                  ),
+                  activeIcon: _buildCommonItem(
+                    Icons.calendar_today_rounded,
+                    '리마인더',
+                    true,
+                  ),
                   label: '',
                 ),
                 BottomNavigationBarItem(
                   icon: _buildCommonItem(Icons.settings_outlined, '설정', false),
-                  activeIcon: _buildCommonItem(Icons.settings_outlined, '설정', true),
+                  activeIcon: _buildCommonItem(
+                    Icons.settings_outlined,
+                    '설정',
+                    true,
+                  ),
                   label: '',
                 ),
               ],
