@@ -21,7 +21,6 @@ class LinkResponse {
     this.selectedDate,
   });
 
-  // 서버에서 준 JSON 데이터를 Dart 객체로 변환하는 팩토리 메서드
   factory LinkResponse.fromJson(Map<String, dynamic> json) {
     return LinkResponse(
       id: json['id'],
@@ -34,25 +33,16 @@ class LinkResponse {
     );
   }
   Future<List<LinkResponse>> fetchLinksFromApi() async {
-  // 1. Spring Boot 서버 API 주소
   final url = Uri.parse('${baseUrl}/api/links'); 
 
   try {
-    // 2. 서버에 GET 요청을 보내서 데이터 가져오기 (토큰이 필요하다면 headers에 추가)
     final response = await http.get(
       url,
       headers: {'Content-Type': 'application/json'},
     );
 
     if (response.statusCode == 200) {
-      // 3. 응답받은 JSON 문자열을 Dart의 List<dynamic> 형태로 변환
-      // (서버가 [{...}, {...}] 형태의 배열을 바로 리턴한다고 가정)
       Iterable jsonList = jsonDecode(response.body);
-      
-      // 💡 만약 서버가 { "status": 200, "data": [...] } 형태로 리턴한다면 아래처럼 수정하세요:
-      // Iterable jsonList = jsonDecode(response.body)['data'];
-
-      // 4. 핵심 부분! map()을 이용해 JSON 맵을 LinkResponse 객체로 변환하고 리스트로 묶기
       return jsonList.map((json) => LinkResponse.fromJson(json)).toList();
       
     } else {

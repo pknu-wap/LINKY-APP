@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
-import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_appbar.dart';
-import 'package:std/widgets/public_dropdown_menu.dart';
 import 'package:std/widgets/public_messagebox.dart';
-import 'package:std/snackbar.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -16,7 +11,6 @@ class SettingPage extends StatefulWidget {
 }
 
 class SettingPageState extends State<SettingPage> {
-  // 입력창 스타일을 위한 공통 함수
   InputDecoration inputBox(String hint) {
     return InputDecoration(
       hintText: hint,
@@ -47,7 +41,7 @@ class SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.mainBackGrey, // 연한 그레이 배경색
+      backgroundColor: AppColors.mainBackGrey,
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: SafeArea(
@@ -63,7 +57,6 @@ class SettingPageState extends State<SettingPage> {
                     appbarIcon: Icons.settings_outlined,
                   ),
                   const SizedBox(height: 25),
-                  // 비밀번호 설정 섹션
                   Row(
                     children: const [
                       Icon(
@@ -89,7 +82,6 @@ class SettingPageState extends State<SettingPage> {
 
                   const SizedBox(height: 30),
 
-                  // 데이터 초기화 버튼
                   GestureDetector(
                     onTap: () {
                       showDialog(
@@ -126,90 +118,6 @@ class SettingPageState extends State<SettingPage> {
                     ),
                   ),
 
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     showDialog(
-                  //       context: context,
-                  //       barrierDismissible: true,
-                  //       builder: (context) {
-                  //         return DialogPopup(
-                  //           title: '로그아웃 하시겠어요?',
-                  //           boxType: BoxType.warning,
-                  //           onConfirm: () => print('로그아웃 완료'),
-                  //           confirmText: '로그아웃',
-                  //         );
-                  //       },
-                  //     );
-                  //   },
-                  //   child: Container(
-                  //     width: double.infinity,
-                  //     height: 54,
-                  //     margin: const EdgeInsets.only(bottom: 20),
-                  //     decoration: BoxDecoration(
-                  //       color: AppColors.white,
-                  //       borderRadius: BorderRadius.circular(20),
-                  //       border: Border.all(color: AppColors.lightGrey),
-                  //     ),
-                  //     child: Center(
-                  //       child: Text(
-                  //         "로그아웃",
-                  //         style: TextStyle(
-                  //           color: AppColors.mainRed,
-                  //           fontSize: 18,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     // _showActionDialog(context, "탈퇴");
-                  //     showDialog(
-                  //       context: context,
-                  //       barrierDismissible: true,
-                  //       builder: (context) {
-                  //         return DialogPopup(
-                  //           title: '탈퇴 하시겠어요?',
-                  //           boxType: BoxType.warning,
-                  //           onConfirm: () => showDialog(
-                  //             context: context,
-                  //             builder: (context) {
-                  //               return DialogPopup(
-                  //                 title: "탈퇴시 LINLKY에 저장된\n모든 정보는 삭제됩니다.",
-                  //                 onConfirm: () => print('탈퇴 완료'),
-                  //                 confirmText: '탈퇴',
-                  //                 boxType: BoxType.warning,
-                  //               );
-                  //             },
-                  //           ),
-                  //           confirmText: '예',
-                  //         );
-                  //       },
-                  //     );
-                  //   },
-                  //   child: Container(
-                  //     width: double.infinity,
-                  //     height: 54,
-                  //     margin: const EdgeInsets.only(bottom: 20),
-                  //     decoration: BoxDecoration(
-                  //       color: AppColors.white,
-                  //       borderRadius: BorderRadius.circular(20),
-                  //       border: Border.all(
-                  //         color: AppColors.lightGrey,
-                  //       ),
-                  //     ),
-                  //     child: Center(
-                  //       child: Text(
-                  //         "탈퇴",
-                  //         style: TextStyle(
-                  //           color: AppColors.mainRed,
-                  //           fontSize: 18,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                   const SizedBox(height: 10),
                 ],
               ),

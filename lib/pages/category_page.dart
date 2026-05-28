@@ -26,25 +26,11 @@ class CategoryPage extends StatefulWidget {
   State<CategoryPage> createState() => _CategoryPageState();
 }
 
-// List<String> categoryNames = ['전체', '즐겨찾기'];
 
 class _CategoryPageState extends State<CategoryPage> {
   String selectedCategory = '전체';
 
   final storage = const FlutterSecureStorage();
-
-  // void _updatePage(int index) {
-  //   setState(() {
-  //     categories_contentsTitle.removeAt(index);
-  //     categories_contentsURL.removeAt(index);
-  //     contentsFavorite.removeAt(index);
-  //   });
-  // }
-
-  // late List<bool> contentsFavorite = List.generate(
-  //   categories_contentsTitle.length,
-  //   (index) => false,
-  // );
 
   void _showChatRoomOptions(BuildContext context, String categoryName) {
     showDialog(
@@ -104,7 +90,6 @@ class _CategoryPageState extends State<CategoryPage> {
                           ),
                         ),
                       ),
-                      // titlePadding: EdgeInsets.only(left: 20, top: 15),
                       contentPadding: EdgeInsets.only(
                         top: 20,
                         right: 20,

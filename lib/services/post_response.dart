@@ -9,7 +9,6 @@ class PostResponse {
 
   PostResponse({required this.id, required this.url, required this.title, required this.category, required this.isPrivate, required this.selectedDate});
 
-  // JSON 데이터를 객체로 변환하는 팩토리 생성자
   factory PostResponse.fromJson(Map<String, dynamic> json) {
     return PostResponse(
       id: json['id'] as int,

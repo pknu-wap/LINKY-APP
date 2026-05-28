@@ -58,8 +58,6 @@ class AppState extends ChangeNotifier {
 
   Future<void> loadContentsFromDb() async {
     try {
-      // 만약 LinkResponse.fetchLinksFromApi() 가 static으로 잘 구현되어 있다면 그것을 쓰셔도 되지만,
-      // DataService를 안 쓰기로 했으므로 안정성을 위해 아래와 같이 직접 HTTP 통신을 작성하는 것을 추천합니다.
       final serverUrl = Uri.parse("${baseUrl}/links");
       final headers = await _getHeaders();
       final response = await http.get(serverUrl, headers: headers);
@@ -69,11 +67,9 @@ class AppState extends ChangeNotifier {
         final List<dynamic> linkList = responseData['data'] ?? responseData;
 
         _contents.clear();
-        kEvents.clear();
-
-        // 💡 핵심 수정: row는 이제 Map이 아니라 LinkResponse 객체입니다!
+      
         for (final jsonMap in linkList) {
-          final row = LinkResponse.fromJson(jsonMap); // 객체화
+          final row = LinkResponse.fromJson(jsonMap);
 
           final id = row.id;
           final title = row.title ?? '제목 없음';
@@ -125,20 +121,17 @@ class AppState extends ChangeNotifier {
         throw Exception("서버 조회 실패 코드: ${response.statusCode}");
       }
     } catch (e) {
-      print("🚨 로드 에러 발생: $e");
+      print("로드 에러 발생: $e");
     }
   }
 
   List<int> getContentIdsByCategory(String categoryName) {
-    // '전체' 카테고리일 경우 모든 (비공개가 아닌) id 반환
     if (categoryName == '전체' || categoryName == 'All') {
       return _contents
           .where((item) => !item.isPrivate)
           .map((item) => item.id)
           .toList();
     }
-
-    // '즐겨찾기' 카테고리일 경우
     if (categoryName == '즐겨찾기' || categoryName == 'Favorites') {
       return _contents
           .where((item) => !item.isPrivate && item.isFavorite)
@@ -152,19 +145,14 @@ class AppState extends ChangeNotifier {
           .map((item) => item.id)
           .toList();
     }
-
-    // 특정 일반 카테고리일 경우
     return _contents
         .where((item) => !item.isPrivate && item.category == categoryName)
-        .map((item) => item.id) // 아이템 객체에서 id만 추출
-        .toList(); // 리스트로 변환
+        .map((item) => item.id)
+        .toList();
   }
 
-  // 비공개 아이템만 필터링해서 가져오기
   List<ContentItem> get privateContents =>
       _contents.where((item) => item.isPrivate).toList();
-
-  // categories 관리 로직
 
   void addCategory(String categoryName) {
     if (!_categories.contains(categoryName)) {
@@ -198,7 +186,6 @@ class AppState extends ChangeNotifier {
     return _categories.contains(categoryName);
   }
 
-  // contents 관리 로직
   Future<void> addContent({
     required String title,
     required String url,
@@ -206,13 +193,10 @@ class AppState extends ChangeNotifier {
     required DateTime? selectedDate,
     String? category,
   }) async {
-    // 카카오 ID 확인
     final kakaoId = await storage.read(key: 'kakaoId');
     if (kakaoId == null) {
-      throw Exception('로그인 정보가 없습니다. 다시 로그인해주세요.'); // UI의 catch 블록으로 던짐
+      throw Exception('로그인 정보가 없습니다. 다시 로그인해주세요.');
     }
-
-    // DB에 데이터 저장
     final int dbId = await _dataService.insertLink(
       kakaoId: kakaoId,
       url: url,
@@ -222,7 +206,6 @@ class AppState extends ChangeNotifier {
       selectedDate: selectedDate,
     );
 
-    // 3. 로컬 상태(_contents) 업데이트
     final verifiedCategory =
         (category != null && _categories.contains(category)) ? category : '전체';
 
@@ -241,7 +224,6 @@ class AppState extends ChangeNotifier {
 
     _contents.add(newItem);
 
-    // 달력/리마인더 이벤트 맵(kEvents)에 추가
     if (selectedDate != null) {
       DateTime dateKey = DateTime(
         selectedDate.year,
@@ -266,7 +248,6 @@ class AppState extends ChangeNotifier {
       );
     }
 
-    // 화면 갱신 알림
     notifyListeners();
   }
 
@@ -326,8 +307,6 @@ class AppState extends ChangeNotifier {
           if (kEvents[oldDateKey]!.isEmpty) kEvents.remove(oldDateKey);
         }
       }
-
-      // 새로운 이벤트 등록 (newTime이 있을 경우에만)
       if (newTime != null) {
         DateTime newDate = DateTime.parse(newTime);
         DateTime newDateKey = DateTime(
@@ -336,10 +315,8 @@ class AppState extends ChangeNotifier {
           newDate.day,
         );
 
-        // 해당 날짜 리스트가 없으면 새로 만들고 이벤트 추가
         kEvents.putIfAbsent(newDateKey, () => []);
 
-        // 중복 방지를 위해 안전하게 추가
         kEvents[newDateKey]!.add(
           Event(id, newTitle, hour: newDate.hour, minute: newDate.minute),
         );
@@ -347,7 +324,6 @@ class AppState extends ChangeNotifier {
 
       await AlarmService.cancelEventAlarm(id);
 
-      //새 알람 등록
       if (newTime != null) {
         await AlarmService.scheduleEventAlarm(
           contentID: id,
@@ -370,8 +346,6 @@ class AppState extends ChangeNotifier {
     orElse: () => null,
   );
 
-  // 일정 관리 로직
-
   List<Event> getEventsForDay(DateTime day) {
     final dateKey = DateTime(day.year, day.month, day.day);
     return kEvents[dateKey] ?? [];
@@ -381,16 +355,13 @@ class AppState extends ChangeNotifier {
     final dateOnly = DateTime(day.year, day.month, day.day);
 
     if (kEvents.containsKey(dateOnly)) {
-      // 전역 변수 kEvents에서 해당 contentID를 가진 이벤트만 찾아서 삭제
       kEvents[dateOnly]!.removeWhere((event) => event.contentID == contentID);
 
-      // 만약 해당 날짜에 데이터가 없으면 키 삭제
       if (kEvents[dateOnly]!.isEmpty) {
         kEvents.remove(dateOnly);
       }
     }
 
-    // 아예 삭제하지 않고 contents 리스트에서 해당 아이템의 time만 null로 변경
     int index = _contents.indexWhere((item) => item.id == contentID);
     if (index != -1) {
       _contents[index].time = null;

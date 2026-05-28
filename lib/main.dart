@@ -21,7 +21,6 @@ import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter/services.dart';
 import 'package:std/snackbar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 import 'constants.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -135,7 +134,6 @@ class _MainScreenState extends State<MainScreen> {
           },
         );
 
-    // 🌟 수정 1: 첫 화면 빌드가 완벽히 끝난 후 초기 공유 링크를 처리하도록 시점 조절
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await handleInitialSharing();
       
@@ -182,8 +180,9 @@ class _MainScreenState extends State<MainScreen> {
       }
 
       final verifier = UrlVerification();
+      late final String verifiedSharedLink;
       try {
-        verifier.urlVerify(sharedLink);
+        verifiedSharedLink = verifier.urlVerify(sharedLink);
       } on FormatException catch (e) {
         if (!mounted) return;
         showCustomSnackBar(context, message: e.message, isError: true);
@@ -192,7 +191,6 @@ class _MainScreenState extends State<MainScreen> {
 
       if (!mounted) return;
 
-      // 🌟 [서버 전송 로딩 시작]
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -207,7 +205,7 @@ class _MainScreenState extends State<MainScreen> {
             "Content-Type": "application/json",
           },
           body: json.encode({
-            "url": sharedLink,
+            "url": verifiedSharedLink,
             "title": sharedContentTitle,
             "category": "전체", 
             "isPrivate": false,
@@ -215,7 +213,6 @@ class _MainScreenState extends State<MainScreen> {
           }),
         ).timeout(const Duration(seconds: 5));
 
-        // 🌟 수정 2: 로딩창을 닫기 전 화면이 여전히 살아있는지(mounted) 확인
         if (!mounted) return;
         if (Navigator.canPop(context)) {
           Navigator.pop(context); 
@@ -225,7 +222,6 @@ class _MainScreenState extends State<MainScreen> {
           print('url: $sharedLink\ntitle: $sharedContentTitle');
           showCustomSnackBar(context, message: '공유된 링크가 성공적으로 DB에 저장되었습니다!');
           
-          // 저장 후 화면 갱신을 위해 DB 데이터를 새로고침 해줍니다.
           final kakaoId = await storage.read(key: 'kakaoId');
           if (kakaoId != null && mounted) {
             await context.read<AppState>().loadContentsFromDb();
@@ -236,12 +232,11 @@ class _MainScreenState extends State<MainScreen> {
           throw Exception('서버 에러 (코드: ${response.statusCode})');
         }
       } catch (e) {
-        // 🌟 수정 3: 에러 발생 시에도 화면 존재 확인 후 로딩창 닫기
         if (!mounted) return;
         if (Navigator.canPop(context)) {
           Navigator.pop(context); 
         }
-        print("🚨 외부 공유 링크 서버 저장 실패: $e");
+        print("외부 공유 링크 서버 저장 실패: $e");
         
         String errorMessage = e.toString().replaceAll('Exception: ', '');
         if (e is TimeoutException) {
@@ -325,7 +320,6 @@ class _MainScreenState extends State<MainScreen> {
       },
       child: Scaffold(
         extendBody: true,
-        // 현재 인덱스에 맞는 페이지 표시
         body: IndexedStack(
           index: _selectedIndex,
           children: _buildPages(),

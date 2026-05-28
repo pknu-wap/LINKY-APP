@@ -51,7 +51,6 @@ class DialogPopup extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
                         child: InkWell(

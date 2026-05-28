@@ -121,7 +121,7 @@ class _CalendarPageState extends State<CalendarPage> {
             border: Border.all(
               color: AppColors.outlineGrey,
               width: 1,
-            ), // 외곽선 추가
+            ),
           ),
           child: Row(
             children: [
@@ -361,7 +361,6 @@ class _CalendarPageState extends State<CalendarPage> {
                       ),
                     ),
 
-                    // ✅ 일정 리스트 (Expanded 없이 SliverList로)
                     ValueListenableBuilder<List<Event>>(
                       valueListenable: _selectedEvents,
                       builder: (context, events, _) {

@@ -18,7 +18,7 @@ class PopupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
-      // popUpAnimationStyle: AnimationStyle.noAnimation,
+      popUpAnimationStyle: AnimationStyle.noAnimation,
       offset: const Offset(-5, 30),
       menuPadding: EdgeInsets.symmetric(vertical: 3),
       // 메뉴 전체의 최대 너비 제한
@@ -84,7 +84,7 @@ class PopupButton extends StatelessWidget {
             ],
           ),
         ),
-        const PopupMenuDivider(height: 1), // 구분선 높이
+        const PopupMenuDivider(height: 1),
         PopupMenuItem<String>(
           value: 'delete',
           height: 25,

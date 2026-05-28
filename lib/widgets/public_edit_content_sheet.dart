@@ -6,6 +6,8 @@ import 'package:std/constants.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
 import 'package:std/widgets/plus_page_calendar.dart';
+import 'package:std/services/url_verification.dart';
+import 'package:std/snackbar.dart';
 
 class EditContentSheet extends StatefulWidget {
   const EditContentSheet({super.key, required this.contentID});
@@ -28,9 +30,6 @@ class _EditContentSheetState extends State<EditContentSheet> {
 
   final GlobalKey _calendarAnchorKey = GlobalKey();
 
-  // final DateTime _focusedDay = DateTime.now();
-  // DateTime? _selectedDay;
-
   @override
   void initState() {
     super.initState();
@@ -44,7 +43,6 @@ class _EditContentSheetState extends State<EditContentSheet> {
 
   @override
   void dispose() {
-    // 사용이 끝난 컨트롤러는 해제해줍니다.
     titleController.dispose();
     urlController.dispose();
     summaryController.dispose();
@@ -108,10 +106,30 @@ class _EditContentSheetState extends State<EditContentSheet> {
                   Icons.check_rounded,
                   AppColors.mainGreen,
                   () {
+                    final verifier = UrlVerification();
+                    late final String verifiedUrl;
+
+                    try {
+                      verifiedUrl = verifier.urlVerify(urlController.text);
+                    } on FormatException catch (e) {
+                      showCustomSnackBar(
+                        context,
+                        message: e.message,
+                        isError: true,
+                      );
+                      return;
+                    } catch (_) {
+                      showCustomSnackBar(
+                        context,
+                        message: 'URL을 확인하는 중 문제가 발생했어요.',
+                        isError: true,
+                      );
+                      return;
+                    }
                     context.read<AppState>().updateContent(
                       id: widget.contentID,
                       newTitle: titleController.text,
-                      newUrl: urlController.text,
+                      newUrl: verifiedUrl,
                       newTime: _dateController.text,
                       newCategory: _selectedCategory,
                     );
@@ -189,7 +207,6 @@ class _EditContentSheetState extends State<EditContentSheet> {
               insideWidget: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // 선택된 날짜 텍스트 (없으면 '날짜 수정')
                   Text(
                     _dateController.text.isEmpty ||
                             _dateController.text == 'null'
@@ -240,45 +257,6 @@ class _EditContentSheetState extends State<EditContentSheet> {
                       );
                     },
                   ),
-                  // PopupMenuButton<void>(
-                  //   padding: EdgeInsets.zero,
-                  //   position: PopupMenuPosition.under,
-                  //   offset: const Offset(0, 10),
-                  //   elevation: 4,
-                  //   color: Colors.white,
-                  //   shape: RoundedRectangleBorder(
-                  //     borderRadius: BorderRadius.circular(16),
-                  //     side: BorderSide(color: Colors.grey.shade200),
-                  //   ),
-                  //   itemBuilder: (BuildContext context) => [
-                  //     PopupMenuItem<void>(
-                  //       enabled: false, // 메뉴 자체 클릭 방지
-                  //       child: SizedBox(
-                  //         width: 320, // 캘린더 크기 명시
-                  //         height: 380,
-                  //         child: CalendarWidget(
-                  //           selectedDate: _selectedDay,
-                  //           onChanged: (date) {
-                  //             setState(() {
-                  //               _selectedDay = date;
-                  //             });
-                  //           },
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  //   child: Image.asset(
-                  //     'assets/images/calendar_img.png', // 이미지 경로
-                  //     width: 24, // 아이콘 크기에 맞춰 적절히 조절
-                  //     height: 24,
-                  //     fit: BoxFit.contain,
-                  //     // 이미지가 없을 때를 대비한 에러 처리 (선택사항)
-                  //     errorBuilder: (context, error, stackTrace) => const Icon(
-                  //       Icons.calendar_today,
-                  //       color: AppColors.textGrey,
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
             ),
@@ -380,7 +358,6 @@ class _WhiteContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(21),
         color: AppColors.white,
       ),
-      // height: 101,
       width: screenSize.width * 0.86,
       padding: EdgeInsets.symmetric(horizontal: 19, vertical: 14),
       child: insideWidget,

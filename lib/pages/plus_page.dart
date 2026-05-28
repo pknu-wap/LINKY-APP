@@ -1,4 +1,4 @@
-import 'dart:async'; // 🌟 추가 (타임아웃 핸들링용)
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -63,12 +63,10 @@ class _PlusPageState extends State<PlusPage> {
     super.dispose();
   }
 
-  // 🌟 구조 개편된 안전한 저장 로직
   Future<void> saveLink() async {
     final url = urlController.text.trim();
     final title = titleController.text.trim();
     final verifier = UrlVerification();
-    
 
     if (title.isEmpty) {
       showCustomSnackBar(context, message: '제목을 입력해주세요', isError: true);
@@ -97,7 +95,6 @@ class _PlusPageState extends State<PlusPage> {
       return;
     }
 
-    // 2. 화면 선제 로딩 시작
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -106,7 +103,7 @@ class _PlusPageState extends State<PlusPage> {
 
     try {
       final serverUrl = Uri.parse("${baseUrl}/links"); 
-      print("🚀 [서버 요청 전송] 주소: $serverUrl");
+      print("[서버 요청 전송] 주소: $serverUrl");
       
       final response = await http.post(
         serverUrl,
@@ -115,26 +112,24 @@ class _PlusPageState extends State<PlusPage> {
           "Authorization": "Bearer $accessToken",
         },
         body: json.encode({
-          "kakaoId": kakaoId, // 🌟 필수 추가: 서버 DTO에 맞는 유저 식별 식별자 변수명
-          "url": url,
+          "kakaoId": kakaoId,
+          "url": verifiedUrl,
           "title": title,
-          "category": selectedCategory ?? "전체", // null 방어
+          "category": selectedCategory ?? "전체",
           "isPrivate": isPrivate,
           "selectedDate": selectedDate?.toIso8601String(), 
         }),
-      ).timeout(const Duration(seconds: 5)); // 🌟 5초 타임아웃 안전망
+      ).timeout(const Duration(seconds: 5));
 
       await context.read<AppState>().addContent(title: title, url: verifiedUrl, isPrivate: isPrivate, selectedDate: selectedDate);
 
-      // 3. 통신이 완료되면 에러/성공 상관없이 일단 로딩팝업 먼저 무조건 닫기
       if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context);
       }
 
-      print("ℹ️ [서버 응답 수신] 상태 코드: ${response.statusCode}");
-      print("ℹ️ [서버 응답 본문]: ${response.body}");
+      print("[서버 응답 수신] 상태 코드: ${response.statusCode}");
+      print("[서버 응답 본문]: ${response.body}");
 
-      // 4. 서버 응답 결과 판별
       if (response.statusCode == 200 || response.statusCode == 201) {
         showCustomSnackBar(context, message: '링크가 성공적으로 DB에 저장되었습니다!');
 
@@ -142,7 +137,6 @@ class _PlusPageState extends State<PlusPage> {
           addEventToMap(0, title, selectedDate!); 
         }
 
-        // 입력 폼 클리어
         if (mounted) {
           setState(() {
             urlController.clear();
@@ -155,17 +149,15 @@ class _PlusPageState extends State<PlusPage> {
           widget.onSaved?.call();
         }
       } else {
-        // 백엔드 에러 코드 핸들링 (400, 404, 500 등)
         throw HttpException('서버가 요청을 거부했습니다. 코드: ${response.statusCode}');
       }
 
     } catch (e) {
-      // 5. 예외 캐치 시 아직 로딩창이 열려있다면 즉시 닫아서 앱 먹통 방지
       if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context);
       }
 
-      print("🚨 [PlusPage 저장 에러 로그]: $e");
+      print("[PlusPage 저장 에러 로그]: $e");
 
       String errorMessage = e.toString().replaceAll('Exception: ', '');
       if (e is TimeoutException) {
@@ -381,7 +373,6 @@ class _PlusPageState extends State<PlusPage> {
   }
 }
 
-// 명시적인 에러 처리를 위한 커스텀 예외 클래스
 class HttpException implements Exception {
   final String message;
   HttpException(this.message);

@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       final kakaoToken = await UserApi.instance
-          .loginWithKakaoTalk(); //테스트 진행시에는 이 코드 주석 처리하고 진행
+          .loginWithKakaoTalk();
       debugPrint('3. 카카오 로그인 성공');
 
       final user = await UserApi.instance.me();
@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('카카오ID 저장 완료: $kakaoId');
 
       await sendKakaoTokenToBackend(
-        kakaoToken.accessToken,
+        kakaoToken.accessToken,  //테스트 진행시에는 이 코드 주석 처리하고 진행
       );
       debugPrint('4. 백엔드 전송 성공');
 

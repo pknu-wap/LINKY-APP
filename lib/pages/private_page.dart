@@ -47,10 +47,6 @@ class _PrivatePageState extends State<PrivatePage> {
                 textColor: AppColors.white,
               ),
 
-              // SelectCategory(
-              //   categoryCount: privateList.length.toString(),
-              //   categoryTitle: 'Only me',
-              // ),
               SizedBox(height: 13),
               Expanded(child: _contentsScroll(privateList)),
               const SizedBox(height: 110),

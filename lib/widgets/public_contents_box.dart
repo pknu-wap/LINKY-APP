@@ -31,7 +31,6 @@ class ContentsBox extends StatelessWidget {
     return InkWell(
       child: Container(
         width: 375,
-        // height: 138,
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(23),
@@ -41,7 +40,7 @@ class ContentsBox extends StatelessWidget {
               color: AppColors.black.withValues(alpha: 0.25),
               spreadRadius: 0,
               blurRadius: 4,
-              offset: Offset(0, 4), // changes position of shadow
+              offset: Offset(0, 4),
             ),
           ],
         ),

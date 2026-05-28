@@ -21,12 +21,10 @@ class SelectCategoryHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // 높이는 기존 디자인에 맞춰 조절하세요
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
       decoration: BoxDecoration(
         color: backgroundColor, // 전달받은 배경색 적용
         borderRadius: BorderRadius.circular(25),
-        // 선택되지 않았을 때 심심하지 않게 아주 연한 테두리를 줄 수 있습니다.
         border: Border.all(color: AppColors.black),
       ),
       child: Row(
@@ -35,7 +33,7 @@ class SelectCategoryHome extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: countBackgroundColor, // 전달받은 개수창 색상 적용 (#C5C5C5 등)
+              color: countBackgroundColor,
               borderRadius: BorderRadius.circular(13),
             ),
             child: Text(
@@ -50,7 +48,7 @@ class SelectCategoryHome extends StatelessWidget {
           Text(
             categoryTitle,
             style: GoogleFonts.inter(
-              color: textColor, // 전달받은 글자색 적용
+              color: textColor,
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
