@@ -151,6 +151,8 @@ class _PlusPageState extends State<PlusPage> {
             isPrivate = false;
             selectedDate = null;
           });
+
+          widget.onSaved?.call();
         }
       } else {
         // 백엔드 에러 코드 핸들링 (400, 404, 500 등)
