@@ -31,6 +31,21 @@ class DbService {
       throw Exception("Failed to fetch Post by Id");
     }
   }
+
+  Future<bool> resetData({required String deviceUuid}) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/links/reset'),
+        headers: {
+          'X-Device-UUID': deviceUuid,
+        },
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print("초기화 통신 에러: $e");
+      return false;
+    }
+  }
 }
 
 class PostResponse {
@@ -137,4 +152,5 @@ Future<void> deleteLink({required int id, required String deviceUuid}) async {
   } catch (e) {
     print("네트워크 통신 에러: $e");
   }
+  
 }

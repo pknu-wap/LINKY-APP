@@ -275,7 +275,7 @@ class _MainScreenState extends State<MainScreen> {
         },
       ),
       const CalendarPage(),
-      const SettingPage(),
+      SettingPage(),
     ];
   }
 
