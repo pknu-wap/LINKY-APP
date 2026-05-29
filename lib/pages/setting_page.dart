@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 import 'package:std/constants.dart';
+import 'package:std/main.dart';
+import 'package:std/provider/app_state.dart';
+import 'package:std/services/db_service.dart';
 import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_messagebox.dart';
 
@@ -11,6 +16,8 @@ class SettingPage extends StatefulWidget {
 }
 
 class SettingPageState extends State<SettingPage> {
+  final DbService _dbService = DbService();
+
   InputDecoration inputBox(String hint) {
     return InputDecoration(
       hintText: hint,
@@ -29,6 +36,26 @@ class SettingPageState extends State<SettingPage> {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(20),
         borderSide: const BorderSide(color: AppColors.mainGreen),
+      ),
+    );
+  }
+
+  Future<void> _onResetConfirm() async {
+    final deviceUuid = await context.read<AppState>().getDeviceUuid();
+    final response = await http.get(Uri.parse("$baseUrl/links"));
+    final isSuccess = await _dbService.resetData(deviceUuid: deviceUuid);
+
+    if (!mounted) return;
+
+    print('reset deviceUuid: $deviceUuid');
+    print('reset status: ${response.statusCode}');
+    print('reset body: ${response.body}');
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isSuccess ? '데이터가 초기화되었습니다.' : '초기화에 실패했습니다.',
+        ),
       ),
     );
   }
@@ -87,12 +114,14 @@ class SettingPageState extends State<SettingPage> {
                       showDialog(
                         context: context,
                         barrierDismissible: true,
-                        builder: (context) {
+                        builder: (dialogContext) {
                           return DialogPopup(
                             title: '데이터 초기화 하시겠어요?',
                             boxType: BoxType.warning,
-                            onConfirm: () => print('데이터 초기화 완료'),
                             confirmText: '초기화',
+                            onConfirm: () async {
+                              await _onResetConfirm();
+                            },
                           );
                         },
                       );
