@@ -8,7 +8,6 @@ import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_select_category.dart';
 import 'package:std/widgets/public_contents_box.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:std/snackbar.dart';
 
 class PrivatePage extends StatefulWidget {
   const PrivatePage({super.key});
@@ -47,10 +46,6 @@ class _PrivatePageState extends State<PrivatePage> {
                 textColor: AppColors.white,
               ),
 
-              // SelectCategory(
-              //   categoryCount: privateList.length.toString(),
-              //   categoryTitle: 'Only me',
-              // ),
               SizedBox(height: 13),
               Expanded(child: _contentsScroll(privateList)),
               const SizedBox(height: 110),

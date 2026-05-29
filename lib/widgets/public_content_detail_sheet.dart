@@ -7,7 +7,6 @@ import 'package:std/provider/app_state.dart';
 import 'package:std/widgets/public_messagebox.dart';
 import 'package:std/widgets/public_popup_menu_button.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:std/snackbar.dart';
 
 class FolderModel {
   final int id;
@@ -247,8 +246,6 @@ class ContentDetailSheet extends StatelessWidget {
                         PopupButton(
                           contentID: contentID,
                           onActionDone: () async {
-                            final kakaoId = await storage.read(key: 'kakaoId');
-
                             if (!context.mounted) return;
 
                             Navigator.pop(context);

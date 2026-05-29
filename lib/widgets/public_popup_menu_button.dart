@@ -84,7 +84,7 @@ class PopupButton extends StatelessWidget {
             ],
           ),
         ),
-        const PopupMenuDivider(height: 1), // 구분선 높이
+        const PopupMenuDivider(height: 1),
         PopupMenuItem<String>(
           value: 'delete',
           height: 25,

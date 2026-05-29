@@ -1,9 +1,7 @@
-import 'dart:async'; // 🌟 추가 (타임아웃 핸들링용)
-import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
@@ -11,7 +9,6 @@ import 'package:std/provider/app_state.dart';
 import 'package:std/services/url_verification.dart';
 import 'package:std/snackbar.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
-import '../main.dart';
 import '../widgets/plus_page_calendar.dart';
 
 String? selectedCategory;
@@ -63,16 +60,15 @@ class _PlusPageState extends State<PlusPage> {
     super.dispose();
   }
 
-  // 🌟 구조 개편된 안전한 저장 로직
   Future<void> saveLink() async {
     final url = urlController.text.trim();
     final title = titleController.text.trim();
     final verifier = UrlVerification();
 
-    if (title.isEmpty) {
-      showCustomSnackBar(context, message: '제목을 입력해주세요', isError: true);
-      return;
-    }
+    // if (title.isEmpty) {
+    //   showCustomSnackBar(context, message: '제목을 입력해주세요', isError: true);
+    //   return;
+    // }
     late final String verifiedUrl;
     try {
       verifiedUrl = verifier.urlVerify(url);
@@ -87,8 +83,6 @@ class _PlusPageState extends State<PlusPage> {
       );
       return;
     }
-
-    // 2. 화면 선제 로딩 시작
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -97,23 +91,23 @@ class _PlusPageState extends State<PlusPage> {
 
     final newItem = ContentItem.create(
       title: titleController.text,
-      url: urlController.text,
+      url: verifiedUrl,
       time: selectedDate?.toString(),
       isPrivate: isPrivate,
       category: selectedCategory ?? "전체",
     );
 
     try {
-      // AppState의 함수 실행
       await context.read<AppState>().addContent(newItem);
 
-      // 성공 시 UI 처리
+      if(!mounted) return;
+
       if (mounted && Navigator.canPop(context)) {
-        Navigator.pop(context); // 로딩창 또는 바텀시트 닫기
+        Navigator.pop(context);
       }
       showCustomSnackBar(context, message: '링크가 성공적으로 저장되었습니다!');
 
-      // 폼 초기화
+
       setState(() {
         urlController.clear();
         titleController.clear();
@@ -124,10 +118,11 @@ class _PlusPageState extends State<PlusPage> {
 
       widget.onSaved?.call();
     } catch (e) {
-      // 실패 시 UI 처리 (AppState에서 던진 에러를 여기서 잡습니다)
       if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context); // 로딩창 닫기
       }
+
+      print("[PlusPage 저장 에러 로그]: $e");
 
       String errorMessage = e.toString().replaceAll('Exception: ', '');
       if (e is TimeoutException) {
@@ -342,7 +337,6 @@ class _PlusPageState extends State<PlusPage> {
   }
 }
 
-// 명시적인 에러 처리를 위한 커스텀 예외 클래스
 class HttpException implements Exception {
   final String message;
   HttpException(this.message);

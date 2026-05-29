@@ -18,7 +18,7 @@ class ReminderScreen extends StatefulWidget {
 class Reminder extends State<ReminderScreen> {
   int selectedMonth = 0;
   int selectedDay = 0;
-  int day_count = 0;
+  int daycount = 0;
 
   final List<String> months = [
     'January',
@@ -41,7 +41,7 @@ class Reminder extends State<ReminderScreen> {
     final selectedDate = widget.selectedDate;
     selectedMonth = selectedDate.month;
     selectedDay = selectedDate.day;
-    day_count = getLastDayOfMonth(selectedDate.year, selectedDate.month);
+    daycount = getLastDayOfMonth(selectedDate.year, selectedDate.month);
   }
 
   @override
@@ -51,15 +51,12 @@ class Reminder extends State<ReminderScreen> {
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 2. 메인 컨텐츠 영역
           Expanded(
             child: SafeArea(
-              child: Container(
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
 
-                    // 헤더: 아이콘 + 타이틀
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: AppBarDesign(
@@ -69,7 +66,6 @@ class Reminder extends State<ReminderScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // 5. 시간별 타임라인 (Vertical Scroll)
                     Expanded(
                       child: TimelineWidget(
                         selectedMonth: selectedMonth,
@@ -80,7 +76,6 @@ class Reminder extends State<ReminderScreen> {
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -104,13 +99,13 @@ class TimelineWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 이제 빌드 메서드 최상단에서 watch하는 것이 안전합니다.
+
     final appState = context.watch<AppState>();
 
     final selectedDate = DateTime(
       DateTime.now().year,
       selectedMonth,
-      selectedDay, // 필요에 따라 유지
+      selectedDay,
     );
 
     final List<Event> dayEvents = appState.getEventsForDay(selectedDate);
