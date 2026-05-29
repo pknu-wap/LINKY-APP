@@ -206,8 +206,9 @@ class ContentDetailSheet extends StatelessWidget {
       (state) => state.contentById(contentID),
     );
 
-    String titleText = targetItem?.title ?? "찾을 수 없음";
+    String titleText = targetItem?.displayTitle ?? "찾을 수 없음";
     final urlText = targetItem?.url ?? "찾을 수 없음";
+    final summaryText = targetItem?.summary ?? "요약 정보가 없습니다.";
 
     return Material(
       color: Colors.transparent,
@@ -305,6 +306,11 @@ class ContentDetailSheet extends StatelessWidget {
                     const Divider(thickness: 1, color: Colors.black),
                     const SizedBox(height: 10),
                     Text('요약', style: GoogleFonts.inter(fontSize: 20)),
+                    const SizedBox(height: 10),
+                    Text(
+                      summaryText,
+                      style: GoogleFonts.inter(fontSize: 16),
+                    ),
                   ],
                 ),
               ),

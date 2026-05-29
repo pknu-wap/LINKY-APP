@@ -24,7 +24,7 @@ class ContentsBox extends StatelessWidget {
       (state) => state.contentById(contentID),
     );
 
-    String titleText = targetItem?.title ?? "찾을 수 없음";
+    String titleText = targetItem?.displayTitle ?? "찾을 수 없음";
     String urlText = targetItem?.url ?? "찾을 수 없음";
     final datetimeText = targetItem?.time ?? '';
 

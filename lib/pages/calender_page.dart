@@ -111,7 +111,12 @@ class _CalendarPageState extends State<CalendarPage> {
           (state) => state.contentById(event.contentID),
         );
 
-        final displayTitle = currentContent?.title ?? event.title;
+        final displayTitle =
+            currentContent?.displayTitle ??
+            (event.title.trim().isEmpty ||
+                    event.title.trim().toLowerCase() == 'null'
+                ? '요약중입니다...'
+                : event.title.trim());
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 8),
           padding: const EdgeInsets.all(16),
@@ -409,5 +414,4 @@ class Event {
   const Event(this.contentID, this.title, {this.hour = 9, this.minute = 0});
 }
 
-final Map<DateTime, List<Event>> kEvents = {
-};
+final Map<DateTime, List<Event>> kEvents = {};

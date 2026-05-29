@@ -30,27 +30,13 @@ class PopupButton extends StatelessWidget {
 
       onSelected: (value) {
         if (value == 'edit') {
-          showDialog(
+          showModalBottomSheet(
             context: context,
-            barrierDismissible: true,
-            builder: (context) {
-              return DialogPopup(
-                title: '해당 링크를 수정하시겠어요?',
-                boxType: BoxType.warning,
-                onConfirm: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor:
-                        AppColors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
-                    builder: (context) => EditContentSheet(
-                      contentID: contentID,
-                    ),
-                  );
-                },
-                confirmText: '수정',
-              );
-            },
+            isScrollControlled: true,
+            backgroundColor: AppColors.transparent, // 배경을 투명하게 해야 컨테이너 디자인이 보임
+            builder: (context) => EditContentSheet(
+              contentID: contentID,
+            ),
           );
         } else if (value == 'delete') {
           showDialog(

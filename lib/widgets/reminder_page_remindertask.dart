@@ -27,7 +27,7 @@ class RemindertaskWidget extends StatelessWidget {
     final targetItem = context.read<AppState>().contentById(contentID);
     print('targetItem: $targetItem');
 
-    final titleText = targetItem?.title ?? "제목 없음";
+    final titleText = targetItem?.displayTitle ?? "제목 없음";
 
     return Container(
       padding: const EdgeInsets.all(16),

@@ -90,7 +90,7 @@ class _PlusPageState extends State<PlusPage> {
     );
 
     final newItem = ContentItem.create(
-      title: titleController.text,
+      title: title,
       url: verifiedUrl,
       time: selectedDate?.toString(),
       isPrivate: isPrivate,

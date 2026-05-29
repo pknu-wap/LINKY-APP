@@ -158,7 +158,7 @@ class _MainScreenState extends State<MainScreen> {
       }
 
       String sharedLink = '';
-      String sharedContentTitle = '';
+      String sharedContentTitle = '요약중입니다...';
 
       final lines = sharedData.split('\n');
       for (String text in lines) {

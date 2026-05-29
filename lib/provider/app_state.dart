@@ -21,6 +21,16 @@ class ContentItem extends ChangeNotifier {
   bool isPrivate;
   bool isFavorite;
 
+  String get displayTitle {
+
+    final normalizedTitle = title.trim();
+    
+    if(normalizedTitle.isEmpty || normalizedTitle.toLowerCase() == 'null'){
+      return '요약중입니다...';
+    }
+    return normalizedTitle;
+  }
+
   ContentItem({
     required this.id,
     required this.title,
@@ -83,7 +93,7 @@ class AppState extends ChangeNotifier {
           final row = LinkResponse.fromJson(jsonMap);
 
           final id = row.id;
-          final title = row.title ?? '제목 없음';
+          final title = row.title?.trim() ?? '';
           final selectedDateText = row.selectedDate;
 
           _contents.add(

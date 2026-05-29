@@ -62,7 +62,8 @@ class _EditContentSheetState extends State<EditContentSheet> {
       (state) => state.contentById(widget.contentID),
     );
 
-    final titleText = targetItem?.title ?? "찾을 수 없음";
+    final rawtitle = targetItem?.title ?? "";
+    final titleText = rawtitle.trim().toLowerCase() == 'null' ? "" : rawtitle;
     final urlText = targetItem?.url ?? "찾을 수 없음";
     final datetimeText = targetItem?.time ?? "";
     final categoryText = targetItem?.category ?? "카테고리 선택";
