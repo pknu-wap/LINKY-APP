@@ -28,7 +28,6 @@ class RemindertaskWidget extends StatelessWidget {
     print('targetItem: $targetItem');
 
     final titleText = targetItem?.title ?? "제목 없음";
-    final urlText = targetItem?.url ?? "url 없음";
 
     return Container(
       padding: const EdgeInsets.all(16),

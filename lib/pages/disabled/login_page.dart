@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('백엔드 요청 시작');
 
       final response = await dio.post(
-        'http://3.34.52.216:8080/auth/kakao',
+        '주소입력',
         data: {
           'accessToken': kakaoAccessToken,
         },
@@ -128,13 +128,13 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Expanded(
                     flex: 54,
-                    child: Header(),
+                    child: header(),
                   ),
 
                   const Spacer(),
                   Expanded(
                     flex: 46,
-                    child: ActionArea(),
+                    child: actionArea(),
                   ),
                 ],
               ),
@@ -145,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget Header() {
+  Widget header() {
     return PhysicalShape(
       clipper: WhiteCircle(),
       color: AppColors.white,
@@ -165,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget ActionArea() {
+  Widget actionArea() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(

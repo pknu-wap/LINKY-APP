@@ -18,7 +18,7 @@ class ReminderScreen extends StatefulWidget {
 class Reminder extends State<ReminderScreen> {
   int selectedMonth = 0;
   int selectedDay = 0;
-  int day_count = 0;
+  int daycount = 0;
 
   final List<String> months = [
     'January',
@@ -41,7 +41,7 @@ class Reminder extends State<ReminderScreen> {
     final selectedDate = widget.selectedDate;
     selectedMonth = selectedDate.month;
     selectedDay = selectedDate.day;
-    day_count = getLastDayOfMonth(selectedDate.year, selectedDate.month);
+    daycount = getLastDayOfMonth(selectedDate.year, selectedDate.month);
   }
 
   @override
@@ -53,7 +53,6 @@ class Reminder extends State<ReminderScreen> {
         children: [
           Expanded(
             child: SafeArea(
-              child: Container(
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
@@ -77,7 +76,6 @@ class Reminder extends State<ReminderScreen> {
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

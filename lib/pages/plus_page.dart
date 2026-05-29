@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/pages/calender_page.dart';
@@ -11,7 +9,6 @@ import 'package:std/provider/app_state.dart';
 import 'package:std/services/url_verification.dart';
 import 'package:std/snackbar.dart';
 import 'package:std/widgets/public_dropdown_menu.dart';
-import '../main.dart';
 import '../widgets/plus_page_calendar.dart';
 
 String? selectedCategory;
@@ -68,10 +65,10 @@ class _PlusPageState extends State<PlusPage> {
     final title = titleController.text.trim();
     final verifier = UrlVerification();
 
-    if (title.isEmpty) {
-      showCustomSnackBar(context, message: '제목을 입력해주세요', isError: true);
-      return;
-    }
+    // if (title.isEmpty) {
+    //   showCustomSnackBar(context, message: '제목을 입력해주세요', isError: true);
+    //   return;
+    // }
     late final String verifiedUrl;
     try {
       verifiedUrl = verifier.urlVerify(url);
@@ -86,91 +83,57 @@ class _PlusPageState extends State<PlusPage> {
       );
       return;
     }
-
-    final accessToken = await storage.read(key: 'accessToken');
-    final kakaoId = await storage.read(key: 'kakaoId');
-
-    if (kakaoId == null) {
-      showCustomSnackBar(context, message: '로그인 정보가 유실되었습니다. 다시 로그인 해주세요.', isError: true);
-      return;
-    }
-
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    try {
-      final serverUrl = Uri.parse("${baseUrl}/links"); 
-      print("[서버 요청 전송] 주소: $serverUrl");
-      
-      final response = await http.post(
-        serverUrl,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $accessToken",
-        },
-        body: json.encode({
-          "kakaoId": kakaoId,
-          "url": verifiedUrl,
-          "title": title,
-          "category": selectedCategory ?? "전체",
-          "isPrivate": isPrivate,
-          "selectedDate": selectedDate?.toIso8601String(), 
-        }),
-      ).timeout(const Duration(seconds: 5));
+    final newItem = ContentItem.create(
+      title: titleController.text,
+      url: verifiedUrl,
+      time: selectedDate?.toString(),
+      isPrivate: isPrivate,
+      category: selectedCategory ?? "전체",
+    );
 
-      await context.read<AppState>().addContent(title: title, url: verifiedUrl, isPrivate: isPrivate, selectedDate: selectedDate);
+    try {
+      await context.read<AppState>().addContent(newItem);
+
+      if(!mounted) return;
 
       if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context);
       }
+      showCustomSnackBar(context, message: '링크가 성공적으로 저장되었습니다!');
 
-      print("[서버 응답 수신] 상태 코드: ${response.statusCode}");
-      print("[서버 응답 본문]: ${response.body}");
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        showCustomSnackBar(context, message: '링크가 성공적으로 DB에 저장되었습니다!');
+      setState(() {
+        urlController.clear();
+        titleController.clear();
+        selectedCategory = null;
+        isPrivate = false;
+        selectedDate = null;
+      });
 
-        if (selectedDate != null) {
-          addEventToMap(0, title, selectedDate!); 
-        }
-
-        if (mounted) {
-          setState(() {
-            urlController.clear();
-            titleController.clear();
-            selectedCategory = null;
-            isPrivate = false;
-            selectedDate = null;
-          });
-
-          widget.onSaved?.call();
-        }
-      } else {
-        throw HttpException('서버가 요청을 거부했습니다. 코드: ${response.statusCode}');
-      }
-
+      widget.onSaved?.call();
     } catch (e) {
       if (mounted && Navigator.canPop(context)) {
-        Navigator.pop(context);
+        Navigator.pop(context); // 로딩창 닫기
       }
 
       print("[PlusPage 저장 에러 로그]: $e");
 
       String errorMessage = e.toString().replaceAll('Exception: ', '');
       if (e is TimeoutException) {
-        errorMessage = "서버 연결 시간이 초과되었습니다. (AWS 보안그룹 또는 포트 점검 필요)";
+        errorMessage = "서버 연결 시간이 초과되었습니다.";
       }
 
-      if (mounted) {
-        showCustomSnackBar(
-          context,
-          message: '저장 실패: $errorMessage',
-          isError: true,
-        );
-      }
+      showCustomSnackBar(
+        context,
+        message: '저장 실패: $errorMessage',
+        isError: true,
+      );
     }
   }
 
@@ -287,7 +250,8 @@ class _PlusPageState extends State<PlusPage> {
                                   Text(
                                     selectedCategory ?? '카테고리',
                                     style: GoogleFonts.inter(
-                                      color: selectedCategory == '카테고리' ||
+                                      color:
+                                          selectedCategory == '카테고리' ||
                                               selectedCategory == null
                                           ? AppColors.textGrey
                                           : AppColors.black,

@@ -14,7 +14,7 @@ class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
 
   @override
-  _CalendarPageState createState() => _CalendarPageState();
+  State<CalendarPage> createState() => _CalendarPageState();
 }
 
 class _CalendarPageState extends State<CalendarPage> {
@@ -104,7 +104,7 @@ class _CalendarPageState extends State<CalendarPage> {
     return kEvents[dateOnly] ?? [];
   }
 
-  Widget today_reminder(BuildContext context, Event event, int index) {
+  Widget todayreminder(BuildContext context, Event event, int index) {
     return Builder(
       builder: (innerContext) {
         final currentContent = innerContext.select<AppState, ContentItem?>(
@@ -379,7 +379,7 @@ class _CalendarPageState extends State<CalendarPage> {
                         }
                         return SliverList(
                           delegate: SliverChildBuilderDelegate(
-                            (context, index) => today_reminder(
+                            (context, index) => todayreminder(
                               context,
                               events[index],
                               index,

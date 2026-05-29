@@ -33,7 +33,7 @@ class LinkResponse {
     );
   }
   Future<List<LinkResponse>> fetchLinksFromApi() async {
-  final url = Uri.parse('${baseUrl}/api/links'); 
+  final url = Uri.parse('$baseUrl/api/links'); 
 
   try {
     final response = await http.get(
