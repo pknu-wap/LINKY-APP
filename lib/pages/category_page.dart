@@ -26,7 +26,6 @@ class CategoryPage extends StatefulWidget {
   State<CategoryPage> createState() => _CategoryPageState();
 }
 
-
 class _CategoryPageState extends State<CategoryPage> {
   String selectedCategory = '전체';
 
@@ -37,6 +36,7 @@ class _CategoryPageState extends State<CategoryPage> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
+          backgroundColor: AppColors.white,
           title: Text(
             categoryName,
             style: TextStyle(fontWeight: FontWeight.bold),
@@ -58,6 +58,7 @@ class _CategoryPageState extends State<CategoryPage> {
                       title: Text('카테고리 이름 수정'),
                       content: TextField(
                         controller: categoryController,
+                        cursorColor: AppColors.mainGreen,
                         decoration: InputDecoration(
                           hintText: '수정할 카테고리 이름을 입력해주세요',
                           hintStyle: const TextStyle(
@@ -102,6 +103,9 @@ class _CategoryPageState extends State<CategoryPage> {
                       ),
                       actions: [
                         TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.mainGreen, 
+                          ),
                           onPressed: () {
                             Navigator.pop(context);
                             newCategoryName = categoryController.text;
@@ -139,7 +143,9 @@ class _CategoryPageState extends State<CategoryPage> {
                               }
                             }
                           },
-                          child: Text("확인"),
+                          child: Text(
+                            "확인",
+                          ),
                         ),
                       ],
                     );
@@ -171,6 +177,7 @@ class _CategoryPageState extends State<CategoryPage> {
                           context,
                           message: "카테고리가 삭제되었습니다.",
                         );
+                        return true;
                       },
                       confirmText: '삭제',
                       boxType: BoxType.warning,
@@ -231,45 +238,149 @@ class _CategoryPageState extends State<CategoryPage> {
                 appbarIcon: 'assets/images/CategoryIcon.png',
               ),
               const SizedBox(height: 13),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Row(
-                  children: currentCategories.map((cat) {
-                    final String? categoryTitle = cat["title"];
-                    final String? categoryCount = cat["count"];
 
-                    bool isSelected = selectedCategory == categoryTitle;
+              Row(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      child: Row(
+                        children: currentCategories.map((cat) {
+                          final String? categoryTitle = cat["title"];
+                          final String? categoryCount = cat["count"];
 
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedCategory = cat["title"]!;
-                          });
+                          bool isSelected = selectedCategory == categoryTitle;
+
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 6),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedCategory = cat["title"]!;
+                                });
+                              },
+
+                              onLongPress: () {
+                                if (categoryTitle != '전체' &&
+                                    categoryTitle != '즐겨찾기') {
+                                  _showChatRoomOptions(context, categoryTitle);
+                                }
+                              },
+                              child: SelectCategoryHome(
+                                categoryCount: categoryCount!,
+                                categoryTitle: categoryTitle!,
+                                backgroundColor: isSelected
+                                    ? AppColors.mainGreen
+                                    : AppColors.white,
+                                countBackgroundColor: isSelected
+                                    ? const Color(0xffffffff)
+                                    : const Color(0xFFC5C5C5),
+                                textColor: isSelected
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () {
+                      final TextEditingController categoryController =
+                          TextEditingController();
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return DialogPopup(
+                            title: "카테고리 추가",
+                            height: 160,
+                            content: TextField(
+                              controller: categoryController,
+                              cursorColor: AppColors.darkGreen,
+                              decoration: InputDecoration(
+                                hintText: "카테고리를 입력해주세요.",
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: AppColors.darkGreen,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            confirmText: "확인",
+                            boxType: BoxType.warning,
+                            onConfirm: () {
+                              final newCategoryName = categoryController.text
+                                  .trim();
+
+                              if (newCategoryName.isEmpty) {
+                                showCustomSnackBar(
+                                  context,
+                                  message: '카테고리를 입력해주세요.',
+                                  isError: true,
+                                );
+                                return false;
+                              }
+
+                              if (newCategoryName == '전체' ||
+                                  newCategoryName == '즐겨찾기') {
+                                showCustomSnackBar(
+                                  context,
+                                  message: '기본설정 카테고리입니다.',
+                                  isError: true,
+                                );
+                                return false;
+                              }
+                              final alredyExists = context
+                                  .read<AppState>()
+                                  .categoryNameCheck(newCategoryName);
+
+                              if (alredyExists) {
+                                showCustomSnackBar(
+                                  context,
+                                  message: '이미 존재하는 카테고리 입니다.',
+                                  isError: true,
+                                );
+                                return false;
+                              }
+                              context.read<AppState>().addCategory(
+                                newCategoryName,
+                              );
+
+                              setState(() {
+                                selectedCategory = newCategoryName;
+                              });
+
+                              showCustomSnackBar(
+                                context,
+                                message: '카테고리가 추가되었습니다.',
+                              );
+                              return true;
+                            },
+                          );
                         },
-                        onLongPress: () {
-                          if (categoryTitle != '전체' &&
-                              categoryTitle != '즐겨찾기') {
-                            _showChatRoomOptions(context, categoryTitle);
-                          }
-                        },
-                        child: SelectCategoryHome(
-                          categoryCount: categoryCount!,
-                          categoryTitle: categoryTitle!,
-                          backgroundColor: isSelected
-                              ? AppColors.mainGreen
-                              : AppColors.white,
-                          countBackgroundColor: isSelected
-                              ? const Color(0xffffffff)
-                              : const Color(0xFFC5C5C5),
-                          textColor: isSelected ? Colors.white : Colors.black,
+                      );
+                    },
+                    child: Container(
+                      width: 38,
+                      height: 38,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        border: Border.fromBorderSide(
+                          BorderSide(color: Colors.black),
                         ),
                       ),
-                    );
-                  }).toList(),
-                ),
+                      child: const Icon(
+                        Icons.add,
+                        color: AppColors.mainGreen,
+                        size: 22,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 13),
               filteredItems.isEmpty

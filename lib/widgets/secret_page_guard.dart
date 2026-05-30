@@ -51,7 +51,7 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
           return DialogPopup(
             title: '잘못된 비밀번호입니다',
             boxType: BoxType.alert,
-            onConfirm: () {},
+            onConfirm: () => true,
             confirmText: '확인',
           );
         },

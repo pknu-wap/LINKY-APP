@@ -118,10 +118,11 @@ class SettingPageState extends State<SettingPage> {
                           return DialogPopup(
                             title: '데이터 초기화 하시겠어요?',
                             boxType: BoxType.warning,
-                            confirmText: '초기화',
-                            onConfirm: () async {
-                              await _onResetConfirm();
+                            onConfirm: () {
+                              print('초기화 완료');
+                              return true;
                             },
+                            confirmText: '초기화',
                           );
                         },
                       );

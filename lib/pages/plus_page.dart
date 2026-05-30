@@ -100,13 +100,12 @@ class _PlusPageState extends State<PlusPage> {
     try {
       await context.read<AppState>().addContent(newItem);
 
-      if(!mounted) return;
+      if (!mounted) return;
 
       if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context);
       }
       showCustomSnackBar(context, message: '링크가 성공적으로 저장되었습니다!');
-
 
       setState(() {
         urlController.clear();
@@ -201,8 +200,19 @@ class _PlusPageState extends State<PlusPage> {
                               hintText: 'https://example.com',
                               filled: true,
                               fillColor: AppColors.white,
-                              border: OutlineInputBorder(
+                              enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(
+                                  color: AppColors.bottNavTextGrey,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(
+                                  color: AppColors.mainGreen,
+                                  width: 1.5,
+                                ),
                               ),
                             ),
                           ),
@@ -219,6 +229,17 @@ class _PlusPageState extends State<PlusPage> {
                               fillColor: AppColors.white,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(
+                                  color: AppColors.bottNavTextGrey,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(
+                                  color: AppColors.mainGreen,
+                                  width: 1.5,
+                                ),
                               ),
                             ),
                           ),
@@ -228,8 +249,10 @@ class _PlusPageState extends State<PlusPage> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
-                                color: AppColors.bottNavTextGrey,
-                                width: 1,
+                                color: selectedCategory == null
+                                    ? AppColors.bottNavTextGrey
+                                    : AppColors.mainGreen,
+                                width: selectedCategory == null ? 1 : 1.5,
                               ),
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -278,6 +301,10 @@ class _PlusPageState extends State<PlusPage> {
                                 scale: 0.8,
                                 child: Switch(
                                   value: isPrivate,
+                                  activeThumbColor: AppColors.mainGreen,
+                                  activeTrackColor: AppColors.mainGreen.withValues(alpha: 0.4),
+                                  inactiveThumbColor: AppColors.white,
+                                  inactiveTrackColor: AppColors.bottNavTextGrey,
                                   onChanged: (value) {
                                     setState(() {
                                       isPrivate = value;
