@@ -5,6 +5,7 @@ import 'package:std/constants.dart';
 import 'package:std/main.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/services/db_service.dart';
+import 'package:std/snackbar.dart';
 import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_messagebox.dart';
 
@@ -51,12 +52,10 @@ class SettingPageState extends State<SettingPage> {
     print('reset status: ${response.statusCode}');
     print('reset body: ${response.body}');
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          isSuccess ? '데이터가 초기화되었습니다.' : '초기화에 실패했습니다.',
-        ),
-      ),
+    showCustomSnackBar(
+      context,
+      message: isSuccess ? '데이터가 초기화되었습니다.' : '초기화에 실패했습니다.',
+      isError: !isSuccess,
     );
   }
 
