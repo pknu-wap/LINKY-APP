@@ -22,10 +22,9 @@ class ContentItem extends ChangeNotifier {
   bool isFavorite;
 
   String get displayTitle {
-
     final normalizedTitle = title.trim();
-    
-    if(normalizedTitle.isEmpty || normalizedTitle.toLowerCase() == 'null'){
+
+    if (normalizedTitle.isEmpty || normalizedTitle.toLowerCase() == 'null') {
       return '요약중입니다...';
     }
     return normalizedTitle;
@@ -88,7 +87,7 @@ class AppState extends ChangeNotifier {
 
         _contents.clear();
         kEvents.clear();
-      
+
         for (final jsonMap in linkList) {
           final row = LinkResponse.fromJson(jsonMap);
 
@@ -250,7 +249,6 @@ class AppState extends ChangeNotifier {
       print("[서버 응답 본문]: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-
         int nextId = 1;
         if (_contents.isNotEmpty) {
           nextId =

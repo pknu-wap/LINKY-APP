@@ -49,6 +49,7 @@ class _PlusPageState extends State<PlusPage> {
 
   String? selectedCategory;
   bool isPrivate = false;
+  bool isCategoryFocused = false;
   DateTime? selectedDate;
   int hour = 0;
   int minute = 0;
@@ -100,19 +101,19 @@ class _PlusPageState extends State<PlusPage> {
     try {
       await context.read<AppState>().addContent(newItem);
 
-      if(!mounted) return;
+      if (!mounted) return;
 
       if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context);
       }
       showCustomSnackBar(context, message: '링크가 성공적으로 저장되었습니다!');
 
-
       setState(() {
         urlController.clear();
         titleController.clear();
         selectedCategory = null;
         isPrivate = false;
+        isCategoryFocused = false;
         selectedDate = null;
       });
 
@@ -145,7 +146,13 @@ class _PlusPageState extends State<PlusPage> {
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey,
       body: GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+          setState(() {
+            isCategoryFocused = false;
+          });
+        },
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -190,57 +197,119 @@ class _PlusPageState extends State<PlusPage> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          TextField(
-                            controller: urlController,
-                            maxLength: 1024,
-                            decoration: InputDecoration(
-                              labelStyle: GoogleFonts.inter(
-                                color: AppColors.textGrey,
+
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              textSelectionTheme: TextSelectionThemeData(
+                                cursorColor: AppColors.mainGreen,
+                                selectionColor: AppColors.mainGreen.withValues(
+                                  alpha: 0.3,
+                                ),
+                                selectionHandleColor: AppColors.mainGreen,
                               ),
-                              labelText: '링크 URL',
-                              hintText: 'https://example.com',
-                              filled: true,
-                              fillColor: AppColors.white,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: TextField(
+                              controller: urlController,
+                              maxLength: 1024,
+                              decoration: InputDecoration(
+                                labelStyle: GoogleFonts.inter(
+                                  color: AppColors.textGrey,
+                                ),
+                                labelText: '링크 URL',
+                                hintText: 'https://example.com',
+                                filled: true,
+                                fillColor: AppColors.white,
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.bottNavTextGrey,
+                                    width: 1,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.mainGreen,
+                                    width: 1.5,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                           const SizedBox(height: 10),
-                          TextField(
-                            controller: titleController,
-                            maxLength: 50,
-                            decoration: InputDecoration(
-                              labelStyle: GoogleFonts.inter(
-                                color: AppColors.textGrey,
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              textSelectionTheme: TextSelectionThemeData(
+                                cursorColor: AppColors.mainGreen,
+                                selectionColor: AppColors.mainGreen.withValues(
+                                  alpha: 0.3,
+                                ),
+                                selectionHandleColor: AppColors.mainGreen,
                               ),
-                              labelText: '제목',
-                              filled: true,
-                              fillColor: AppColors.white,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: TextField(
+                              controller: titleController,
+                              maxLength: 50,
+                              decoration: InputDecoration(
+                                labelStyle: GoogleFonts.inter(
+                                  color: AppColors.textGrey,
+                                ),
+                                labelText: '제목',
+                                filled: true,
+                                fillColor: AppColors.white,
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.bottNavTextGrey,
+                                    width: 1,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.mainGreen,
+                                    width: 1.5,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
+
                           const SizedBox(height: 10),
                           Container(
                             alignment: Alignment.centerLeft,
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
-                                color: AppColors.bottNavTextGrey,
-                                width: 1,
+                                color: isCategoryFocused
+                                    ? AppColors.mainGreen
+                                    : AppColors.bottNavTextGrey,
+                                width: isCategoryFocused ? 1.5 : 1,
                               ),
                               borderRadius: BorderRadius.circular(14),
                             ),
                             width: double.infinity,
-                            padding: const EdgeInsets.only(left: 13, right: 12),
+                            padding: const EdgeInsets.only(
+                              left: 13,
+                              right: 12,
+                            ),
                             height: 56,
                             child: DropdownWidget(
                               itemsList: categoryList,
+                              onOpend: () {
+                                setState(() {
+                                  isCategoryFocused = true;
+                                });
+                              },
+                              onCanceled: () {
+                                setState(() {
+                                  isCategoryFocused = false;
+                                });
+                              },
                               onCategorySelected: (value) {
                                 setState(() {
                                   selectedCategory = value;
+                                  isCategoryFocused = false;
                                 });
                               },
                               menuWidget: Row(
@@ -263,6 +332,7 @@ class _PlusPageState extends State<PlusPage> {
                               ),
                             ),
                           ),
+
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -278,6 +348,11 @@ class _PlusPageState extends State<PlusPage> {
                                 scale: 0.8,
                                 child: Switch(
                                   value: isPrivate,
+                                  activeThumbColor: AppColors.mainGreen,
+                                  activeTrackColor: AppColors.mainGreen
+                                      .withValues(alpha: 0.4),
+                                  inactiveThumbColor: AppColors.white,
+                                  inactiveTrackColor: AppColors.bottNavTextGrey,
                                   onChanged: (value) {
                                     setState(() {
                                       isPrivate = value;

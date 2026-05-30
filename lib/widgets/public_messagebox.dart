@@ -6,8 +6,10 @@ enum BoxType { alert, warning }
 
 class DialogPopup extends StatelessWidget {
   final String title, confirmText;
-  final VoidCallback onConfirm;
+  final bool Function() onConfirm;
   final BoxType boxType;
+  final Widget? content;
+  final double height;
 
   const DialogPopup({
     super.key,
@@ -15,6 +17,8 @@ class DialogPopup extends StatelessWidget {
     required this.onConfirm,
     required this.confirmText,
     required this.boxType,
+    this.content,
+    this.height = 141,
   });
 
   @override
@@ -23,7 +27,7 @@ class DialogPopup extends StatelessWidget {
       backgroundColor: AppColors.transparent,
       child: Container(
         width: 326,
-        height: 141,
+        height: height,
         decoration: BoxDecoration(
           color: AppColors.white,
           border: Border.all(color: AppColors.black, width: 1),
@@ -32,11 +36,21 @@ class DialogPopup extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Center(
-                child: Text(
-                  textAlign: TextAlign.center,
-                  title,
-                  style: GoogleFonts.inter(fontSize: 20),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.center,
+                      title,
+                      style: GoogleFonts.inter(fontSize: 20),
+                    ),
+                    if (content != null) ...[
+                      const SizedBox(height: 12),
+                      content!,
+                    ],
+                  ],
                 ),
               ),
             ),
@@ -48,51 +62,53 @@ class DialogPopup extends StatelessWidget {
             ),
 
             if (boxType == BoxType.warning)
-              Expanded(
-                child: Center(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () => Navigator.pop(context),
-                          child: Center(
-                            child: Text(
-                              '취소',
-                              style: GoogleFonts.inter(
-                                color: AppColors.mainBlue,
-                                fontSize: 20,
-                              ),
+              SizedBox(
+                height: 52,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () => Navigator.pop(context),
+                        child: Center(
+                          child: Text(
+                            '취소',
+                            style: GoogleFonts.inter(
+                              color: AppColors.mainBlue,
+                              fontSize: 20,
                             ),
                           ),
                         ),
                       ),
-                      VerticalDivider(
-                        thickness: 0.38,
-                        width: 1,
-                      ),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {
+                    ),
+                    VerticalDivider(
+                      thickness: 0.38,
+                      width: 1,
+                    ),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          final shouldClose = onConfirm();
+                          if (shouldClose) {
                             Navigator.pop(context);
-                            onConfirm();
-                          },
-                          child: Center(
-                            child: Text(
-                              confirmText,
-                              style: GoogleFonts.inter(
-                                color: AppColors.mainRed,
-                                fontSize: 20,
-                              ),
+                          }
+                        },
+                        child: Center(
+                          child: Text(
+                            confirmText,
+                            style: GoogleFonts.inter(
+                              color: AppColors.mainRed,
+                              fontSize: 20,
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             if (boxType == BoxType.alert)
-              Expanded(
+              SizedBox(
+                height: 52,
                 child: InkWell(
                   onTap: () => Navigator.pop(context),
                   child: Center(

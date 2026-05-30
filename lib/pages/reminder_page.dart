@@ -53,29 +53,29 @@ class Reminder extends State<ReminderScreen> {
         children: [
           Expanded(
             child: SafeArea(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
 
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: AppBarDesign(
-                        appbarText: 'Reminder',
-                        appbarIcon: Icons.calendar_today_outlined,
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: AppBarDesign(
+                      appbarText: 'Reminder',
+                      appbarIcon: Icons.calendar_today_outlined,
                     ),
-                    const SizedBox(height: 20),
+                  ),
+                  const SizedBox(height: 20),
 
-                    Expanded(
-                      child: TimelineWidget(
-                        selectedMonth: selectedMonth,
-                        selectedDay: selectedDay,
-                      ),
+                  Expanded(
+                    child: TimelineWidget(
+                      selectedMonth: selectedMonth,
+                      selectedDay: selectedDay,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+          ),
         ],
       ),
     );
@@ -99,7 +99,6 @@ class TimelineWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final appState = context.watch<AppState>();
 
     final selectedDate = DateTime(

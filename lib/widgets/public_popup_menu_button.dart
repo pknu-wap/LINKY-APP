@@ -45,7 +45,10 @@ class PopupButton extends StatelessWidget {
             builder: (context) {
               return DialogPopup(
                 title: '해당 링크를 삭제하시겠어요?',
-                onConfirm: onActionDone,
+                onConfirm: () {
+                  onActionDone();
+                  return true;
+                },
                 confirmText: '삭제',
                 boxType: BoxType.warning,
               );

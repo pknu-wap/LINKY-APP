@@ -149,15 +149,26 @@ class _EditContentSheetState extends State<EditContentSheet> {
                   Row(
                     children: [
                       Expanded(
-                        child: TextField(
-                          controller: titleController,
-                          focusNode: titleFocusNode,
-                          decoration: InputDecoration(
-                            hintText: '제목 수정',
-                            border: InputBorder.none,
-                            isDense: true,
-                            hintStyle: GoogleFonts.inter(
-                              color: AppColors.textGrey,
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            textSelectionTheme: TextSelectionThemeData(
+                              cursorColor: AppColors.mainGreen,
+                              selectionColor: AppColors.mainGreen.withValues(
+                                alpha: 0.3,
+                              ),
+                              selectionHandleColor: AppColors.mainGreen,
+                            ),
+                          ),
+                          child: TextField(
+                            controller: titleController,
+                            focusNode: titleFocusNode,
+                            decoration: InputDecoration(
+                              hintText: '제목 수정',
+                              border: InputBorder.none,
+                              isDense: true,
+                              hintStyle: GoogleFonts.inter(
+                                color: AppColors.textGrey,
+                              ),
                             ),
                           ),
                         ),
@@ -175,15 +186,26 @@ class _EditContentSheetState extends State<EditContentSheet> {
                   Row(
                     children: [
                       Expanded(
-                        child: TextField(
-                          controller: urlController,
-                          focusNode: urlFocusNode,
-                          decoration: InputDecoration(
-                            hintText: "URL 수정",
-                            border: InputBorder.none,
-                            isDense: true,
-                            hintStyle: GoogleFonts.inter(
-                              color: AppColors.textGrey,
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            textSelectionTheme: TextSelectionThemeData(
+                              cursorColor: AppColors.mainGreen,
+                              selectionColor: AppColors.mainGreen.withValues(
+                                alpha: 0.3,
+                              ),
+                              selectionHandleColor: AppColors.mainGreen,
+                            ),
+                          ),
+                          child: TextField(
+                            controller: urlController,
+                            focusNode: urlFocusNode,
+                            decoration: InputDecoration(
+                              hintText: "URL 수정",
+                              border: InputBorder.none,
+                              isDense: true,
+                              hintStyle: GoogleFonts.inter(
+                                color: AppColors.textGrey,
+                              ),
                             ),
                           ),
                         ),
@@ -303,12 +325,23 @@ class _EditContentSheetState extends State<EditContentSheet> {
                     '요약 수정',
                     style: TextStyle(color: AppColors.textGrey, fontSize: 16),
                   ),
-                  TextField(
-                    controller: summaryController,
-                    maxLines: 13,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
+                  Theme(
+                    data: Theme.of(context).copyWith(
+                      textSelectionTheme: TextSelectionThemeData(
+                        cursorColor: AppColors.mainGreen,
+                        selectionColor: AppColors.mainGreen.withValues(
+                          alpha: 0.3,
+                        ),
+                        selectionHandleColor: AppColors.mainGreen,
+                      ),
+                    ),
+                    child: TextField(
+                      controller: summaryController,
+                      maxLines: 13,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                      ),
                     ),
                   ),
                 ],
