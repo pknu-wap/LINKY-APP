@@ -435,7 +435,7 @@ class _LinkyCalendarPickerState extends State<LinkyCalendarPicker> {
                       ),
                     ),
                   ),
-                  
+
                   TextButton(
                     onPressed: () {
                       notifyChanged();

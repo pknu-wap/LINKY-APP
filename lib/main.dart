@@ -9,6 +9,7 @@ import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:provider/provider.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
+import 'package:std/services/refresh_database.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting_page.dart';
 import 'package:std/pages/plus_page.dart';
@@ -94,6 +95,7 @@ class MyApp extends StatelessWidget {
       //   '/main': (context) => const MainScreen(),
       // },
       home: const MainScreen(),
+      navigatorObservers: [RefreshDatabase()],
     );
   }
 }
@@ -279,6 +281,8 @@ class _MainScreenState extends State<MainScreen> {
           setState(() {
             _selectedIndex = 0;
           });
+
+          context.read<AppState>().loadContentsFromDb();
         },
       ),
       const CalendarPage(),
@@ -286,10 +290,12 @@ class _MainScreenState extends State<MainScreen> {
     ];
   }
 
-  void _onItemTapped(int index) {
+  Future<void> _onItemTapped(int index) async {
     setState(() {
       _selectedIndex = index;
     });
+
+    await context.read<AppState>().loadContentsFromDb();
   }
 
   void _handleBackButton() {
@@ -335,7 +341,7 @@ class _MainScreenState extends State<MainScreen> {
               topRight: Radius.circular(19),
               topLeft: Radius.circular(19),
             ),
-            border: Border.all(color: AppColors.outlineGrey, width: 1),
+            border: Border.all(color: AppColors.outlineGrey, width: 2),
           ),
           child: ClipRRect(
             borderRadius: const BorderRadius.only(
@@ -343,6 +349,7 @@ class _MainScreenState extends State<MainScreen> {
               topRight: Radius.circular(19),
             ),
             child: BottomNavigationBar(
+              backgroundColor: AppColors.white,
               showSelectedLabels: false,
               showUnselectedLabels: false,
               type: BottomNavigationBarType.fixed,

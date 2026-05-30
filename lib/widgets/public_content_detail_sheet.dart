@@ -281,7 +281,10 @@ class ContentDetailSheet extends StatelessWidget {
                               builder: (context) => DialogPopup(
                                 title: '해당 링크로 이동하시겠어요?',
                                 boxType: BoxType.warning,
-                                onConfirm: () => launchUrl(Uri.parse(urlText)),
+                                onConfirm: () {
+                                  launchUrl(Uri.parse(urlText));
+                                  return true;
+                                },
                                 confirmText: '이동',
                               ),
                             );

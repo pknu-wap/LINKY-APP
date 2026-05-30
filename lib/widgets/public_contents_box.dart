@@ -123,6 +123,7 @@ class ContentsBox extends StatelessWidget {
                         GestureDetector(
                           onTap: () {
                             context.read<AppState>().toggleFavorite(targetItem);
+                            
                           },
                           child: Image.asset(
                             targetItem.isFavorite

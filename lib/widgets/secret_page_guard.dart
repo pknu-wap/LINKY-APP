@@ -69,7 +69,7 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
           return DialogPopup(
             title: '잘못된 비밀번호입니다',
             boxType: BoxType.alert,
-            onConfirm: () {},
+            onConfirm: () => true,
             confirmText: '확인',
           );
         },
@@ -116,16 +116,47 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
                         SizedBox(
                           width: 293,
                           height: 44,
-                          child: TextField(
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.center,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.zero,
-                              border: OutlineInputBorder(),
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              textSelectionTheme: TextSelectionThemeData(
+                                cursorColor: AppColors.mainGreen,
+                                selectionColor: AppColors.mainGreen.withValues(
+                                  alpha: 0.3,
+                                ),
+                                selectionHandleColor: AppColors.mainGreen,
+                              ),
                             ),
-                            style: TextStyle(fontSize: 16),
-                            controller: pwController,
+                            child: TextField(
+                              textAlign: TextAlign.center,
+                              textAlignVertical: TextAlignVertical.center,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.zero,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.outlineGrey,
+                                    width: 1,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.outlineGrey,
+                                    width: 1,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.mainGreen,
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                              style: TextStyle(fontSize: 16),
+                              controller: pwController,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 13),

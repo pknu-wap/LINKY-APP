@@ -8,7 +8,8 @@ class DbService {
     final response = await http.get(Uri.parse("$baseUrl/links"));
 
     if (response.statusCode == 200) {
-      final data = json.decode(utf8.decode(response.bodyBytes)) as List<dynamic>;
+      final data =
+          json.decode(utf8.decode(response.bodyBytes)) as List<dynamic>;
 
       return data
           .map<PostResponse>((json) => PostResponse.fromJson(json))
@@ -16,6 +17,24 @@ class DbService {
     } else {
       throw Exception('Failed to load post list');
     }
+  }
+
+  Future<bool> updateFavorite({
+    required int id,
+    required String deviceUuid,
+    required bool isFavorite,
+  }) async{
+    final response = await http.patch(
+      Uri.parse("$baseUrl/links/$id"),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Device-UUID": deviceUuid,
+      },
+      body: json.encode({
+        "isFavorite": isFavorite,
+      }),
+    );
+    return response.statusCode == 200;
   }
 
   Future<PostResponse> getPostById(int id) async {
@@ -55,6 +74,7 @@ class PostResponse {
   final String category;
   final bool isPrivate;
   final DateTime selectedDate;
+  final bool isFavorite;
 
   PostResponse({
     required this.id,
@@ -63,6 +83,7 @@ class PostResponse {
     required this.category,
     required this.isPrivate,
     required this.selectedDate,
+    required this.isFavorite,
   });
 
   factory PostResponse.fromJson(Map<String, dynamic> json) {
@@ -73,6 +94,7 @@ class PostResponse {
       category: json['category'] as String,
       isPrivate: json['isPrivate'] as bool,
       selectedDate: DateTime.parse(json['selectedDate'] as String),
+      isFavorite: json['isFavorite'] as bool,
     );
   }
 }
@@ -85,6 +107,7 @@ class LinkResponse {
   final bool isPrivate;
   final String? summary;
   final String? selectedDate;
+  final bool isFavorite;
 
   LinkResponse({
     required this.id,
@@ -94,6 +117,7 @@ class LinkResponse {
     required this.isPrivate,
     this.summary,
     this.selectedDate,
+    required this.isFavorite,
   });
 
   factory LinkResponse.fromJson(Map<String, dynamic> json) {
@@ -105,6 +129,7 @@ class LinkResponse {
       isPrivate: json['isPrivate'] ?? false,
       summary: json['summary'],
       selectedDate: json['selectedDate'] ?? json['selected_date'],
+      isFavorite: json['isFavorite'] ?? false,
     );
   }
   Future<List<LinkResponse>> fetchLinksFromApi() async {
@@ -117,7 +142,6 @@ class LinkResponse {
       );
 
       if (response.statusCode == 200) {
-
         Iterable jsonList = jsonDecode(response.body);
 
         return jsonList.map((json) => LinkResponse.fromJson(json)).toList();
@@ -137,7 +161,6 @@ Future<void> deleteLink({required int id, required String deviceUuid}) async {
   final Uri url = Uri.parse("$baseUrl/links/$id");
 
   try {
-
     final response = await http.delete(
       url,
       headers: {"X-Device-UUID": deviceUuid},
@@ -152,5 +175,4 @@ Future<void> deleteLink({required int id, required String deviceUuid}) async {
   } catch (e) {
     print("네트워크 통신 에러: $e");
   }
-  
 }
