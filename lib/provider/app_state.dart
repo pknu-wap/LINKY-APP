@@ -22,10 +22,9 @@ class ContentItem extends ChangeNotifier {
   bool isFavorite;
 
   String get displayTitle {
-
     final normalizedTitle = title.trim();
-    
-    if(normalizedTitle.isEmpty || normalizedTitle.toLowerCase() == 'null'){
+
+    if (normalizedTitle.isEmpty || normalizedTitle.toLowerCase() == 'null') {
       return '요약중입니다...';
     }
     return normalizedTitle;
@@ -69,6 +68,7 @@ class AppState extends ChangeNotifier {
   List<String> get categories => _categories;
   List<ContentItem> get contents => _contents;
 
+  
   Future<void> loadContentsFromDb() async {
     final deviceUuid = await getDeviceUuid();
 
@@ -88,7 +88,7 @@ class AppState extends ChangeNotifier {
 
         _contents.clear();
         kEvents.clear();
-      
+
         for (final jsonMap in linkList) {
           final row = LinkResponse.fromJson(jsonMap);
 
@@ -103,6 +103,7 @@ class AppState extends ChangeNotifier {
               url: row.url,
               category: row.category ?? '전체',
               isPrivate: row.isPrivate,
+              isFavorite: row.isFavorite,
               summary: row.summary ?? '',
               time: selectedDateText,
             ),
@@ -239,6 +240,7 @@ class AppState extends ChangeNotifier {
               "title": item.title,
               "category": item.category,
               "isPrivate": item.isPrivate,
+              "isFavorite": item.isFavorite,
               "selectedDate": item.time != null
                   ? DateTime.parse(item.time!).toIso8601String()
                   : null,
@@ -250,7 +252,6 @@ class AppState extends ChangeNotifier {
       print("[서버 응답 본문]: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-
         int nextId = 1;
         if (_contents.isNotEmpty) {
           nextId =
@@ -273,6 +274,7 @@ class AppState extends ChangeNotifier {
           title: item.title,
           url: item.url,
           isPrivate: item.isPrivate,
+          isFavorite: item.isFavorite,
           time: formattedTime,
           category: verifiedCategory,
         );
@@ -400,10 +402,25 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  void toggleFavorite(ContentItem item) {
-    item.isFavorite = !item.isFavorite;
+  Future<void> toggleFavorite(ContentItem item) async {
+  final deviceUuid = await getDeviceUuid();
+  final newValue = !item.isFavorite;
+
+  item.isFavorite = newValue;
+  notifyListeners();
+
+  final success = await DbService().updateFavorite(
+    id: item.id,
+    deviceUuid: deviceUuid,
+    isFavorite: newValue,
+  );
+
+  if (!success) {
+    item.isFavorite = !newValue;
     notifyListeners();
   }
+}
+
 
   ContentItem? contentById(int id) => _contents.cast<ContentItem?>().firstWhere(
     (item) => item?.id == id,

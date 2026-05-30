@@ -18,6 +18,24 @@ class DbService {
     }
   }
 
+  Future<bool> updateFavorite({
+    required int id,
+    required String deviceUuid,
+    required bool isFavorite,
+  }) async{
+    final response = await http.patch(
+      Uri.parse("$baseUrl/links/$id"),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Device-UUID": deviceUuid,
+      },
+      body: json.encode({
+        "isFavorite": isFavorite,
+      }),
+    );
+    return response.statusCode == 200;
+  }
+
   Future<PostResponse> getPostById(int id) async {
     final response = await http.get(Uri.parse("$baseUrl/links/$id"));
 
@@ -55,6 +73,7 @@ class PostResponse {
   final String category;
   final bool isPrivate;
   final DateTime selectedDate;
+  final bool isFavorite;
 
   PostResponse({
     required this.id,
@@ -63,6 +82,7 @@ class PostResponse {
     required this.category,
     required this.isPrivate,
     required this.selectedDate,
+    required this.isFavorite,
   });
 
   factory PostResponse.fromJson(Map<String, dynamic> json) {
@@ -73,6 +93,7 @@ class PostResponse {
       category: json['category'] as String,
       isPrivate: json['isPrivate'] as bool,
       selectedDate: DateTime.parse(json['selectedDate'] as String),
+      isFavorite: json['isFavorite'] as bool,
     );
   }
 }
@@ -85,6 +106,7 @@ class LinkResponse {
   final bool isPrivate;
   final String? summary;
   final String? selectedDate;
+  final bool isFavorite;
 
   LinkResponse({
     required this.id,
@@ -94,6 +116,7 @@ class LinkResponse {
     required this.isPrivate,
     this.summary,
     this.selectedDate,
+    required this.isFavorite,
   });
 
   factory LinkResponse.fromJson(Map<String, dynamic> json) {
@@ -105,6 +128,7 @@ class LinkResponse {
       isPrivate: json['isPrivate'] ?? false,
       summary: json['summary'],
       selectedDate: json['selectedDate'] ?? json['selected_date'],
+      isFavorite: json['isFavorite'] ?? false,
     );
   }
   Future<List<LinkResponse>> fetchLinksFromApi() async {

@@ -9,6 +9,7 @@ import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:provider/provider.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
+import 'package:std/services/refresh_database.dart';
 import 'package:std/pages/private_page.dart';
 import 'package:std/pages/setting_page.dart';
 import 'package:std/pages/plus_page.dart';
@@ -94,6 +95,7 @@ class MyApp extends StatelessWidget {
       //   '/main': (context) => const MainScreen(),
       // },
       home: const MainScreen(),
+      navigatorObservers: [RefreshDatabase()],
     );
   }
 }
@@ -272,6 +274,8 @@ class _MainScreenState extends State<MainScreen> {
           setState(() {
             _selectedIndex = 0;
           });
+
+          context.read<AppState>().loadContentsFromDb();
         },
       ),
       const CalendarPage(),
@@ -279,10 +283,12 @@ class _MainScreenState extends State<MainScreen> {
     ];
   }
 
-  void _onItemTapped(int index) {
+  Future<void> _onItemTapped(int index) async {
     setState(() {
       _selectedIndex = index;
     });
+
+    await context.read<AppState>().loadContentsFromDb();
   }
 
   void _handleBackButton() {
