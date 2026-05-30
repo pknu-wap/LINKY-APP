@@ -192,7 +192,11 @@ class _MainScreenState extends State<MainScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(
+            color: AppColors.mainGreen,
+          ),
+        ),
       );
 
       try {
@@ -266,7 +270,10 @@ class _MainScreenState extends State<MainScreen> {
   List<Widget> _buildPages() {
     return [
       const CategoryPage(),
-      const SecretGuardWrapperPw(child: PrivatePage()), // 커스텀 패스워드 (현재 0000)
+      SecretGuardWrapperPw(
+        isSelected: _selectedIndex == 1,
+        child: const PrivatePage(),
+      ), // 커스텀 패스워드 (현재 0000)
       PlusPage(
         onSaved: () {
           setState(() {

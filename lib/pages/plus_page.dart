@@ -86,7 +86,9 @@ class _PlusPageState extends State<PlusPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: AppColors.mainGreen),
+      ),
     );
 
     final newItem = ContentItem.create(

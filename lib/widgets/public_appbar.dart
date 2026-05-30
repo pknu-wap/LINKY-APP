@@ -28,7 +28,7 @@ class AppBarDesign extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: AppColors.mainPink,
+                    color: AppColors.mainGreen.withValues(alpha: 0.3),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(5),
