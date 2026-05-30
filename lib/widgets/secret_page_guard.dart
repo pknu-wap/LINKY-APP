@@ -25,7 +25,8 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this); // 감지 종료
+    WidgetsBinding.instance.removeObserver(this);// 감지 종료
+    myController.dispose();
     super.dispose();
   }
 

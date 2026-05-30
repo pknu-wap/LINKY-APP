@@ -7,11 +7,15 @@ class DropdownWidget extends StatefulWidget {
     required this.onCategorySelected, // 값이 바뀌었을 때 실행할 콜백
     required this.itemsList,
     required this.menuWidget,
+    this.onOpend,
+    this.onCanceled,
   });
 
   final Function(String) onCategorySelected;
   final List<String> itemsList;
   final Widget menuWidget;
+  final VoidCallback? onOpend;
+  final VoidCallback? onCanceled;
 
   @override
   State<DropdownWidget> createState() => _DropdownWidgetState();
@@ -22,6 +26,8 @@ class _DropdownWidgetState extends State<DropdownWidget> {
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       color: AppColors.white,
+      onOpened: widget.onOpend,
+      onCanceled: widget.onCanceled,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
 

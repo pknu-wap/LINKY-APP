@@ -49,6 +49,7 @@ class _PlusPageState extends State<PlusPage> {
 
   String? selectedCategory;
   bool isPrivate = false;
+  bool isCategoryFocused = false;
   DateTime? selectedDate;
   int hour = 0;
   int minute = 0;
@@ -112,6 +113,7 @@ class _PlusPageState extends State<PlusPage> {
         titleController.clear();
         selectedCategory = null;
         isPrivate = false;
+        isCategoryFocused = false;
         selectedDate = null;
       });
 
@@ -144,7 +146,13 @@ class _PlusPageState extends State<PlusPage> {
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey,
       body: GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+          setState(() {
+            isCategoryFocused = false;
+          });
+        },
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -273,21 +281,35 @@ class _PlusPageState extends State<PlusPage> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
-                                color: selectedCategory == null
-                                    ? AppColors.bottNavTextGrey
-                                    : AppColors.mainGreen,
-                                width: selectedCategory == null ? 1 : 1.5,
+                                color: isCategoryFocused
+                                    ? AppColors.mainGreen
+                                    : AppColors.bottNavTextGrey,
+                                width: isCategoryFocused ? 1.5 : 1,
                               ),
                               borderRadius: BorderRadius.circular(14),
                             ),
                             width: double.infinity,
-                            padding: const EdgeInsets.only(left: 13, right: 12),
+                            padding: const EdgeInsets.only(
+                              left: 13,
+                              right: 12,
+                            ),
                             height: 56,
                             child: DropdownWidget(
                               itemsList: categoryList,
+                              onOpend: () {
+                                setState(() {
+                                  isCategoryFocused = true;
+                                });
+                              },
+                              onCanceled: () {
+                                setState(() {
+                                  isCategoryFocused = false;
+                                });
+                              },
                               onCategorySelected: (value) {
                                 setState(() {
                                   selectedCategory = value;
+                                  isCategoryFocused = false;
                                 });
                               },
                               menuWidget: Row(
@@ -310,6 +332,7 @@ class _PlusPageState extends State<PlusPage> {
                               ),
                             ),
                           ),
+
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
