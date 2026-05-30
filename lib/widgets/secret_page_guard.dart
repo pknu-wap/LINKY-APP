@@ -7,7 +7,12 @@ import 'package:std/constants.dart';
 
 class SecretGuardWrapperPw extends StatefulWidget {
   final Widget child;
-  const SecretGuardWrapperPw({super.key, required this.child});
+  final bool isSelected;
+  const SecretGuardWrapperPw({
+    super.key,
+    required this.child,
+    this.isSelected = false,
+  });
 
   @override
   State<SecretGuardWrapperPw> createState() => _SecretGuardWrapperState();
@@ -25,9 +30,21 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);// 감지 종료
-    myController.dispose();
+    WidgetsBinding.instance.removeObserver(this); // 감지 종료
+    pwController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant SecretGuardWrapperPw oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 페이지가 선택되지 않았다가 선택된 경우 잠금 상태로 전환
+    if (!oldWidget.isSelected && widget.isSelected) {
+      setState(() {
+        _isLocked = true;
+        pwController.clear();
+      });
+    }
   }
 
   @override
@@ -60,7 +77,7 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
     }
   }
 
-  final myController = TextEditingController();
+  final pwController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -138,13 +155,13 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
                                 ),
                               ),
                               style: TextStyle(fontSize: 16),
-                              controller: myController,
+                              controller: pwController,
                             ),
                           ),
                         ),
                         const SizedBox(height: 13),
                         InkWell(
-                          onTap: () => _tryUnlock(myController.text),
+                          onTap: () => _tryUnlock(pwController.text),
                           child: Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: 25,
