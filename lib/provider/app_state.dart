@@ -68,7 +68,26 @@ class AppState extends ChangeNotifier {
   List<String> get categories => _categories;
   List<ContentItem> get contents => _contents;
 
-  
+  Future<void> saveCategories() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('categories', _categories);
+  }
+
+  Future<void> loadSavedCategories() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedCategories = prefs.getStringList('categories') ?? [];
+
+    _categories
+      ..clear()
+      ..addAll(['전체', '즐겨찾기']);
+
+    for (final category in savedCategories) {
+      if (!_categories.contains(category)) {
+        _categories.add(category);
+      }
+    }
+  }
+
   Future<void> loadContentsFromDb() async {
     final deviceUuid = await getDeviceUuid();
 
@@ -89,6 +108,8 @@ class AppState extends ChangeNotifier {
         _contents.clear();
         kEvents.clear();
 
+        await loadSavedCategories();
+
         for (final jsonMap in linkList) {
           final row = LinkResponse.fromJson(jsonMap);
 
@@ -96,12 +117,22 @@ class AppState extends ChangeNotifier {
           final title = row.title?.trim() ?? '';
           final selectedDateText = row.selectedDate;
 
+          final category = row.category?.trim().isNotEmpty == true
+              ? row.category!.trim()
+              : '전체';
+
+          if (category != '전체' &&
+              category != '즐겨찾기' &&
+              !_categories.contains(category)) {
+            _categories.add(category);
+          }
+
           _contents.add(
             ContentItem(
               id: id,
               title: title,
               url: row.url,
-              category: row.category ?? '전체',
+              category: category,
               isPrivate: row.isPrivate,
               isFavorite: row.isFavorite,
               summary: row.summary ?? '',
@@ -176,15 +207,20 @@ class AppState extends ChangeNotifier {
   List<ContentItem> get privateContents =>
       _contents.where((item) => item.isPrivate).toList();
 
-  void addCategory(String categoryName) {
-    if (!_categories.contains(categoryName)) {
-      _categories.add(categoryName);
+  Future<void> addCategory(String categoryName) async {
+    final name = categoryName.trim();
+    if (name.isEmpty) return;
+
+    if (!_categories.contains(name)) {
+      _categories.add(name);
+      await saveCategories();
       notifyListeners();
     }
   }
 
-  void removeCategory(String categoryName) {
-    if (categoryName == '전체') return;
+  Future<void> removeCategory(String categoryName) async {
+    if (categoryName == '전체' || categoryName == '즐겨찾기') return;
+
     _categories.remove(categoryName);
 
     for (var content in _contents) {
@@ -192,6 +228,8 @@ class AppState extends ChangeNotifier {
         content.category = '전체';
       }
     }
+
+    await saveCategories();
     notifyListeners();
   }
 
@@ -348,6 +386,21 @@ class AppState extends ChangeNotifier {
         newTime = null;
       }
 
+      final success = await updateLink(
+        id: id,
+        deviceUuid: await getDeviceUuid(),
+        title: newTitle,
+        url: newUrl,
+        category: newCategory ?? _contents[index].category,
+        isPrivate: _contents[index].isPrivate,
+        selectedDate: newTime,
+      );
+
+      if (!success) {
+        print("콘텐츠 업데이트 실패: 서버 오류");
+        return;
+      }
+
       _contents[index].title = newTitle;
       _contents[index].url = newUrl;
       if (newTime != null) {
@@ -402,25 +455,54 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  Future<void> toggleFavorite(ContentItem item) async {
-  final deviceUuid = await getDeviceUuid();
-  final newValue = !item.isFavorite;
+  Future<bool> updateLink({
+    required int id,
+    required String deviceUuid,
+    required String title,
+    required String url,
+    required String category,
+    required bool isPrivate,
+    String? selectedDate,
+  }) async {
+    final response = await http.patch(
+      Uri.parse("$baseUrl/links/$id"),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Device-UUID": deviceUuid,
+      },
+      body: jsonEncode({
+        "title": title,
+        "url": url,
+        "category": category,
+        "isPrivate": isPrivate,
+        "selectedDate": selectedDate,
+      }),
+    );
 
-  item.isFavorite = newValue;
-  notifyListeners();
+    print("콘텐츠 수정 상태코드: ${response.statusCode}");
+    print("콘텐츠 수정 응답: ${response.body}");
 
-  final success = await DbService().updateFavorite(
-    id: item.id,
-    deviceUuid: deviceUuid,
-    isFavorite: newValue,
-  );
-
-  if (!success) {
-    item.isFavorite = !newValue;
-    notifyListeners();
+    return response.statusCode == 200;
   }
-}
 
+  Future<void> toggleFavorite(ContentItem item) async {
+    final deviceUuid = await getDeviceUuid();
+    final newValue = !item.isFavorite;
+
+    item.isFavorite = newValue;
+    notifyListeners();
+
+    final success = await DbService().updateFavorite(
+      id: item.id,
+      deviceUuid: deviceUuid,
+      isFavorite: newValue,
+    );
+
+    if (!success) {
+      item.isFavorite = !newValue;
+      notifyListeners();
+    }
+  }
 
   ContentItem? contentById(int id) => _contents.cast<ContentItem?>().firstWhere(
     (item) => item?.id == id,

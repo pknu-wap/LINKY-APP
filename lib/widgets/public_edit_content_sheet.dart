@@ -106,7 +106,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
                 _circleButton(
                   Icons.check_rounded,
                   AppColors.mainGreen,
-                  () {
+                  () async {
                     final verifier = UrlVerification();
                     late final String verifiedUrl;
 
@@ -134,7 +134,25 @@ class _EditContentSheetState extends State<EditContentSheet> {
                       newTime: _dateController.text,
                       newCategory: _selectedCategory,
                     );
-                    Navigator.pop(context);
+                    try {
+                      await context.read<AppState>().updateContent(
+                        id: widget.contentID,
+                        newTitle: titleController.text,
+                        newUrl: verifiedUrl,
+                        newTime: _dateController.text,
+                        newCategory: _selectedCategory,
+                      );
+
+                      if (!context.mounted) return;
+                      Navigator.pop(context);
+                    } catch (e) {
+                      if (!context.mounted) return;
+                      showCustomSnackBar(
+                        context,
+                        message: '수정 내용을 저장하지 못했어요.',
+                        isError: true,
+                      );
+                    }
                   },
                 ),
               ],
