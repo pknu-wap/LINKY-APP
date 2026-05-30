@@ -64,48 +64,48 @@ class DialogPopup extends StatelessWidget {
             if (boxType == BoxType.warning)
               SizedBox(
                 height: 52,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () => Navigator.pop(context),
-                          child: Center(
-                            child: Text(
-                              '취소',
-                              style: GoogleFonts.inter(
-                                color: AppColors.mainBlue,
-                                fontSize: 20,
-                              ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () => Navigator.pop(context),
+                        child: Center(
+                          child: Text(
+                            '취소',
+                            style: GoogleFonts.inter(
+                              color: AppColors.mainBlue,
+                              fontSize: 20,
                             ),
                           ),
                         ),
                       ),
-                      VerticalDivider(
-                        thickness: 0.38,
-                        width: 1,
-                      ),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {
-                            final shouldClose = onConfirm();
-                            if (shouldClose) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: Center(
-                            child: Text(
-                              confirmText,
-                              style: GoogleFonts.inter(
-                                color: AppColors.mainRed,
-                                fontSize: 20,
-                              ),
+                    ),
+                    VerticalDivider(
+                      thickness: 0.38,
+                      width: 1,
+                    ),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          final shouldClose = onConfirm();
+                          if (shouldClose) {
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Center(
+                          child: Text(
+                            confirmText,
+                            style: GoogleFonts.inter(
+                              color: AppColors.mainRed,
+                              fontSize: 20,
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
             if (boxType == BoxType.alert)
               SizedBox(
                 height: 52,

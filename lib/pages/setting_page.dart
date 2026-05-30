@@ -102,9 +102,20 @@ class SettingPageState extends State<SettingPage> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  TextField(
-                    obscureText: true,
-                    decoration: inputBox("비밀번호를 입력해주세요."),
+                  Theme(
+                    data: Theme.of(context).copyWith(
+                      textSelectionTheme: TextSelectionThemeData(
+                        cursorColor: AppColors.mainGreen,
+                        selectionColor: AppColors.mainGreen.withValues(
+                          alpha: 0.3,
+                        ),
+                        selectionHandleColor: AppColors.mainGreen,
+                      ),
+                    ),
+                    child: TextField(
+                      obscureText: true,
+                      decoration: inputBox("비밀번호를 입력해주세요."),
+                    ),
                   ),
 
                   const SizedBox(height: 30),
@@ -119,6 +130,7 @@ class SettingPageState extends State<SettingPage> {
                             title: '데이터 초기화 하시겠어요?',
                             boxType: BoxType.warning,
                             onConfirm: () {
+                              _onResetConfirm();
                               print('초기화 완료');
                               return true;
                             },

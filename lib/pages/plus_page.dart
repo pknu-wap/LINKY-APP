@@ -189,60 +189,84 @@ class _PlusPageState extends State<PlusPage> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          TextField(
-                            controller: urlController,
-                            maxLength: 1024,
-                            decoration: InputDecoration(
-                              labelStyle: GoogleFonts.inter(
-                                color: AppColors.textGrey,
-                              ),
-                              labelText: '링크 URL',
-                              hintText: 'https://example.com',
-                              filled: true,
-                              fillColor: AppColors.white,
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppColors.bottNavTextGrey,
-                                  width: 1,
+
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              textSelectionTheme: TextSelectionThemeData(
+                                cursorColor: AppColors.mainGreen,
+                                selectionColor: AppColors.mainGreen.withValues(
+                                  alpha: 0.3,
                                 ),
+                                selectionHandleColor: AppColors.mainGreen,
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppColors.mainGreen,
-                                  width: 1.5,
+                            ),
+                            child: TextField(
+                              controller: urlController,
+                              maxLength: 1024,
+                              decoration: InputDecoration(
+                                labelStyle: GoogleFonts.inter(
+                                  color: AppColors.textGrey,
+                                ),
+                                labelText: '링크 URL',
+                                hintText: 'https://example.com',
+                                filled: true,
+                                fillColor: AppColors.white,
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.bottNavTextGrey,
+                                    width: 1,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.mainGreen,
+                                    width: 1.5,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                           const SizedBox(height: 10),
-                          TextField(
-                            controller: titleController,
-                            maxLength: 50,
-                            decoration: InputDecoration(
-                              labelStyle: GoogleFonts.inter(
-                                color: AppColors.textGrey,
-                              ),
-                              labelText: '제목',
-                              filled: true,
-                              fillColor: AppColors.white,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppColors.bottNavTextGrey,
-                                  width: 1,
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              textSelectionTheme: TextSelectionThemeData(
+                                cursorColor: AppColors.mainGreen,
+                                selectionColor: AppColors.mainGreen.withValues(
+                                  alpha: 0.3,
                                 ),
+                                selectionHandleColor: AppColors.mainGreen,
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
-                                  color: AppColors.mainGreen,
-                                  width: 1.5,
+                            ),
+                            child: TextField(
+                              controller: titleController,
+                              maxLength: 50,
+                              decoration: InputDecoration(
+                                labelStyle: GoogleFonts.inter(
+                                  color: AppColors.textGrey,
+                                ),
+                                labelText: '제목',
+                                filled: true,
+                                fillColor: AppColors.white,
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.bottNavTextGrey,
+                                    width: 1,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.mainGreen,
+                                    width: 1.5,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
+
                           const SizedBox(height: 10),
                           Container(
                             alignment: Alignment.centerLeft,
@@ -302,7 +326,8 @@ class _PlusPageState extends State<PlusPage> {
                                 child: Switch(
                                   value: isPrivate,
                                   activeThumbColor: AppColors.mainGreen,
-                                  activeTrackColor: AppColors.mainGreen.withValues(alpha: 0.4),
+                                  activeTrackColor: AppColors.mainGreen
+                                      .withValues(alpha: 0.4),
                                   inactiveThumbColor: AppColors.white,
                                   inactiveTrackColor: AppColors.bottNavTextGrey,
                                   onChanged: (value) {

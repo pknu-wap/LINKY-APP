@@ -37,6 +37,7 @@ class _CategoryPageState extends State<CategoryPage> {
       builder: (BuildContext context) {
         return SimpleDialog(
           backgroundColor: AppColors.white,
+
           title: Text(
             categoryName,
             style: TextStyle(fontWeight: FontWeight.bold),
@@ -56,37 +57,47 @@ class _CategoryPageState extends State<CategoryPage> {
                     return AlertDialog(
                       backgroundColor: AppColors.white,
                       title: Text('카테고리 이름 수정'),
-                      content: TextField(
-                        controller: categoryController,
-                        cursorColor: AppColors.mainGreen,
-                        decoration: InputDecoration(
-                          hintText: '수정할 카테고리 이름을 입력해주세요',
-                          hintStyle: const TextStyle(
-                            color: AppColors.textGrey,
-                            fontSize: 14,
-                          ),
-                          filled: true,
-                          fillColor: AppColors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(
-                              color: AppColors.outlineGrey,
+                      content: Theme(
+                        data: Theme.of(context).copyWith(
+                          textSelectionTheme: TextSelectionThemeData(
+                            cursorColor: AppColors.mainGreen,
+                            selectionColor: AppColors.mainGreen.withValues(
+                              alpha: 0.3,
                             ),
+                            selectionHandleColor: AppColors.mainGreen,
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(
-                              color: AppColors.outlineGrey,
+                        ),
+                        child: TextField(
+                          controller: categoryController,
+                          decoration: InputDecoration(
+                            hintText: '수정할 카테고리 이름을 입력해주세요',
+                            hintStyle: const TextStyle(
+                              color: AppColors.textGrey,
+                              fontSize: 14,
                             ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: const BorderSide(
-                              color: AppColors.mainGreen,
+                            filled: true,
+                            fillColor: AppColors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 15,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: AppColors.outlineGrey,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(
+                                color: AppColors.outlineGrey,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                color: AppColors.mainGreen,
+                              ),
                             ),
                           ),
                         ),
@@ -104,7 +115,7 @@ class _CategoryPageState extends State<CategoryPage> {
                       actions: [
                         TextButton(
                           style: TextButton.styleFrom(
-                            foregroundColor: AppColors.mainGreen, 
+                            foregroundColor: AppColors.mainGreen,
                           ),
                           onPressed: () {
                             Navigator.pop(context);
@@ -297,18 +308,34 @@ class _CategoryPageState extends State<CategoryPage> {
                           return DialogPopup(
                             title: "카테고리 추가",
                             height: 160,
-                            content: TextField(
-                              controller: categoryController,
-                              cursorColor: AppColors.darkGreen,
-                              decoration: InputDecoration(
-                                hintText: "카테고리를 입력해주세요.",
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    color: AppColors.darkGreen,
+                            content: Theme(
+                              data: Theme.of(context).copyWith(
+                                textSelectionTheme: TextSelectionThemeData(
+                                  cursorColor: AppColors.mainGreen,
+                                  selectionColor: AppColors.mainGreen
+                                      .withValues(
+                                        alpha: 0.3,
+                                      ),
+                                  selectionHandleColor: AppColors.mainGreen,
+                                ),
+                              ),
+                              child: TextField(
+                                controller: categoryController,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  contentPadding: const EdgeInsets.only(
+                                    bottom: 1,
+                                  ),
+                                  hintText: "카테고리를 입력해주세요.",
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: AppColors.darkGreen,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
+
                             confirmText: "확인",
                             boxType: BoxType.warning,
                             onConfirm: () {

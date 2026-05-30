@@ -8,7 +8,8 @@ class DbService {
     final response = await http.get(Uri.parse("$baseUrl/links"));
 
     if (response.statusCode == 200) {
-      final data = json.decode(utf8.decode(response.bodyBytes)) as List<dynamic>;
+      final data =
+          json.decode(utf8.decode(response.bodyBytes)) as List<dynamic>;
 
       return data
           .map<PostResponse>((json) => PostResponse.fromJson(json))
@@ -117,7 +118,6 @@ class LinkResponse {
       );
 
       if (response.statusCode == 200) {
-
         Iterable jsonList = jsonDecode(response.body);
 
         return jsonList.map((json) => LinkResponse.fromJson(json)).toList();
@@ -137,7 +137,6 @@ Future<void> deleteLink({required int id, required String deviceUuid}) async {
   final Uri url = Uri.parse("$baseUrl/links/$id");
 
   try {
-
     final response = await http.delete(
       url,
       headers: {"X-Device-UUID": deviceUuid},
@@ -152,5 +151,4 @@ Future<void> deleteLink({required int id, required String deviceUuid}) async {
   } catch (e) {
     print("네트워크 통신 에러: $e");
   }
-  
 }
