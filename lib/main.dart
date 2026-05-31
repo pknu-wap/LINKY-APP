@@ -215,6 +215,11 @@ class _MainScreenState extends State<MainScreen> {
                 "category": "전체",
                 "isPrivate": false,
                 "selectedDate": null,
+                "categories": context
+                    .read<AppState>()
+                    .categories
+                    .where((category) => category != '전체' && category != '즐겨찾기')
+                    .toList(),
               }),
             )
             .timeout(const Duration(seconds: 5));
