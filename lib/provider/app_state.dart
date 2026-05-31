@@ -73,6 +73,17 @@ class AppState extends ChangeNotifier {
     await prefs.setStringList('categories', _categories);
   }
 
+  Future<void> resetCategories() async {
+    _categories
+      ..clear()
+      ..addAll(['전체', '즐겨찾기']);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('categories', []);
+
+    notifyListeners();
+  }
+
   Future<void> loadSavedCategories() async {
     final prefs = await SharedPreferences.getInstance();
     final savedCategories = prefs.getStringList('categories') ?? [];
@@ -282,6 +293,9 @@ class AppState extends ChangeNotifier {
               "selectedDate": item.time != null
                   ? DateTime.parse(item.time!).toIso8601String()
                   : null,
+              "categories": _categories
+                  .where((category) => category != '전체' && category != '즐겨찾기')
+                  .toList(),
             }),
           )
           .timeout(const Duration(seconds: 5));

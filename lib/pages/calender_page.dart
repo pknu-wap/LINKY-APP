@@ -172,6 +172,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 contentID: event.contentID,
                 onActionDone: () => _updatePage(event.contentID),
                 context: context,
+                deleteTitle: '해당 일정을 삭제하시겠어요?',
               ),
             ],
           ),

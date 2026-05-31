@@ -9,11 +9,13 @@ class PopupButton extends StatelessWidget {
     required this.contentID,
     required this.onActionDone,
     required this.context,
+    this.deleteTitle = '해당 링크를 삭제하시겠어요?',
   });
 
   final int contentID;
   final VoidCallback onActionDone;
   final BuildContext context;
+  final String deleteTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class PopupButton extends StatelessWidget {
             barrierDismissible: true,
             builder: (context) {
               return DialogPopup(
-                title: '해당 링크를 삭제하시겠어요?',
+                title: deleteTitle,
                 onConfirm: () {
                   onActionDone();
                   return true;
@@ -91,7 +93,15 @@ class PopupButton extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
-      child: SizedBox(width: 24, height: 24, child: Icon(Icons.more_vert)),
+      child: SizedBox.square(
+        dimension: 28,
+        child: Center(
+          child: Icon(
+            Icons.more_vert,
+            size: 24,
+          ),
+        ),
+      ),
     );
   }
 }
