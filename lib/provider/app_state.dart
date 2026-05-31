@@ -63,6 +63,8 @@ class ContentItem extends ChangeNotifier {
 }
 
 class AppState extends ChangeNotifier {
+  bool isLoadingContents = false;
+
   Timer? summaryPollingTimer;
 
   final List<String> _categories = ['전체', '즐겨찾기'];
@@ -95,9 +97,11 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> loadContentsFromDb() async {
-    final deviceUuid = await getDeviceUuid();
+    if (isLoadingContents) return;
+    isLoadingContents = true;
 
     try {
+      final deviceUuid = await getDeviceUuid();
       final serverUrl = Uri.parse("$baseUrl/links");
 
       final headers = {
@@ -108,8 +112,16 @@ class AppState extends ChangeNotifier {
       final response = await http.get(serverUrl, headers: headers);
 
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        final List<dynamic> linkList = responseData['data'] ?? responseData;
+        final responseData = json.decode(utf8.decode(response.bodyBytes));
+
+        final List<dynamic> linkList;
+        if (responseData is Map<String, dynamic>) {
+          linkList = responseData['data'] as List<dynamic>? ?? [];
+        } else if (responseData is List<dynamic>) {
+          linkList = responseData;
+        } else {
+          linkList = [];
+        }
 
         _contents.clear();
         kEvents.clear();
@@ -171,9 +183,16 @@ class AppState extends ChangeNotifier {
         }
 
         if (kEvents.isNotEmpty) {
-          await AlarmService.syncEventsWithAlarms(
-            kEvents.cast<DateTime, List<dynamic>>(),
+          final eventsSnapshot = Map<DateTime, List<dynamic>>.fromEntries(
+            kEvents.entries.map(
+              (entry) => MapEntry(
+                entry.key,
+                List<dynamic>.from(entry.value),
+              ),
+            ),
           );
+
+          await AlarmService.syncEventsWithAlarms(eventsSnapshot);
         }
 
         final hasRunningSummary = _contents.any(
@@ -190,8 +209,11 @@ class AppState extends ChangeNotifier {
       } else {
         throw Exception("서버 조회 실패 코드: ${response.statusCode}");
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print("로드 에러 발생: $e");
+      print(stackTrace);
+    } finally {
+      isLoadingContents = false;
     }
   }
 
@@ -529,6 +551,35 @@ class AppState extends ChangeNotifier {
     print("콘텐츠 수정 응답: ${response.body}");
 
     return response.statusCode == 200;
+  }
+
+  Future<void> resetAllData() async {
+    stopSummaryPolling();
+
+    final deviceUuid = await getDeviceUuid();
+
+    final success = await DbService().resetData(deviceUuid: deviceUuid);
+    if (!success) {
+      throw Exception('초기화 실패');
+    }
+
+    final contentIds = _contents.map((item) => item.id).toList();
+    if (contentIds.isNotEmpty) {
+      final cancelFutures = contentIds.map(
+        (id) => AlarmService.cancelEventAlarm(id),
+      );
+      await Future.wait(cancelFutures);
+    }
+
+    _contents.clear();
+    kEvents.clear();
+
+    _categories
+      ..clear()
+      ..addAll(['전체', '즐겨찾기']);
+    await saveCategories();
+
+    notifyListeners();
   }
 
   Future<void> toggleFavorite(ContentItem item) async {

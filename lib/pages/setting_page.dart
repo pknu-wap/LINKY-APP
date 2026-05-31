@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:std/constants.dart';
-import 'package:std/main.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/services/db_service.dart';
 import 'package:std/snackbar.dart';
@@ -42,22 +40,26 @@ class SettingPageState extends State<SettingPage> {
   }
 
   Future<void> _onResetConfirm() async {
-    final deviceUuid = await context.read<AppState>().getDeviceUuid();
-    final response = await http.get(Uri.parse("$baseUrl/links"));
-    final isSuccess = await _dbService.resetData(deviceUuid: deviceUuid);
+  try {
+    await context.read<AppState>().resetAllData();
 
     if (!mounted) return;
 
-    print('reset deviceUuid: $deviceUuid');
-    print('reset status: ${response.statusCode}');
-    print('reset body: ${response.body}');
+    showCustomSnackBar(
+      context,
+      message: '데이터가 초기화되었습니다.',
+      isError: false,
+    );
+  } catch (e) {
+    if (!mounted) return;
 
     showCustomSnackBar(
       context,
-      message: isSuccess ? '데이터가 초기화되었습니다.' : '초기화에 실패했습니다.',
-      isError: !isSuccess,
+      message: '초기화에 실패했습니다.',
+      isError: true,
     );
   }
+}
 
   @override
   void dispose() {
