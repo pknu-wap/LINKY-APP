@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -17,6 +18,7 @@ class ContentItem extends ChangeNotifier {
   String title;
   String url;
   String? summary;
+  String? summaryStatus;
   String? time;
   bool isPrivate;
   bool isFavorite;
@@ -37,6 +39,7 @@ class ContentItem extends ChangeNotifier {
     required this.time,
     this.category = '전체',
     this.summary,
+    this.summaryStatus,
     required this.isPrivate,
     this.isFavorite = false,
   });
@@ -47,6 +50,7 @@ class ContentItem extends ChangeNotifier {
     required this.time,
     this.category = '전체',
     this.summary,
+    this.summaryStatus,
     required this.isPrivate,
     this.isFavorite = false,
   }) : id = -1;
@@ -59,6 +63,8 @@ class ContentItem extends ChangeNotifier {
 }
 
 class AppState extends ChangeNotifier {
+  Timer? summaryPollingTimer;
+
   final List<String> _categories = ['전체', '즐겨찾기'];
 
   final List<ContentItem> _contents = [];
@@ -136,6 +142,7 @@ class AppState extends ChangeNotifier {
               isPrivate: row.isPrivate,
               isFavorite: row.isFavorite,
               summary: row.summary ?? '',
+              summaryStatus: row.summaryStatus,
               time: selectedDateText,
             ),
           );
@@ -169,6 +176,16 @@ class AppState extends ChangeNotifier {
           );
         }
 
+        final hasRunningSummary = _contents.any(
+          (item) =>
+              item.summaryStatus == 'PENDING' ||
+              item.summaryStatus == 'PROCESSING',
+        );
+
+        if (hasRunningSummary) {
+          startSummaryPolling();
+        }
+
         notifyListeners();
       } else {
         throw Exception("서버 조회 실패 코드: ${response.statusCode}");
@@ -176,6 +193,32 @@ class AppState extends ChangeNotifier {
     } catch (e) {
       print("로드 에러 발생: $e");
     }
+  }
+
+  void startSummaryPolling() {
+    if (summaryPollingTimer?.isActive == true) return;
+
+    summaryPollingTimer = Timer.periodic(
+      const Duration(seconds: 3),
+      (_) async {
+        await loadContentsFromDb();
+
+        final hasRunningSummary = _contents.any(
+          (item) =>
+              item.summaryStatus == 'PENDING' ||
+              item.summaryStatus == 'PROCESSING',
+        );
+
+        if (!hasRunningSummary) {
+          stopSummaryPolling();
+        }
+      },
+    );
+  }
+
+  void stopSummaryPolling() {
+    summaryPollingTimer?.cancel();
+    summaryPollingTimer = null;
   }
 
   List<int> getContentIdsByCategory(String categoryName) {
@@ -282,6 +325,9 @@ class AppState extends ChangeNotifier {
               "selectedDate": item.time != null
                   ? DateTime.parse(item.time!).toIso8601String()
                   : null,
+              "categories": _categories
+                  .where((category) => category != '전체' && category != '즐겨찾기')
+                  .toList(),
             }),
           )
           .timeout(const Duration(seconds: 5));
