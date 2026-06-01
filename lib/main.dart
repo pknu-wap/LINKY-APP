@@ -7,6 +7,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_sharing_intent/model/sharing_file.dart';
 import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:std/pages/calender_page.dart';
 import 'package:std/pages/category_page.dart';
 import 'package:std/services/refresh_database.dart';
@@ -16,7 +17,6 @@ import 'package:std/pages/plus_page.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/services/url_verification.dart';
 import 'package:std/widgets/secret_page_guard.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter/services.dart';
 import 'package:std/snackbar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -25,6 +25,11 @@ import 'constants.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 const String baseUrl = "http://3.34.52.216:8080";
 final serverUrl = Uri.parse("$baseUrl/links");
+
+enum LockWith { customPw, localAuth }
+
+LockWith? lockWith;
+String? customPw;
 
 @pragma('vm:entry-point')
 void alarmCallback(int id) async {
@@ -59,15 +64,24 @@ void alarmCallback(int id) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await KakaoSdk.init(
-    nativeAppKey: '입력',
-  );
   await AndroidAlarmManager.initialize();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  final prefs = await SharedPreferences.getInstance();
+  if (prefs.getBool('is_first_run') ?? true) {
+    await prefs.remove('lock_method');
+    await prefs.remove('custom_pw');
+    await prefs.setBool('is_first_run', false);
+  }
+
+  final savedMethod = prefs.getString('lock_method');
+  lockWith = LockWith.values.asNameMap()[savedMethod];
+
+  customPw = prefs.getString('custom_pw');
 
   runApp(
     MultiProvider(
@@ -272,7 +286,7 @@ class _MainScreenState extends State<MainScreen> {
   List<Widget> _buildPages() {
     return [
       const CategoryPage(),
-      SecretGuardWrapperPw(
+      SecretGuardWrapper(
         isSelected: _selectedIndex == 1,
         child: const PrivatePage(),
       ), // 커스텀 패스워드 (현재 0000)
