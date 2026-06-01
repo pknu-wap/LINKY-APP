@@ -81,16 +81,16 @@ class AppState extends ChangeNotifier {
     await prefs.setStringList('categories', _categories);
   }
 
-  Future<void> resetCategories() async {
-    _categories
-      ..clear()
-      ..addAll(['전체', '즐겨찾기']);
+  // Future<void> resetCategories() async {
+  //   _categories
+  //     ..clear()
+  //     ..addAll(['전체', '즐겨찾기']);
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('categories', []);
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setStringList('categories', []);
 
-    notifyListeners();
-  }
+  //   notifyListeners();
+  // }
 
   Future<void> loadSavedCategories() async {
     final prefs = await SharedPreferences.getInstance();

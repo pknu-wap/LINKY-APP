@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
-import 'package:std/main.dart';
 import 'package:std/pages/private_setting_page.dart';
 import 'package:std/provider/app_state.dart';
-import 'package:std/services/db_service.dart';
 import 'package:std/snackbar.dart';
 import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_messagebox.dart';
@@ -18,7 +16,6 @@ class SettingPage extends StatefulWidget {
 }
 
 class SettingPageState extends State<SettingPage> {
-  final DbService _dbService = DbService();
 
   Future<void> _onResetConfirm() async {
     try {
