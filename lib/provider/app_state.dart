@@ -414,12 +414,6 @@ class AppState extends ChangeNotifier {
               minute: parsedTime.minute,
             ),
           );
-
-          await AlarmService.scheduleEventAlarm(
-            contentID: nextId,
-            title: item.title,
-            scheduledTime: parsedTime,
-          );
         }
 
         notifyListeners();

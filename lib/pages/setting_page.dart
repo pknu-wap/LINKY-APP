@@ -21,32 +21,26 @@ class SettingPageState extends State<SettingPage> {
   final DbService _dbService = DbService();
 
   Future<void> _onResetConfirm() async {
-  try {
-    await context.read<AppState>().resetAllData();
+    try {
+      await context.read<AppState>().resetAllData();
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    if (isSuccess) {
-      await context.read<AppState>().resetCategories();
+      showCustomSnackBar(
+        context,
+        message: '데이터가 초기화되었습니다.',
+        isError: false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      showCustomSnackBar(
+        context,
+        message: '초기화에 실패했습니다.',
+        isError: true,
+      );
     }
-
-    if (!mounted) return;
-
-    showCustomSnackBar(
-      context,
-      message: '데이터가 초기화되었습니다.',
-      isError: false,
-    );
-  } catch (e) {
-    if (!mounted) return;
-
-    showCustomSnackBar(
-      context,
-      message: '초기화에 실패했습니다.',
-      isError: true,
-    );
   }
-}
 
   @override
   Widget build(BuildContext context) {
