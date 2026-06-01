@@ -117,9 +117,10 @@ class _CategoryPageState extends State<CategoryPage> {
                           style: TextButton.styleFrom(
                             foregroundColor: AppColors.mainGreen,
                           ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            newCategoryName = categoryController.text;
+                          onPressed: () async {
+                            final newCategoryName = categoryController.text
+                                .trim();
+
                             if (newCategoryName.isEmpty ||
                                 newCategoryName == '전체' ||
                                 newCategoryName == '즐겨찾기') {
@@ -128,31 +129,51 @@ class _CategoryPageState extends State<CategoryPage> {
                                 message: "올바르지 않은 카테고리명입니다",
                                 isError: true,
                               );
-                            } else {
-                              bool isValid = !context
-                                  .read<AppState>()
-                                  .categoryNameCheck(newCategoryName);
-                              if (isValid) {
-                                context.read<AppState>().updateCategory(
+                              return;
+                            }
+
+                            if (newCategoryName != categoryName &&
+                                context.read<AppState>().categoryNameCheck(
+                                  newCategoryName,
+                                )) {
+                              showCustomSnackBar(
+                                context,
+                                message: '이미 존재하는 카테고리명입니다.',
+                                isError: true,
+                              );
+                              return;
+                            }
+
+                            final success = await context
+                                .read<AppState>()
+                                .updateCategory(
                                   oldCategoryName: categoryName,
                                   newCategoryName: newCategoryName,
                                 );
-                                if (selectedCategory == categoryName) {
-                                  selectedCategory = newCategoryName;
-                                }
 
-                                showCustomSnackBar(
-                                  context,
-                                  message: "카테고리 이름이 수정되었습니다.",
-                                );
-                              } else {
-                                showCustomSnackBar(
-                                  context,
-                                  message: "이미 존재하는 카테고리명입니다.",
-                                  isError: true,
-                                );
-                              }
+                            if (!context.mounted) return;
+
+                            if (!success) {
+                              showCustomSnackBar(
+                                context,
+                                message: '카테고리명 수정을 실패했습니다.',
+                                isError: true,
+                              );
+                              return;
                             }
+
+                            if (selectedCategory == categoryName) {
+                              setState(() {
+                                selectedCategory = newCategoryName;
+                              });
+                            }
+
+                            Navigator.pop(context);
+                            
+                            showCustomSnackBar(
+                              context,
+                              message: '카테고리명이 수정되었습니다.',
+                            );
                           },
                           child: Text(
                             "확인",

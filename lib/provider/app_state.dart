@@ -309,13 +309,46 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateCategory({
+  Future<bool> updateCategory({
     required String oldCategoryName,
     required String newCategoryName,
-  }) {
-    int categoryIndex = _categories.indexOf(oldCategoryName);
+  }) async {
+    final categoryIndex = _categories.indexOf(oldCategoryName);
+
+    if (categoryIndex == -1) {
+      return false;
+    }
+
+    final affectedContents = _contents
+        .where((item) => item.category == oldCategoryName)
+        .toList();
+
+    final deviceUuid = await getDeviceUuid();
+
+    for (final item in affectedContents) {
+      final success = await updateLink(
+        id: item.id,
+        deviceUuid: deviceUuid,
+        title: item.title,
+        url: item.url,
+        category: newCategoryName,
+        isPrivate: item.isPrivate,
+        selectedDate: item.time,
+      );
+      if (!success) {
+        return false;
+      }
+    }
+
     _categories[categoryIndex] = newCategoryName;
+
+    for (final item in affectedContents) {
+      item.category = newCategoryName;
+    }
+
+    await saveCategories();
     notifyListeners();
+    return true;
   }
 
   void reorderCategories(int oldIndex, int newIndex) {
