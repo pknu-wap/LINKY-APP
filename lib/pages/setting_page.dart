@@ -46,6 +46,8 @@ class SettingPageState extends State<SettingPage> {
     final response = await http.get(Uri.parse("$baseUrl/links"));
     final isSuccess = await _dbService.resetData(deviceUuid: deviceUuid);
 
+    if (!mounted) return;
+
     if (isSuccess) {
       await context.read<AppState>().resetCategories();
     }
