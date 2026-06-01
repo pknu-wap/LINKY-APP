@@ -136,7 +136,7 @@ class AppState extends ChangeNotifier {
               isPrivate: row.isPrivate,
               isFavorite: row.isFavorite,
               summary: row.summary ?? '',
-              time: selectedDateText,
+              time: selectedDateText?.replaceAll('T', ' '),
             ),
           );
 
@@ -265,7 +265,7 @@ class AppState extends ChangeNotifier {
       final serverUrl = Uri.parse("$baseUrl/links");
       print("[서버 요청 전송] 주소: $serverUrl");
 
-      // 1. 서버에 POST 요청
+      // 서버에 POST 요청
       final response = await http
           .post(
             serverUrl,
@@ -373,8 +373,8 @@ class AppState extends ChangeNotifier {
 
   Future<void> updateContent({
     required int id,
+    required String url,
     required String newTitle,
-    required String newUrl,
     required String? newTime,
     String? newCategory,
   }) async {
@@ -390,7 +390,7 @@ class AppState extends ChangeNotifier {
         id: id,
         deviceUuid: await getDeviceUuid(),
         title: newTitle,
-        url: newUrl,
+        url: url,
         category: newCategory ?? _contents[index].category,
         isPrivate: _contents[index].isPrivate,
         selectedDate: newTime,
@@ -402,7 +402,7 @@ class AppState extends ChangeNotifier {
       }
 
       _contents[index].title = newTitle;
-      _contents[index].url = newUrl;
+      _contents[index].url = url;
       if (newTime != null) {
         _contents[index].time = newTime;
       }
@@ -475,7 +475,9 @@ class AppState extends ChangeNotifier {
         "url": url,
         "category": category,
         "isPrivate": isPrivate,
-        "selectedDate": selectedDate,
+        "selectedDate": selectedDate != null
+            ? DateTime.parse(selectedDate).toIso8601String()
+            : null,
       }),
     );
 
