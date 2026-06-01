@@ -21,6 +21,7 @@ import 'package:flutter/services.dart';
 import 'package:std/snackbar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'constants.dart';
+import 'package:std/splash.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 const String baseUrl = "http://3.34.52.216:8080";
@@ -104,11 +105,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      // home: const LoginPage(),
-      // routes: {
-      //   '/main': (context) => const MainScreen(),
-      // },
-      home: const MainScreen(),
+      home: const SplashPage(),
+      routes: {
+        '/main': (context) => const MainScreen(),
+      },
+      //home: const MainScreen(),
       navigatorObservers: [RefreshDatabase()],
     );
   }
@@ -152,11 +153,22 @@ class _MainScreenState extends State<MainScreen> {
         );
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await requestAlarmAndNotificationPermissions();
       await handleInitialSharing();
 
       if (!mounted) return;
       await context.read<AppState>().loadContentsFromDb();
     });
+  }
+
+  Future<void> requestAlarmAndNotificationPermissions() async {
+    final androidPlugin = FlutterLocalNotificationsPlugin()
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+
+    await androidPlugin?.requestNotificationsPermission();
+    await androidPlugin?.requestExactAlarmsPermission();
   }
 
   Future<void> _handleSharedFiles(List<SharedFile> value) async {
@@ -229,6 +241,11 @@ class _MainScreenState extends State<MainScreen> {
                 "category": "전체",
                 "isPrivate": false,
                 "selectedDate": null,
+                "categories": context
+                    .read<AppState>()
+                    .categories
+                    .where((category) => category != '전체' && category != '즐겨찾기')
+                    .toList(),
               }),
             )
             .timeout(const Duration(seconds: 5));
@@ -243,6 +260,7 @@ class _MainScreenState extends State<MainScreen> {
           showCustomSnackBar(context, message: '공유된 링크가 성공적으로 DB에 저장되었습니다!');
           if (mounted) {
             await context.read<AppState>().loadContentsFromDb();
+            context.read<AppState>().startSummaryPolling();
           }
 
           if (mounted) setState(() {});
@@ -297,6 +315,7 @@ class _MainScreenState extends State<MainScreen> {
           });
 
           context.read<AppState>().loadContentsFromDb();
+          context.read<AppState>().startSummaryPolling();
         },
       ),
       const CalendarPage(),
@@ -355,7 +374,7 @@ class _MainScreenState extends State<MainScreen> {
               topRight: Radius.circular(19),
               topLeft: Radius.circular(19),
             ),
-            border: Border.all(color: AppColors.outlineGrey, width: 2),
+            border: Border.all(color: AppColors.black, width: 1),
           ),
           child: ClipRRect(
             borderRadius: const BorderRadius.only(

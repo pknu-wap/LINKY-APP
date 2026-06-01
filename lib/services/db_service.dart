@@ -106,6 +106,7 @@ class LinkResponse {
   final String? category;
   final bool isPrivate;
   final String? summary;
+  final String? summaryStatus;
   final String? selectedDate;
   final bool isFavorite;
 
@@ -116,6 +117,7 @@ class LinkResponse {
     this.category,
     required this.isPrivate,
     this.summary,
+    this.summaryStatus,
     this.selectedDate,
     required this.isFavorite,
   });
@@ -128,6 +130,7 @@ class LinkResponse {
       category: json['category'],
       isPrivate: json['isPrivate'] ?? false,
       summary: json['summary'],
+      summaryStatus: json['summaryStatus'],
       selectedDate: json['selectedDate'] ?? json['selected_date'],
       isFavorite: json['isFavorite'] ?? false,
     );

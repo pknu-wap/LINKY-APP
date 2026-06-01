@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:std/constants.dart';
 import 'package:std/main.dart';
 import 'package:std/pages/category_setting_page.dart';
 import 'package:std/pages/private_setting_page.dart';
 import 'package:std/provider/app_state.dart';
-import 'package:std/services/db_service.dart';
 import 'package:std/snackbar.dart';
 import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_messagebox.dart';
@@ -21,24 +19,27 @@ class SettingPage extends StatefulWidget {
 }
 
 class SettingPageState extends State<SettingPage> {
-  final DbService _dbService = DbService();
 
   Future<void> _onResetConfirm() async {
-    final deviceUuid = await context.read<AppState>().getDeviceUuid();
-    final response = await http.get(Uri.parse("$baseUrl/links"));
-    final isSuccess = await _dbService.resetData(deviceUuid: deviceUuid);
+    try {
+      await context.read<AppState>().resetAllData();
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    print('reset deviceUuid: $deviceUuid');
-    print('reset status: ${response.statusCode}');
-    print('reset body: ${response.body}');
+      showCustomSnackBar(
+        context,
+        message: '데이터가 초기화되었습니다.',
+        isError: false,
+      );
+    } catch (e) {
+      if (!mounted) return;
 
-    showCustomSnackBar(
-      context,
-      message: isSuccess ? '데이터가 초기화되었습니다.' : '초기화에 실패했습니다.',
-      isError: !isSuccess,
-    );
+      showCustomSnackBar(
+        context,
+        message: '초기화에 실패했습니다.',
+        isError: true,
+      );
+    }
   }
 
   @override

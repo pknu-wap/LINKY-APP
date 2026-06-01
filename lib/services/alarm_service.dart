@@ -54,8 +54,23 @@ class AlarmService {
   }
 
   static Future<void> cancelEventAlarm(int contentID) async {
-    await AndroidAlarmManager.cancel(earlyAlarmId(contentID));
-    await AndroidAlarmManager.cancel(exactAlarmId(contentID));
+    try {
+      final earlyCanceled = await AndroidAlarmManager.cancel(
+        earlyAlarmId(contentID),
+      );
+      final exactCanceled = await AndroidAlarmManager.cancel(
+        exactAlarmId(contentID),
+      );
+
+      if (earlyCanceled != true && exactCanceled != true) {
+        print(
+          'Alarm cancellation may have failed for contentID=$contentID: '
+          'early=$earlyCanceled exact=$exactCanceled',
+        );
+      }
+    } catch (e) {
+      print('알람 취소 에러: $e');
+    }
   }
 
   static Future<void> syncEventsWithAlarms(

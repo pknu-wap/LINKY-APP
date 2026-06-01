@@ -353,8 +353,30 @@ class _PlusPageState extends State<PlusPage> {
                                   activeThumbColor: AppColors.mainGreen,
                                   activeTrackColor: AppColors.mainGreen
                                       .withValues(alpha: 0.4),
-                                  inactiveThumbColor: AppColors.white,
-                                  inactiveTrackColor: AppColors.bottNavTextGrey,
+                                  inactiveThumbColor: AppColors.bottNavTextGrey,
+                                  inactiveTrackColor: AppColors.white,
+                                  trackOutlineColor:
+                                      WidgetStateProperty.resolveWith<Color?>(
+                                        (states) {
+                                          if (states.contains(
+                                            WidgetState.selected,
+                                          )) {
+                                            return AppColors.mainGreen;
+                                          }
+                                          return AppColors.bottNavTextGrey;
+                                        },
+                                      ),
+                                  trackOutlineWidth:
+                                      WidgetStateProperty.resolveWith<double?>(
+                                        (states) {
+                                          if (states.contains(
+                                            WidgetState.selected,
+                                          )) {
+                                            return 1.5;
+                                          }
+                                          return 1.5;
+                                        },
+                                      ),
                                   onChanged: (value) {
                                     setState(() {
                                       isPrivate = value;
