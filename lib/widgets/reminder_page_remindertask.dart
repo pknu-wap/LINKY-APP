@@ -54,6 +54,7 @@ class RemindertaskWidget extends StatelessWidget {
             onActionDone: () =>
                 context.read<AppState>().removeEvent(eventDate, contentID),
             context: context,
+            deleteTitle: '해당 일정을 삭제하시겠어요?',
           ),
 
           const SizedBox(width: 8),

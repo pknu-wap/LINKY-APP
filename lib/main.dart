@@ -363,7 +363,7 @@ class _MainScreenState extends State<MainScreen> {
               topRight: Radius.circular(19),
               topLeft: Radius.circular(19),
             ),
-            border: Border.all(color: AppColors.outlineGrey, width: 2),
+            border: Border.all(color: AppColors.black, width: 1),
           ),
           child: ClipRRect(
             borderRadius: const BorderRadius.only(

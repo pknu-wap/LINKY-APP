@@ -414,7 +414,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   ? Expanded(
                       child: Center(
                         child: Text(
-                          "\n일정을 추가해주세요!",
+                          "\n링크를 추가해주세요!",
                           style: GoogleFonts.inter(
                             color: AppColors.textGrey,
                             fontSize: 20,

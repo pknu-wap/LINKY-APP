@@ -24,6 +24,10 @@ class SettingPageState extends State<SettingPage> {
   try {
     await context.read<AppState>().resetAllData();
 
+    if (isSuccess) {
+      await context.read<AppState>().resetCategories();
+    }
+
     if (!mounted) return;
 
     showCustomSnackBar(
