@@ -242,6 +242,16 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void reorderCategories(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+    final String item = _categories.removeAt(oldIndex);
+    _categories.insert(newIndex, item);
+    saveCategories();
+    notifyListeners();
+  }
+
   bool categoryNameCheck(String categoryName) {
     return _categories.contains(categoryName);
   }

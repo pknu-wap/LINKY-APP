@@ -273,39 +273,44 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapper>
               child: Container(
                 color: AppColors.black.withValues(alpha: 0.1),
                 child: Center(
-                  child: Container(
-                    width: screenSize.width * 0.65,
-                    height: 260,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      border: Border.all(
-                        color: AppColors.outlineGrey,
-                        width: 1,
-                      ),
-                      color: AppColors.white,
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.security,
-                            color: AppColors.textGrey,
-                            size: 80,
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            '잠금방식 설정 필요',
-                            style: GoogleFonts.inter(fontSize: 23),
-                          ),
-                          Text(
-                            '설정에서 잠금방식을 선택해주세요',
-                            style: GoogleFonts.inter(fontSize: 13.5),
-                          ),
-                        ],
-                      ),
-                    ),
+                  child: Icon(
+                    Icons.lock,
+                    size: 100,
+                    color: AppColors.bottNavTextGrey,
                   ),
+                  //     child: Container(
+                  //       width: screenSize.width * 0.65,
+                  //       height: 260,
+                  //       decoration: BoxDecoration(
+                  //         borderRadius: BorderRadius.circular(40),
+                  //         border: Border.all(
+                  //           color: AppColors.outlineGrey,
+                  //           width: 1,
+                  //         ),
+                  //         color: AppColors.white,
+                  //       ),
+                  //       child: Center(
+                  //         child: Column(
+                  //           mainAxisSize: MainAxisSize.min,
+                  //           children: [
+                  //             Icon(
+                  //               Icons.lock_outline_rounded,
+                  //               color: AppColors.textGrey,
+                  //               size: 80,
+                  //             ),
+                  //             SizedBox(height: 10),
+                  //             Text(
+                  //               '잠금방식 설정 필요',
+                  //               style: GoogleFonts.inter(fontSize: 23),
+                  //             ),
+                  //             Text(
+                  //               '설정에서 잠금방식을 선택해주세요',
+                  //               style: GoogleFonts.inter(fontSize: 13.5),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ),
                 ),
               ),
             ),

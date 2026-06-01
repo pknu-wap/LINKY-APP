@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:std/constants.dart';
 
@@ -37,7 +38,7 @@ class AppBarDesign extends StatelessWidget {
                             appbarIcon,
                             size: 25,
                           )
-                        : Image.asset(
+                        : SvgPicture.asset(
                             appbarIcon,
                             width: 25,
                             height: 25,

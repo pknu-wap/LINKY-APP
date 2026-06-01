@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:std/constants.dart';
 import 'package:std/main.dart';
+import 'package:std/pages/category_setting_page.dart';
 import 'package:std/pages/private_setting_page.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/services/db_service.dart';
@@ -60,7 +62,13 @@ class SettingPageState extends State<SettingPage> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 25),
+
+                SettingMenu(
+                  icon: Icons.reorder,
+                  text: '카테고리 설정',
+                  onTap: () => settingAnimation(context, CategorySettingPage()),
+                ),
 
                 SettingMenu(
                   icon: Icons.account_circle_outlined,

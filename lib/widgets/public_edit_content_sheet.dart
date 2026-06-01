@@ -162,6 +162,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
                           insideWidget: Column(
                             children: [
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Expanded(
                                     child: Theme(
@@ -213,11 +214,12 @@ class _EditContentSheetState extends State<EditContentSheet> {
                                     selectionHandleColor: AppColors.mainGreen,
                                   ),
                                 ),
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: SizedBox(
-                                    height: 25,
-                                    child: Center(
+                                child: SizedBox(
+                                  height: 25,
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
                                       child: SelectableText(
                                         urlText,
                                         maxLines: 1,
