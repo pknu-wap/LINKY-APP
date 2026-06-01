@@ -153,12 +153,22 @@ class _MainScreenState extends State<MainScreen> {
         );
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await requestAlarmAndNotificationPermissions();
       await handleInitialSharing();
 
       if (!mounted) return;
       await context.read<AppState>().loadContentsFromDb();
-      
     });
+  }
+
+  Future<void> requestAlarmAndNotificationPermissions() async {
+    final androidPlugin = FlutterLocalNotificationsPlugin()
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+
+    await androidPlugin?.requestNotificationsPermission();
+    await androidPlugin?.requestExactAlarmsPermission();
   }
 
   Future<void> _handleSharedFiles(List<SharedFile> value) async {
