@@ -1,31 +1,37 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:std/main.dart';
 import 'package:std/services/auth_service.dart';
-import 'package:std/widgets/public_messagebox.dart';
+import 'package:std/snackbar.dart';
 import 'package:std/constants.dart';
 
-class SecretGuardWrapperPw extends StatefulWidget {
+class SecretGuardWrapper extends StatefulWidget {
   final Widget child;
   final bool isSelected;
-  const SecretGuardWrapperPw({
+  const SecretGuardWrapper({
     super.key,
     required this.child,
     this.isSelected = false,
   });
 
   @override
-  State<SecretGuardWrapperPw> createState() => _SecretGuardWrapperState();
+  State<SecretGuardWrapper> createState() => _SecretGuardWrapperState();
 }
 
-class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
+class _SecretGuardWrapperState extends State<SecretGuardWrapper>
     with WidgetsBindingObserver {
-  bool _isLocked = true; // 처음 진입 시 잠금 상태
+  bool _isLocked = true;
+  bool _isAuthenticating = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this); // 라이프사이클 감지 시작
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tryUnlock();
+    });
   }
 
   @override
@@ -36,44 +42,76 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
   }
 
   @override
-  void didUpdateWidget(covariant SecretGuardWrapperPw oldWidget) {
+  void didUpdateWidget(covariant SecretGuardWrapper oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // 페이지가 선택되지 않았다가 선택된 경우 잠금 상태로 전환
+
+    if (oldWidget.isSelected != widget.isSelected) {
+      _isAuthenticating = false;
+    }
+
     if (!oldWidget.isSelected && widget.isSelected) {
       setState(() {
         _isLocked = true;
         pwController.clear();
       });
+
+      if (lockWith == LockWith.localAuth) {
+        _tryUnlock();
+      }
     }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // 앱이 화면에서 사라질 때 (홈 버튼, 다른 앱 전환 등)
     if (state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused) {
       setState(() => _isLocked = true);
+    } else if (state == AppLifecycleState.resumed) {
+      if (widget.isSelected &&
+          _isLocked &&
+          lockWith == LockWith.localAuth &&
+          !_isAuthenticating) {
+        _tryUnlock();
+      }
     }
   }
 
-  Future<void> _tryUnlock(String inputPassword) async {
-    // bool authenticated = await AuthService.authenticate();
-    bool authenticated = AuthWithPW.authenticate(inputPassword);
-    if (authenticated) {
-      setState(() => _isLocked = false);
-    } else {
-      showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (context) {
-          return DialogPopup(
-            title: '잘못된 비밀번호입니다',
-            boxType: BoxType.alert,
-            onConfirm: () => true,
-            confirmText: '확인',
+  Future<void> _tryUnlock() async {
+    if (_isAuthenticating || !_isLocked || !widget.isSelected) return;
+
+    _isAuthenticating = true;
+    bool authenticated = false;
+    try {
+      if (lockWith == LockWith.customPw) {
+        authenticated = PwAuthService.authenticate(pwController.text);
+      } else if (lockWith == LockWith.localAuth) {
+        bool isAvailable = await LocalAuthService.checkAvailable();
+        if (!mounted || !widget.isSelected) return;
+
+        if (isAvailable) {
+          authenticated = await LocalAuthService.authenticate();
+        } else {
+          showCustomSnackBar(
+            context,
+            message: '기기에 등록된 보안 설정이 없습니다.',
+            isError: true,
           );
-        },
-      );
+        }
+      }
+
+      if (!mounted || !widget.isSelected) return;
+
+      if (authenticated) {
+        setState(() {
+          _isLocked = false;
+        });
+      } else {
+        if (lockWith == LockWith.customPw) {
+          showCustomSnackBar(context, message: '잘못된 비밀번호입니다', isError: true);
+        }
+      }
+    } catch (e) {
+      showCustomSnackBar(context, message: '에러 발생: $e', isError: true);
     }
   }
 
@@ -81,15 +119,17 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Stack(
         children: [
           widget.child, // 실제 앱 콘텐츠
 
-          if (_isLocked) // 잠금 상태일 때만 덮어씌움
+          if (_isLocked && lockWith == LockWith.customPw)
             BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // 배경 블러 처리
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
                 color: AppColors.black.withValues(alpha: 0.1),
                 child: Center(
@@ -161,7 +201,10 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
                         ),
                         const SizedBox(height: 13),
                         InkWell(
-                          onTap: () => _tryUnlock(pwController.text),
+                          onTap: () {
+                            _isAuthenticating = false;
+                            _tryUnlock();
+                          },
                           child: Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: 25,
@@ -183,6 +226,84 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapperPw>
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if (_isLocked && lockWith == LockWith.localAuth)
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: const Color.from(
+                  alpha: 1,
+                  red: 0,
+                  green: 0,
+                  blue: 0,
+                ).withValues(alpha: 0.1),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      _isAuthenticating = false;
+                      _tryUnlock();
+                    },
+                    child: Container(
+                      width: screenSize.width * 0.3,
+                      height: screenSize.width * 0.3,
+                      decoration: BoxDecoration(
+                        color: AppColors.darkGreen.withValues(alpha: 0.4),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.outlineGrey),
+                      ),
+                      child: Center(
+                        child: const Icon(
+                          Icons.lock_outline,
+                          color: AppColors.bottNavTextGrey,
+                          size: 60,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if (_isLocked && lockWith == null)
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: AppColors.black.withValues(alpha: 0.1),
+                child: Center(
+                  child: Container(
+                    width: screenSize.width * 0.65,
+                    height: 260,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40),
+                      border: Border.all(
+                        color: AppColors.outlineGrey,
+                        width: 1,
+                      ),
+                      color: AppColors.white,
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.security,
+                            color: AppColors.textGrey,
+                            size: 80,
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            '잠금방식 설정 필요',
+                            style: GoogleFonts.inter(fontSize: 23),
+                          ),
+                          Text(
+                            '설정에서 잠금방식을 선택해주세요',
+                            style: GoogleFonts.inter(fontSize: 13.5),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

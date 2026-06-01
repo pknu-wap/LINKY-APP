@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:std/constants.dart';
 import 'package:std/main.dart';
+import 'package:std/pages/private_setting_page.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/services/db_service.dart';
 import 'package:std/snackbar.dart';
@@ -18,28 +20,6 @@ class SettingPage extends StatefulWidget {
 
 class SettingPageState extends State<SettingPage> {
   final DbService _dbService = DbService();
-
-  InputDecoration inputBox(String hint) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 14),
-      filled: true,
-      fillColor: AppColors.white,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: AppColors.outlineGrey),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: AppColors.outlineGrey),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: const BorderSide(color: AppColors.mainGreen),
-      ),
-    );
-  }
 
   Future<void> _onResetConfirm() async {
     final deviceUuid = await context.read<AppState>().getDeviceUuid();
@@ -60,73 +40,51 @@ class SettingPageState extends State<SettingPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey,
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  AppBarDesign(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: AppBarDesign(
                     appbarText: 'Setting',
                     appbarIcon: Icons.settings_outlined,
                   ),
-                  const SizedBox(height: 25),
-                  Row(
-                    children: const [
-                      Icon(
-                        Icons.account_circle,
-                        color: AppColors.mainGreen,
-                        size: 28,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        "나만 보기 페이지 비밀 번호 설정",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Theme(
-                    data: Theme.of(context).copyWith(
-                      textSelectionTheme: TextSelectionThemeData(
-                        cursorColor: AppColors.mainGreen,
-                        selectionColor: AppColors.mainGreen.withValues(
-                          alpha: 0.3,
-                        ),
-                        selectionHandleColor: AppColors.mainGreen,
-                      ),
-                    ),
-                    child: TextField(
-                      obscureText: true,
-                      decoration: inputBox("비밀번호를 입력해주세요."),
-                    ),
-                  ),
+                ),
 
-                  const SizedBox(height: 30),
+                const SizedBox(height: 20),
 
-                  GestureDetector(
+                SettingMenu(
+                  icon: Icons.account_circle_outlined,
+                  text: '나만보기 설정',
+                  onTap: () => settingAnimation(context, PrivateSettingPage()),
+                ),
+
+                Divider(
+                  height: 1,
+                  color: AppColors.outlineGrey,
+                ),
+
+                const SizedBox(height: 20),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: GestureDetector(
                     onTap: () {
                       showDialog(
                         context: context,
                         barrierDismissible: true,
                         builder: (dialogContext) {
                           return DialogPopup(
-                            title: '데이터 초기화 하시겠어요?',
+                            title: '데이터를 초기화하시겠습니까?',
                             boxType: BoxType.warning,
                             onConfirm: () {
                               _onResetConfirm();
@@ -158,13 +116,97 @@ class SettingPageState extends State<SettingPage> {
                       ),
                     ),
                   ),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-                  const SizedBox(height: 10),
+  void settingAnimation(BuildContext context, Widget moveTo) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => moveTo,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+
+          var tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+}
+
+class SettingMenu extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final VoidCallback onTap;
+
+  const SettingMenu({
+    super.key,
+    required this.text,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Divider(
+            height: 1,
+            color: AppColors.outlineGrey,
+          ),
+          Container(
+            color: AppColors.transparent,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 15,
+                horizontal: 20,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        icon,
+                        color: AppColors.textGrey,
+                        size: 35,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        text,
+                        style: GoogleFonts.inter(fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: AppColors.textGrey,
+                  ),
                 ],
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
