@@ -156,6 +156,7 @@ class _MainScreenState extends State<MainScreen> {
 
       if (!mounted) return;
       await context.read<AppState>().loadContentsFromDb();
+      
     });
   }
 
@@ -229,6 +230,11 @@ class _MainScreenState extends State<MainScreen> {
                 "category": "전체",
                 "isPrivate": false,
                 "selectedDate": null,
+                "categories": context
+                    .read<AppState>()
+                    .categories
+                    .where((category) => category != '전체' && category != '즐겨찾기')
+                    .toList(),
               }),
             )
             .timeout(const Duration(seconds: 5));
@@ -243,6 +249,7 @@ class _MainScreenState extends State<MainScreen> {
           showCustomSnackBar(context, message: '공유된 링크가 성공적으로 DB에 저장되었습니다!');
           if (mounted) {
             await context.read<AppState>().loadContentsFromDb();
+            context.read<AppState>().startSummaryPolling();
           }
 
           if (mounted) setState(() {});
@@ -297,6 +304,7 @@ class _MainScreenState extends State<MainScreen> {
           });
 
           context.read<AppState>().loadContentsFromDb();
+          context.read<AppState>().startSummaryPolling();
         },
       ),
       const CalendarPage(),

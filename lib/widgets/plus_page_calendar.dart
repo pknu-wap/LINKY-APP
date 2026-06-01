@@ -78,8 +78,8 @@ Future<void> showLinkyCalendarPicker(
         now.year,
         now.month,
         now.day,
-        8,
-        0,
+        now.hour,
+        now.minute,
       );
 
   await showGeneralDialog<void>(
