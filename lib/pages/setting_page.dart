@@ -24,6 +24,8 @@ class SettingPageState extends State<SettingPage> {
   try {
     await context.read<AppState>().resetAllData();
 
+    if (!mounted) return;
+
     if (isSuccess) {
       await context.read<AppState>().resetCategories();
     }

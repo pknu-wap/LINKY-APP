@@ -21,6 +21,7 @@ import 'package:flutter/services.dart';
 import 'package:std/snackbar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'constants.dart';
+import 'package:std/splash.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 const String baseUrl = "http://3.34.52.216:8080";
@@ -104,11 +105,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'Linky',
       theme: ThemeData(primarySwatch: Colors.blue),
-      // home: const LoginPage(),
-      // routes: {
-      //   '/main': (context) => const MainScreen(),
-      // },
-      home: const MainScreen(),
+      home: const SplashPage(),
+      routes: {
+        '/main': (context) => const MainScreen(),
+      },
+      //home: const MainScreen(),
       navigatorObservers: [RefreshDatabase()],
     );
   }
