@@ -246,7 +246,7 @@ class _CategoryPageState extends State<CategoryPage> {
               const SizedBox(height: 20),
               AppBarDesign(
                 appbarText: 'Category',
-                appbarIcon: 'assets/images/CategoryIcon.png',
+                appbarIcon: 'assets/images/CategoryIcon.svg',
               ),
               const SizedBox(height: 13),
 
