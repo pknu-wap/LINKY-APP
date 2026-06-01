@@ -223,107 +223,113 @@ class _LinkyCalendarPickerState extends State<LinkyCalendarPicker> {
       context: context,
       backgroundColor: AppColors.white,
       builder: (context) {
-        return Container(
+        return SizedBox(
           height: 280,
-          decoration: const BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(24),
-            ),
-          ),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 48,
-                child: Row(
-                  children: [
-                    const SizedBox(width: 16),
-                    const Text(
-                      '시간 선택',
-                      style: TextStyle(
-                        color: AppColors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          selectedTime = TimeOfDay(
-                            hour: tempHour,
-                            minute: tempMinute,
-                          );
-                        });
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        '완료',
-                        style: TextStyle(
-                          color: AppColors.mainBlue,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Container(
+              height: 280,
+              decoration: const BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+              ),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 48,
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 16),
+                        const Text(
+                          '시간 선택',
+                          style: TextStyle(
+                            color: AppColors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      child: CupertinoPicker.builder(
-                        scrollController: hourController,
-                        itemExtent: 36,
-                        onSelectedItemChanged: (index) {
-                          tempHour = index;
-                        },
-                        childCount: 24,
-                        itemBuilder: (context, index) {
-                          return Center(
-                            child: Text(
-                              index.toString().padLeft(2, '0'),
+                        const Spacer(),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              selectedTime = TimeOfDay(
+                                hour: tempHour,
+                                minute: tempMinute,
+                              );
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            '완료',
+                            style: TextStyle(
+                              color: AppColors.mainBlue,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      ':',
-                      style: TextStyle(
-                        color: AppColors.black,
-                        fontSize: 26,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  ),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 80,
+                          child: CupertinoPicker.builder(
+                            scrollController: hourController,
+                            itemExtent: 36,
+                            onSelectedItemChanged: (index) {
+                              tempHour = index;
+                            },
+                            childCount: 24,
+                            itemBuilder: (context, index) {
+                              return Center(
+                                child: Text(
+                                  index.toString().padLeft(2, '0'),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          ':',
+                          style: TextStyle(
+                            color: AppColors.black,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        SizedBox(
+                          width: 80,
+                          child: CupertinoPicker.builder(
+                            scrollController: minuteController,
+                            itemExtent: 36,
+                            onSelectedItemChanged: (index) {
+                              tempMinute = index;
+                            },
+                            childCount: 60,
+                            itemBuilder: (context, index) {
+                              return Center(
+                                child: Text(
+                                  index.toString().padLeft(2, '0'),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    SizedBox(
-                      width: 80,
-                      child: CupertinoPicker.builder(
-                        scrollController: minuteController,
-                        itemExtent: 36,
-                        onSelectedItemChanged: (index) {
-                          tempMinute = index;
-                        },
-                        childCount: 60,
-                        itemBuilder: (context, index) {
-                          return Center(
-                            child: Text(
-                              index.toString().padLeft(2, '0'),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },

@@ -132,50 +132,60 @@ class _ContentDetailBottomSheetState extends State<ContentDetailBottomSheet> {
 
     return SizedBox(
       height: sheetHeight,
-      width: screenSize.width,
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: _folders.asMap().entries.map((entry) {
-          int index = entry.key;
-          FolderModel folder = entry.value;
-          int slot = _currentSlots[index];
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SizedBox(
+          height: sheetHeight,
+          width: screenSize.width,
+          child: Stack(
+            alignment: Alignment.topCenter,
+            children: _folders.asMap().entries.map((entry) {
+              int index = entry.key;
+              FolderModel folder = entry.value;
+              int slot = _currentSlots[index];
 
-          Duration currentDuration;
-          if (slot == 3) {
-            currentDuration = _durationHide; // 사라질 때
-          } else if (slot == 0) {
-            currentDuration = _durationShow; // 뒤에서 다시 나타날 때
-          } else {
-            currentDuration = _durationMove; // 앞으로 전진할 때
-          }
+              Duration currentDuration;
+              if (slot == 3) {
+                currentDuration = _durationHide; // 사라질 때
+              } else if (slot == 0) {
+                currentDuration = _durationShow; // 뒤에서 다시 나타날 때
+              } else {
+                currentDuration = _durationMove; // 앞으로 전진할 때
+              }
 
-          return AnimatedPositioned(
-            key: ValueKey(
-              folder.id,
-            ),
-            duration: currentDuration,
-            curve: Curves.easeOutCubic,
-            top: _slotTops[slot],
-            child: AnimatedOpacity(
-              duration: currentDuration,
-              opacity: _slotOpacities[slot],
-              child: AnimatedContainer(
+              return AnimatedPositioned(
+                key: ValueKey(
+                  folder.id,
+                ),
                 duration: currentDuration,
                 curve: Curves.easeOutCubic,
-                transform: Matrix4.translationValues(_slotOffsetXs[slot], 0, 0),
-                child: GestureDetector(
-                  onTap: _cycleFolders,
-                  child: ContentDetailSheet(
-                    contentID: folder.contentID,
-                    showContent: slot == 2, // 슬롯 2(맨 앞)일 때만 요약 내용 표시
-                    subWidth: _slotSubWidths[slot],
-                    color: folder.color,
+                top: _slotTops[slot],
+                child: AnimatedOpacity(
+                  duration: currentDuration,
+                  opacity: _slotOpacities[slot],
+                  child: AnimatedContainer(
+                    duration: currentDuration,
+                    curve: Curves.easeOutCubic,
+                    transform: Matrix4.translationValues(
+                      _slotOffsetXs[slot],
+                      0,
+                      0,
+                    ),
+                    child: GestureDetector(
+                      onTap: _cycleFolders,
+                      child: ContentDetailSheet(
+                        contentID: folder.contentID,
+                        showContent: slot == 2, // 슬롯 2(맨 앞)일 때만 요약 내용 표시
+                        subWidth: _slotSubWidths[slot],
+                        color: folder.color,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
-        }).toList(),
+              );
+            }).toList(),
+          ),
+        ),
       ),
     );
   }
