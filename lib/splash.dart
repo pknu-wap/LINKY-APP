@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:std/constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -31,13 +32,17 @@ class _SplashPageState extends State<SplashPage>
         weight: 18,
       ),
       TweenSequenceItem(
-        tween: Tween(begin: 1.0, end: 1.18)
-            .chain(CurveTween(curve: Curves.easeOutCubic)),
+        tween: Tween(
+          begin: 1.0,
+          end: 1.18,
+        ).chain(CurveTween(curve: Curves.easeOutCubic)),
         weight: 27,
       ),
       TweenSequenceItem(
-        tween: Tween(begin: 1.18, end: 0.74)
-            .chain(CurveTween(curve: Curves.easeInOutCubic)),
+        tween: Tween(
+          begin: 1.18,
+          end: 0.74,
+        ).chain(CurveTween(curve: Curves.easeInOutCubic)),
         weight: 30,
       ),
       TweenSequenceItem(
@@ -52,13 +57,17 @@ class _SplashPageState extends State<SplashPage>
         weight: 18,
       ),
       TweenSequenceItem(
-        tween: Tween(begin: 0.0, end: 0.25)
-            .chain(CurveTween(curve: Curves.easeOutCubic)),
+        tween: Tween(
+          begin: 0.0,
+          end: 0.25,
+        ).chain(CurveTween(curve: Curves.easeOutCubic)),
         weight: 10,
       ),
       TweenSequenceItem(
-        tween: Tween(begin: 0.25, end: 0.0)
-            .chain(CurveTween(curve: Curves.easeInOutCubic)),
+        tween: Tween(
+          begin: 0.25,
+          end: 0.0,
+        ).chain(CurveTween(curve: Curves.easeInOutCubic)),
         weight: 10,
       ),
       TweenSequenceItem(
@@ -111,15 +120,14 @@ class _SplashPageState extends State<SplashPage>
                     widthFactor: _textReveal.value,
                     child: Opacity(
                       opacity: _textReveal.value,
-                      child: const Padding(
+                      child: Padding(
                         padding: EdgeInsets.only(left: 1),
                         child: Text(
                           'LINKY',
-                          style: TextStyle(
+                          style: GoogleFonts.lalezar(
+                            fontSize: 60,
+                            fontWeight: FontWeight.w300,
                             color: AppColors.black,
-                            fontSize: 44,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.5,
                           ),
                         ),
                       ),

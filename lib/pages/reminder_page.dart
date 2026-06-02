@@ -47,7 +47,7 @@ class Reminder extends State<ReminderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.mainBackGrey,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

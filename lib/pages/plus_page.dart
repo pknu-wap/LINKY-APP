@@ -170,20 +170,24 @@ class _PlusPageState extends State<PlusPage> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Image.asset(
-                                  'assets/images/linky_logo.png',
+                                SizedBox(
                                   width: 50,
-                                  height: 65,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.link, size: 50),
+                                  height: 60,
+                                  child: Image.asset(
+                                    'assets/images/linky_logo.png',
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'LINKY',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 60,
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.black,
+                                const SizedBox(width: 7),
+                                Transform.translate(
+                                  offset: Offset(0, 4),
+                                  child: Text(
+                                    'LINKY',
+                                    style: GoogleFonts.lalezar(
+                                      fontSize: 70,
+                                      fontWeight: FontWeight.w300,
+                                      color: AppColors.black,
+                                    ),
                                   ),
                                 ),
                               ],

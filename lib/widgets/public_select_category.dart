@@ -23,9 +23,16 @@ class SelectCategoryHome extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
       decoration: BoxDecoration(
-        color: backgroundColor, // 전달받은 배경색 적용
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.bottNavTextGrey.withValues(alpha: 0.25),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        color: backgroundColor, 
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: AppColors.black),
+        border: Border.all(color: AppColors.black, width: 0.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
