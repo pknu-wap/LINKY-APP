@@ -158,6 +158,7 @@ class _MainScreenState extends State<MainScreen> {
 
       if (!mounted) return;
       await context.read<AppState>().loadContentsFromDb();
+      await context.read<AppState>().syncAlarmsFromCurrentEvents();
     });
   }
 
@@ -309,12 +310,13 @@ class _MainScreenState extends State<MainScreen> {
         child: const PrivatePage(),
       ), // 커스텀 패스워드 (현재 0000)
       PlusPage(
-        onSaved: () {
+        onSaved: () async {
           setState(() {
             _selectedIndex = 0;
           });
 
-          context.read<AppState>().loadContentsFromDb();
+          await context.read<AppState>().loadContentsFromDb();
+          await context.read<AppState>().syncAlarmsFromCurrentEvents();
           context.read<AppState>().startSummaryPolling();
         },
       ),
