@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:std/constants.dart';
 import 'package:std/main.dart';
 import 'package:std/pages/category_setting_page.dart';
+import 'package:std/pages/introduce_page.dart';
 import 'package:std/pages/private_setting_page.dart';
 import 'package:std/provider/app_state.dart';
 import 'package:std/snackbar.dart';
@@ -19,6 +21,20 @@ class SettingPage extends StatefulWidget {
 }
 
 class SettingPageState extends State<SettingPage> {
+  String _appVersion = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _initPackageInfo();
+  }
+
+  Future<void> _initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      _appVersion = info.version;
+    });
+  }
 
   Future<void> _onResetConfirm() async {
     try {
@@ -77,9 +93,23 @@ class SettingPageState extends State<SettingPage> {
                   onTap: () => settingAnimation(context, PrivateSettingPage()),
                 ),
 
+                SettingMenu(
+                  icon: Icons.info_outline_rounded,
+                  text: 'LINKY 소개',
+                  onTap: () => settingAnimation(context, IntroducePage()),
+                ),
+
+                SettingMenu(
+                  icon: Icons.info_outline_rounded,
+                  text: '앱 버전',
+                  needMove: false,
+                  text2: 'v$_appVersion',
+                  onTap: () {},
+                ),
+
                 Divider(
                   height: 1,
-                  color: AppColors.outlineGrey,
+                  color: AppColors.outlineGrey.withValues(alpha: 0.3),
                 ),
 
                 const SizedBox(height: 20),
@@ -164,12 +194,16 @@ class SettingMenu extends StatelessWidget {
   final IconData icon;
   final String text;
   final VoidCallback onTap;
+  final bool needMove;
+  final String text2;
 
   const SettingMenu({
     super.key,
     required this.text,
     required this.icon,
     required this.onTap,
+    this.needMove = true,
+    this.text2 = '',
   });
 
   @override
@@ -180,7 +214,7 @@ class SettingMenu extends StatelessWidget {
         children: [
           Divider(
             height: 1,
-            color: AppColors.outlineGrey,
+            color: AppColors.outlineGrey.withValues(alpha: 0.3),
           ),
           Container(
             color: AppColors.transparent,
@@ -207,10 +241,19 @@ class SettingMenu extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: AppColors.textGrey,
-                  ),
+                  if (needMove)
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: AppColors.textGrey,
+                    ),
+                  if (!needMove)
+                    Text(
+                      text2,
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        color: AppColors.textGrey,
+                      ),
+                    ),
                 ],
               ),
             ),

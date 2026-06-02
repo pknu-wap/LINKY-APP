@@ -5,7 +5,6 @@ import 'package:std/constants.dart';
 import 'package:std/main.dart';
 import 'package:std/services/auth_service.dart';
 import 'package:std/snackbar.dart';
-import 'package:std/widgets/public_appbar.dart';
 import 'package:std/widgets/public_messagebox.dart';
 
 class PrivateSettingPage extends StatefulWidget {
@@ -73,219 +72,265 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                AppBarDesign(
-                  appbarText: '나만보기 설정',
-                  appbarIcon: Icons.lock_outline,
-                ),
-                const SizedBox(height: 25),
-                const Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Stack(
+                  alignment: Alignment.centerLeft,
                   children: [
-                    Icon(
-                      Icons.account_circle,
-                      color: AppColors.mainGreen,
-                      size: 28,
+                    SizedBox(
+                      width: double.infinity,
+                      child: Text(
+                        '나만보기 설정',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-                    SizedBox(width: 8),
-                    Text(
-                      "잠금 방식 설정",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    Transform.translate(
+                      offset: Offset(0, 2),
+                      child: GestureDetector(
+                        child: SizedBox(
+                          width: 45,
+                          height: 45,
+                          child: Center(
+                            child: Icon(
+                              Icons.chevron_left_rounded,
+                              color: AppColors.textGrey,
+                              size: 40,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                Row(
+              ),
+              const SizedBox(height: 5),
+              const Divider(color: AppColors.outlineGrey, height: 1.5),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
                   children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () async {
-                          if (lockWith == LockWith.localAuth) {
-                            localAuthChecked =
-                                await LocalAuthService.authenticate();
-                            if (localAuthChecked) {
-                              localAuthChecked = false;
-                              setState(() {
-                                _localLockWith = LockWith.customPw;
-                              });
-                              showCustomSnackBar(
-                                context,
-                                message: '잠금방식이 변경되었습니다',
-                              );
-                              if (customPw != null) {
-                                final prefs =
-                                    await SharedPreferences.getInstance();
-                                lockWith = LockWith.customPw;
-                                await prefs.setString(
-                                  'lock_method',
-                                  'customPw',
-                                );
-                                showCustomSnackBar(
-                                  context,
-                                  message: '잠금방식이 변경되었습니다',
-                                );
-                              }
-                            }
-                          } else {
-                            setState(() {
-                              _localLockWith = LockWith.customPw;
-                            });
-                          }
-                        },
-                        child: Container(
-                          height: 54,
-                          decoration: BoxDecoration(
-                            color: (_localLockWith == LockWith.customPw)
-                                ? AppColors.mainGreen
-                                : AppColors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppColors.lightGrey),
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.account_circle,
+                          color: AppColors.mainGreen,
+                          size: 28,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "잠금 방식 설정",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                          child: Center(
-                            child: Text(
-                              'custom_pw',
-                              style: GoogleFonts.inter(
-                                fontSize: 18,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              if (lockWith == LockWith.localAuth) {
+                                localAuthChecked =
+                                    await LocalAuthService.authenticate();
+                                if (localAuthChecked) {
+                                  localAuthChecked = false;
+                                  setState(() {
+                                    _localLockWith = LockWith.customPw;
+                                  });
+                                  showCustomSnackBar(
+                                    context,
+                                    message: '잠금방식이 변경되었습니다',
+                                  );
+                                  if (customPw != null) {
+                                    final prefs =
+                                        await SharedPreferences.getInstance();
+                                    lockWith = LockWith.customPw;
+                                    await prefs.setString(
+                                      'lock_method',
+                                      'customPw',
+                                    );
+                                    showCustomSnackBar(
+                                      context,
+                                      message: '잠금방식이 변경되었습니다',
+                                    );
+                                  }
+                                }
+                              } else {
+                                setState(() {
+                                  _localLockWith = LockWith.customPw;
+                                });
+                              }
+                            },
+                            child: Container(
+                              height: 54,
+                              decoration: BoxDecoration(
                                 color: (_localLockWith == LockWith.customPw)
-                                    ? AppColors.white
-                                    : AppColors.black,
+                                    ? AppColors.mainGreen
+                                    : AppColors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: AppColors.lightGrey),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'custom_pw',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 18,
+                                    color: (_localLockWith == LockWith.customPw)
+                                        ? AppColors.white
+                                        : AppColors.black,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () async {
-                          if (customPw != null &&
-                              lockWith == LockWith.customPw) {
-                            if (_isPwEnabled == true) {
-                              changeLockMethodtoLocalAuth(false);
-                            } else {
-                              await checkCurrentPassword(context);
-                              if (pwChecked) {
-                                pwChecked = false;
-                                changeLockMethodtoLocalAuth(false);
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              if (customPw != null &&
+                                  lockWith == LockWith.customPw) {
+                                if (_isPwEnabled == true) {
+                                  changeLockMethodtoLocalAuth(false);
+                                } else {
+                                  await checkCurrentPassword(context);
+                                  if (pwChecked) {
+                                    pwChecked = false;
+                                    changeLockMethodtoLocalAuth(false);
+                                  }
+                                }
+                              } else {
+                                changeLockMethodtoLocalAuth(true);
                               }
-                            }
-                          } else {
-                            changeLockMethodtoLocalAuth(true);
-                          }
-                        },
-                        child: Container(
-                          height: 54,
-                          decoration: BoxDecoration(
-                            color: (_localLockWith == LockWith.localAuth)
-                                ? AppColors.mainGreen
-                                : AppColors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppColors.lightGrey),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'local_auth',
-                              style: GoogleFonts.inter(
-                                fontSize: 18,
+                            },
+                            child: Container(
+                              height: 54,
+                              decoration: BoxDecoration(
                                 color: (_localLockWith == LockWith.localAuth)
-                                    ? AppColors.white
-                                    : AppColors.black,
+                                    ? AppColors.mainGreen
+                                    : AppColors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: AppColors.lightGrey),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'local_auth',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 18,
+                                    color:
+                                        (_localLockWith == LockWith.localAuth)
+                                        ? AppColors.white
+                                        : AppColors.black,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
+                    const SizedBox(height: 20),
+                    if (_localLockWith == LockWith.customPw)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: pwController,
+                              enabled: _isPwEnabled,
+                              obscureText: true,
+                              decoration: inputBox(
+                                "비밀번호를 입력해주세요.",
+                                fillColor: _isPwEnabled
+                                    ? AppColors.white
+                                    : AppColors.outlineGrey.withValues(
+                                        alpha: 0.5,
+                                      ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () async {
+                              if (_isPwEnabled) {
+                                if (pwController.text.isEmpty) {
+                                  showCustomSnackBar(
+                                    context,
+                                    message: "비밀번호를 입력해주세요.",
+                                    isError: true,
+                                  );
+                                } else {
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  customPw = pwController.text;
+                                  await prefs.setString('custom_pw', customPw!);
+
+                                  lockWith = LockWith.customPw;
+                                  await prefs.setString(
+                                    'lock_method',
+                                    'customPw',
+                                  );
+
+                                  setState(() {
+                                    _isPwEnabled = false;
+                                    FocusScope.of(context).unfocus();
+                                  });
+                                  if (mounted) {
+                                    showCustomSnackBar(
+                                      context,
+                                      message: "비밀번호가 설정되었습니다.",
+                                    );
+                                  }
+                                }
+                              } else {
+                                await checkCurrentPassword(context);
+                                if (pwChecked) {
+                                  setState(() {
+                                    pwChecked = false;
+                                    _isPwEnabled = true;
+                                  });
+                                }
+                              }
+                            },
+                            child: Container(
+                              height: 54,
+                              width: 90,
+                              decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: AppColors.lightGrey),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  _isPwEnabled ? '설정' : '수정',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 18,
+                                    color: AppColors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                if (_localLockWith == LockWith.customPw)
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: pwController,
-                          enabled: _isPwEnabled,
-                          obscureText: true,
-                          decoration: inputBox(
-                            "비밀번호를 입력해주세요.",
-                            fillColor: _isPwEnabled
-                                ? AppColors.white
-                                : AppColors.outlineGrey.withValues(alpha: 0.5),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: () async {
-                          if (_isPwEnabled) {
-                            if (pwController.text.isEmpty) {
-                              showCustomSnackBar(
-                                context,
-                                message: "비밀번호를 입력해주세요.",
-                                isError: true,
-                              );
-                            } else {
-                              final prefs =
-                                  await SharedPreferences.getInstance();
-                              customPw = pwController.text;
-                              await prefs.setString('custom_pw', customPw!);
-
-                              lockWith = LockWith.customPw;
-                              await prefs.setString('lock_method', 'customPw');
-
-                              setState(() {
-                                _isPwEnabled = false;
-                                FocusScope.of(context).unfocus();
-                              });
-                              if (mounted) {
-                                showCustomSnackBar(
-                                  context,
-                                  message: "비밀번호가 설정되었습니다.",
-                                );
-                              }
-                            }
-                          } else {
-                            await checkCurrentPassword(context);
-                            if (pwChecked) {
-                              setState(() {
-                                pwChecked = false;
-                                _isPwEnabled = true;
-                              });
-                            }
-                          }
-                        },
-                        child: Container(
-                          height: 54,
-                          width: 90,
-                          decoration: BoxDecoration(
-                            color: AppColors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppColors.lightGrey),
-                          ),
-                          child: Center(
-                            child: Text(
-                              _isPwEnabled ? '설정' : '수정',
-                              style: GoogleFonts.inter(
-                                fontSize: 18,
-                                color: AppColors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
