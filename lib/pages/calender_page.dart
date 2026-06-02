@@ -222,6 +222,7 @@ class _CalendarPageState extends State<CalendarPage> {
                           ),
                           const SizedBox(height: 20),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               IconButton(
                                 visualDensity: VisualDensity.compact,
