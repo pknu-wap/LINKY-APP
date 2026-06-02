@@ -159,7 +159,6 @@ class _MainScreenState extends State<MainScreen> {
 
       if (!mounted) return;
       await context.read<AppState>().loadContentsFromDb();
-      await context.read<AppState>().syncAlarmsFromCurrentEvents();
     });
   }
 
@@ -317,7 +316,6 @@ class _MainScreenState extends State<MainScreen> {
           });
 
           await context.read<AppState>().loadContentsFromDb();
-          await context.read<AppState>().syncAlarmsFromCurrentEvents();
           context.read<AppState>().startSummaryPolling();
         },
       ),
