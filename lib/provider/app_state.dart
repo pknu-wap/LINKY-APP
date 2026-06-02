@@ -512,6 +512,7 @@ class AppState extends ChangeNotifier {
     required String url,
     required String newTitle,
     required String? newTime,
+    required bool newIsPrivate,
     String? newCategory,
   }) async {
     int index = _contents.indexWhere((item) => item.id == id);
@@ -528,7 +529,7 @@ class AppState extends ChangeNotifier {
         title: newTitle,
         url: url,
         category: newCategory ?? _contents[index].category,
-        isPrivate: _contents[index].isPrivate,
+        isPrivate: newIsPrivate,
         selectedDate: newTime,
       );
 

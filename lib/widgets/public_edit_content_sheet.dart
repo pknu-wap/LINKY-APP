@@ -25,6 +25,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
 
   bool _isInitialized = false;
   String? _selectedCategory;
+  bool _isPrivate = false;
 
   final GlobalKey _calendarAnchorKey = GlobalKey();
 
@@ -70,6 +71,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
       _dateController.text = datetimeText;
       _selectedCategory = targetItem.category;
       _summaryController.text = summaryText;
+      _isPrivate = targetItem.isPrivate;
 
       _isInitialized = true;
     }
@@ -116,21 +118,13 @@ class _EditContentSheetState extends State<EditContentSheet> {
                           );
                           return;
                         }
-
-                        // context.read<AppState>().updateContent(
-                        //   id: widget.contentID,
-                        //   newTitle: _titleController.text,
-                        //   url: urlText,
-                        //   newTime: _dateController.text,
-                        //   newCategory: _selectedCategory,
-                        // );
                         try {
-                          print(_dateController.text);
                           await context.read<AppState>().updateContent(
                             id: widget.contentID,
                             newTitle: _titleController.text,
                             url: urlText,
                             newTime: _dateController.text,
+                            newIsPrivate: _isPrivate,
                             newCategory: _selectedCategory,
                           );
 
@@ -149,7 +143,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
                   ],
                 ),
 
-                SizedBox(height: 23),
+                SizedBox(height: 15),
 
                 Expanded(
                   child: SingleChildScrollView(
@@ -236,7 +230,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
                           ),
                         ),
 
-                        SizedBox(height: 23),
+                        const SizedBox(height: 15),
 
                         _WhiteContainer(
                           screenSize: screenSize,
@@ -295,7 +289,10 @@ class _EditContentSheetState extends State<EditContentSheet> {
                                     // child: Image.asset(
                                     //   'assets/images/CalendarIcon.png',
                                     // ),
-                                    child: Icon(Icons.calendar_today_outlined),
+                                    child: Icon(
+                                      Icons.calendar_today_outlined,
+                                      color: AppColors.textGrey,
+                                    ),
                                   );
                                 },
                               ),
@@ -303,7 +300,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
                           ),
                         ),
 
-                        SizedBox(height: 23),
+                        const SizedBox(height: 15),
 
                         _WhiteContainer(
                           screenSize: screenSize,
@@ -327,13 +324,69 @@ class _EditContentSheetState extends State<EditContentSheet> {
                                     ),
                                   ),
                                 ),
-                                const Icon(Icons.arrow_drop_down_outlined),
+                                Transform.scale(
+                                  scale: 1.3,
+                                  child: const Icon(
+                                    Icons.arrow_drop_down_outlined,
+                                    color: AppColors.textGrey,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                         ),
 
-                        SizedBox(height: 23),
+                        const SizedBox(height: 15),
+
+                        _WhiteContainer(
+                          screenSize: screenSize,
+                          insideWidget: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '나만보기',
+                                style: GoogleFonts.inter(fontSize: 16),
+                              ),
+                              SizedBox(
+                                height: 30,
+                                width: 40,
+                                child: Transform.scale(
+                                  scale: 0.8,
+                                  child: Switch(
+                                    value: _isPrivate,
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                    activeThumbColor: AppColors.white,
+                                    activeTrackColor: AppColors.textGrey,
+                                    inactiveThumbColor: AppColors.textGrey,
+                                    inactiveTrackColor: AppColors.white,
+                                    trackOutlineColor:
+                                        WidgetStateProperty.resolveWith<Color?>(
+                                          (states) {
+                                            return AppColors.textGrey;
+                                          },
+                                        ),
+                                    trackOutlineWidth:
+                                        WidgetStateProperty.resolveWith<
+                                          double?
+                                        >(
+                                          (states) {
+                                            return 1.5;
+                                          },
+                                        ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _isPrivate = value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 15),
 
                         _WhiteContainer(
                           screenSize: screenSize,
