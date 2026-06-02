@@ -433,6 +433,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
                                     '생체인식',
                                     style: GoogleFonts.inter(
                                       fontSize: 18,
+                                      fontWeight: FontWeight.w600,
                                       color:
                                           (_localLockWith == LockWith.localAuth)
                                           ? AppColors.white

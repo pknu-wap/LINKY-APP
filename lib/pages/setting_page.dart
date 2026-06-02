@@ -138,9 +138,18 @@ class SettingPageState extends State<SettingPage> {
                       height: 54,
                       margin: const EdgeInsets.only(bottom: 20),
                       decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.textGrey.withValues(
+                              alpha: 0.2,
+                            ),
+                            spreadRadius: 0,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
                         color: AppColors.white,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.lightGrey),
                       ),
                       child: Center(
                         child: Text(
@@ -148,6 +157,7 @@ class SettingPageState extends State<SettingPage> {
                           style: TextStyle(
                             color: AppColors.mainRed,
                             fontSize: 18,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
