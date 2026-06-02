@@ -23,10 +23,10 @@ class _PrivatePageState extends State<PrivatePage> {
     final appState = context.watch<AppState>();
     final privateList = appState.privateContents;
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: AppColors.mainBackGrey,
-        body: Padding(
+    return Scaffold(
+      backgroundColor: AppColors.mainBackGrey,
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,7 +36,7 @@ class _PrivatePageState extends State<PrivatePage> {
                 appbarText: 'Only me',
                 appbarIcon: Icons.account_circle,
               ),
-              SizedBox(height: 13),
+              SizedBox(height: 15),
               SelectCategoryHome(
                 categoryCount: privateList.length.toString(),
                 categoryTitle: 'Only me',

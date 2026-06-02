@@ -34,10 +34,10 @@ class ContentsBox extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(23),
-          border: BoxBorder.all(color: AppColors.black, width: 1),
+          border: BoxBorder.all(color: AppColors.black, width: 0.5),
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.25),
+              color: AppColors.black.withValues(alpha: 0.3),
               spreadRadius: 0,
               blurRadius: 4,
               offset: Offset(0, 4),

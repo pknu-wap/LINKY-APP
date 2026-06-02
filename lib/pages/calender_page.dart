@@ -184,7 +184,7 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.mainBackGrey,
       body: Row(
         children: [
           Expanded(

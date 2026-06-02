@@ -49,8 +49,6 @@ class _CategoryPageState extends State<CategoryPage> {
                 final TextEditingController categoryController =
                     TextEditingController();
 
-                String newCategoryName = categoryName;
-
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -169,7 +167,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             }
 
                             Navigator.pop(context);
-                            
+
                             showCustomSnackBar(
                               context,
                               message: '카테고리명이 수정되었습니다.',
@@ -256,10 +254,10 @@ class _CategoryPageState extends State<CategoryPage> {
       return {"title": name, "count": count.toString()};
     }).toList();
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: const Color(0xFFf0f2f6),
-        body: Padding(
+    return Scaffold(
+      backgroundColor: const Color(0xFFf0f2f6),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,6 +274,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   Expanded(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(vertical: 6),
                       physics: const BouncingScrollPhysics(),
                       child: Row(
                         children: currentCategories.map((cat) {
@@ -306,11 +305,11 @@ class _CategoryPageState extends State<CategoryPage> {
                                     ? AppColors.mainGreen
                                     : AppColors.white,
                                 countBackgroundColor: isSelected
-                                    ? const Color(0xffffffff)
-                                    : const Color(0xFFC5C5C5),
+                                    ? AppColors.white
+                                    : AppColors.outlineGrey.withValues(alpha: 0.7),
                                 textColor: isSelected
-                                    ? Colors.white
-                                    : Colors.black,
+                                    ? AppColors.white
+                                    : AppColors.black,
                               ),
                             ),
                           );
@@ -414,23 +413,31 @@ class _CategoryPageState extends State<CategoryPage> {
                     child: Container(
                       width: 38,
                       height: 38,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.black.withValues(alpha: 0.25),
+                            spreadRadius: 0,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
                         shape: BoxShape.circle,
                         color: Colors.white,
                         border: Border.fromBorderSide(
-                          BorderSide(color: Colors.black),
+                          BorderSide(color: Colors.black, width: 0.5),
                         ),
                       ),
                       child: const Icon(
                         Icons.add,
                         color: AppColors.mainGreen,
-                        size: 22,
+                        size: 36,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 13),
+              const SizedBox(height: 15),
               filteredItems.isEmpty
                   ? Expanded(
                       child: Center(

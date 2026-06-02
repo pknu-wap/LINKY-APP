@@ -8,7 +8,9 @@
         android:label="Linky"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:resizeableActivity="false">
+        
         
         <service
             android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmService"
