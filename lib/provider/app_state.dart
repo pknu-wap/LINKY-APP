@@ -81,17 +81,6 @@ class AppState extends ChangeNotifier {
     await prefs.setStringList('categories', _categories);
   }
 
-  // Future<void> resetCategories() async {
-  //   _categories
-  //     ..clear()
-  //     ..addAll(['전체', '즐겨찾기']);
-
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.setStringList('categories', []);
-
-  //   notifyListeners();
-  // }
-
   Future<void> loadSavedCategories() async {
     final prefs = await SharedPreferences.getInstance();
     final savedCategories = prefs.getStringList('categories') ?? [];
@@ -193,19 +182,6 @@ class AppState extends ChangeNotifier {
           }
         }
 
-        if (kEvents.isNotEmpty) {
-          final eventsSnapshot = Map<DateTime, List<dynamic>>.fromEntries(
-            kEvents.entries.map(
-              (entry) => MapEntry(
-                entry.key,
-                List<dynamic>.from(entry.value),
-              ),
-            ),
-          );
-
-          await AlarmService.syncEventsWithAlarms(eventsSnapshot);
-        }
-
         final hasRunningSummary = _contents.any(
           (item) =>
               item.summaryStatus == 'PENDING' ||
@@ -292,6 +268,21 @@ class AppState extends ChangeNotifier {
       await saveCategories();
       notifyListeners();
     }
+  }
+
+  Future<void> syncAlarmsFromCurrentEvents() async {
+    if (kEvents.isEmpty) return;
+
+    final eventsSnapshot = Map<DateTime, List<dynamic>>.fromEntries(
+      kEvents.entries.map(
+        (entry) => MapEntry(
+          entry.key,
+          List<dynamic>.from(entry.value),
+        ),
+      ),
+    );
+
+    await AlarmService.syncEventsWithAlarms(eventsSnapshot);
   }
 
   Future<void> removeCategory(String categoryName) async {
@@ -477,6 +468,12 @@ class AppState extends ChangeNotifier {
               minute: parsedTime.minute,
             ),
           );
+
+          await AlarmService.scheduleEventAlarm(
+            contentID: nextId,
+            title: item.title,
+            scheduledTime: parsedTime,
+          );
         }
 
         notifyListeners();
@@ -600,6 +597,7 @@ class AppState extends ChangeNotifier {
     required String category,
     required bool isPrivate,
     String? selectedDate,
+    bool clearSelectedDate = false,
   }) async {
     final response = await http.patch(
       Uri.parse("$baseUrl/links/$id"),
@@ -615,6 +613,7 @@ class AppState extends ChangeNotifier {
         "selectedDate": selectedDate != null
             ? DateTime.parse(selectedDate).toIso8601String()
             : null,
+        "clearSelectedDate": clearSelectedDate,
       }),
     );
 
@@ -682,23 +681,28 @@ class AppState extends ChangeNotifier {
     return kEvents[dateKey] ?? [];
   }
 
-  void removeEvent(DateTime day, int contentID) {
-    final dateOnly = DateTime(day.year, day.month, day.day);
+  Future<void> removeEvent(DateTime day, int contentID) async {
+    final deviceUuid = await getDeviceUuid();
 
-    if (kEvents.containsKey(dateOnly)) {
-      kEvents[dateOnly]!.removeWhere((event) => event.contentID == contentID);
+    final index = _contents.indexWhere((item) => item.id == contentID);
+    if (index == -1) return;
 
-      if (kEvents[dateOnly]!.isEmpty) {
-        kEvents.remove(dateOnly);
-      }
-    }
+    final item = _contents[index];
 
-    int index = _contents.indexWhere((item) => item.id == contentID);
-    if (index != -1) {
-      _contents[index].time = null;
-    }
+    final success = await updateLink(
+      id: contentID,
+      deviceUuid: deviceUuid,
+      title: item.title,
+      url: item.url,
+      category: item.category,
+      isPrivate: item.isPrivate,
+      selectedDate: null,
+      clearSelectedDate: true,
+    );
 
-    AlarmService.cancelEventAlarm(contentID);
+    if (!success) return;
+
+    await AlarmService.cancelEventAlarm(contentID);
 
     notifyListeners();
   }
