@@ -297,14 +297,34 @@ class AppState extends ChangeNotifier {
   Future<void> removeCategory(String categoryName) async {
     if (categoryName == '전체' || categoryName == '즐겨찾기') return;
 
-    _categories.remove(categoryName);
+    final deviceUuid = await getDeviceUuid();
+    final affectedContents = _contents
+        .where((content) => content.category == categoryName)
+        .toList();
 
-    for (var content in _contents) {
-      if (content.category == categoryName) {
-        content.category = '전체';
-      }
+    final results = await Future.wait(
+      affectedContents.map((content) {
+        return updateLink(
+          id: content.id,
+          deviceUuid: deviceUuid,
+          title: content.title,
+          url: content.url,
+          category: '전체',
+          isPrivate: content.isPrivate,
+          selectedDate: content.time,
+        );
+      }),
+    );
+
+    if (results.contains(false)) {
+      return;
     }
 
+    for (final content in affectedContents) {
+      content.category = '전체';
+    }
+
+    _categories.remove(categoryName);
     await saveCategories();
     notifyListeners();
   }
