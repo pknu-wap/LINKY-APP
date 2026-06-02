@@ -121,7 +121,8 @@ class _CategoryPageState extends State<CategoryPage> {
 
                             if (newCategoryName.isEmpty ||
                                 newCategoryName == '전체' ||
-                                newCategoryName == '즐겨찾기') {
+                                newCategoryName == '즐겨찾기' ||
+                                newCategoryName == '나만보기') {
                               showCustomSnackBar(
                                 context,
                                 message: "올바르지 않은 카테고리명입니다",
@@ -306,7 +307,9 @@ class _CategoryPageState extends State<CategoryPage> {
                                     : AppColors.white,
                                 countBackgroundColor: isSelected
                                     ? AppColors.white
-                                    : AppColors.outlineGrey.withValues(alpha: 0.7),
+                                    : AppColors.outlineGrey.withValues(
+                                        alpha: 0.7,
+                                      ),
                                 textColor: isSelected
                                     ? AppColors.white
                                     : AppColors.black,

@@ -104,6 +104,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       title: 'Linky',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const SplashPage(),
       routes: {
@@ -356,6 +357,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -363,109 +365,114 @@ class _MainScreenState extends State<MainScreen> {
         _handleBackButton();
       },
       child: Scaffold(
-        extendBody: true,
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _buildPages(),
-        ),
-        bottomNavigationBar: SafeArea(
-          child: Container(
-            margin: const EdgeInsets.only(
-              left: 12,
-              right: 12,
-              bottom: 15,
+        body: Stack(
+          children: [
+            IndexedStack(
+              index: _selectedIndex,
+              children: _buildPages(),
             ),
-            height: 94,
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(28),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.black.withValues(alpha: 0.25),
-                  blurRadius: 18,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadiusGeometry.circular(28),
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  // splashColor: AppColors.mainGreen,
-                  // hoverColor: AppColors.mainGreen,
-                  highlightColor: Colors.transparent,
-                  splashFactory: NoSplash.splashFactory,
-                ),
-                child: BottomNavigationBar(
-                  backgroundColor: AppColors.white,
-                  showSelectedLabels: false,
-                  showUnselectedLabels: false,
-                  type: BottomNavigationBarType.fixed,
-                  currentIndex: _selectedIndex,
-                  onTap: _onItemTapped,
-                  items: [
-                    BottomNavigationBarItem(
-                      icon: _buildCommonItem(
-                        Icons.view_agenda_outlined,
-                        '카테고리',
-                        false,
-                      ),
-                      activeIcon: _buildCommonItem(
-                        Icons.view_agenda_outlined,
-                        '카테고리',
-                        true,
-                      ),
-                      label: '',
+            if (!isKeyboardOpen)
+              Positioned(
+                left: 12,
+                right: 12,
+                bottom: 12,
+                child: SafeArea(
+                  child: Container(
+                    height: 87,
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.black.withValues(alpha: 0.25),
+                          blurRadius: 18,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
                     ),
-                    BottomNavigationBarItem(
-                      icon: _buildCommonItem(
-                        Icons.account_circle_outlined,
-                        '나만보기',
-                        false,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(28),
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          // splashColor: AppColors.mainGreen,
+                          // hoverColor: AppColors.mainGreen,
+                          highlightColor: Colors.transparent,
+                          splashFactory: NoSplash.splashFactory,
+                        ),
+                        child: BottomNavigationBar(
+                          elevation: 0,
+                          backgroundColor: AppColors.white,
+                          showSelectedLabels: false,
+                          showUnselectedLabels: false,
+                          type: BottomNavigationBarType.fixed,
+                          currentIndex: _selectedIndex,
+                          onTap: _onItemTapped,
+                          items: [
+                            BottomNavigationBarItem(
+                              icon: _buildCommonItem(
+                                Icons.view_agenda_outlined,
+                                '카테고리',
+                                false,
+                              ),
+                              activeIcon: _buildCommonItem(
+                                Icons.view_agenda_outlined,
+                                '카테고리',
+                                true,
+                              ),
+                              label: '',
+                            ),
+                            BottomNavigationBarItem(
+                              icon: _buildCommonItem(
+                                Icons.account_circle_outlined,
+                                '나만보기',
+                                false,
+                              ),
+                              activeIcon: _buildCommonItem(
+                                Icons.account_circle_outlined,
+                                '나만보기',
+                                true,
+                              ),
+                              label: '',
+                            ),
+                            BottomNavigationBarItem(
+                              icon: _buildPlusItem(false),
+                              activeIcon: _buildPlusItem(true),
+                              label: '',
+                            ),
+                            BottomNavigationBarItem(
+                              icon: _buildCommonItem(
+                                Icons.calendar_today_rounded,
+                                '리마인더',
+                                false,
+                              ),
+                              activeIcon: _buildCommonItem(
+                                Icons.calendar_today_rounded,
+                                '리마인더',
+                                true,
+                              ),
+                              label: '',
+                            ),
+                            BottomNavigationBarItem(
+                              icon: _buildCommonItem(
+                                Icons.settings_outlined,
+                                '설정',
+                                false,
+                              ),
+                              activeIcon: _buildCommonItem(
+                                Icons.settings_outlined,
+                                '설정',
+                                true,
+                              ),
+                              label: '',
+                            ),
+                          ],
+                        ),
                       ),
-                      activeIcon: _buildCommonItem(
-                        Icons.account_circle_outlined,
-                        '나만보기',
-                        true,
-                      ),
-                      label: '',
                     ),
-                    BottomNavigationBarItem(
-                      icon: _buildPlusItem(false),
-                      activeIcon: _buildPlusItem(true),
-                      label: '',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: _buildCommonItem(
-                        Icons.calendar_today_rounded,
-                        '리마인더',
-                        false,
-                      ),
-                      activeIcon: _buildCommonItem(
-                        Icons.calendar_today_rounded,
-                        '리마인더',
-                        true,
-                      ),
-                      label: '',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: _buildCommonItem(
-                        Icons.settings_outlined,
-                        '설정',
-                        false,
-                      ),
-                      activeIcon: _buildCommonItem(
-                        Icons.settings_outlined,
-                        '설정',
-                        true,
-                      ),
-                      label: '',
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
+          ],
         ),
       ),
     );
@@ -505,7 +512,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 3),
+        const SizedBox(height: 2),
         Text(
           label,
           style: TextStyle(
@@ -518,27 +525,30 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildPlusItem(bool isSelected) {
-    return Container(
-      width: 55,
-      height: 55,
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.mainGreen : AppColors.transparent,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: isSelected
-            ? [
-                BoxShadow(
-                  color: AppColors.bottNavTextGrey.withValues(alpha: 0.4),
-                  blurRadius: 16,
-                  offset: const Offset(0, 8),
-                ),
-              ]
-            : [],
-      ),
-      child: Center(
-        child: Icon(
-          Icons.add,
-          color: isSelected ? AppColors.white : AppColors.mainGreen,
-          size: 55,
+    return Transform.translate(
+      offset: const Offset(0, -4),
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.mainGreen : AppColors.transparent,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.bottNavTextGrey.withValues(alpha: 0.4),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : [],
+        ),
+        child: Center(
+          child: Icon(
+            Icons.add,
+            color: isSelected ? AppColors.white : AppColors.mainGreen,
+            size: 47,
+          ),
         ),
       ),
     );
