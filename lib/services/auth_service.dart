@@ -1,4 +1,5 @@
 import 'package:local_auth/local_auth.dart';
+import 'package:local_auth_android/local_auth_android.dart';
 import 'package:std/main.dart';
 
 class LocalAuthService {
@@ -15,7 +16,12 @@ class LocalAuthService {
       bool isAvailable = await checkAvailable();
       if (isAvailable) {
         return await _auth.authenticate(
-          // localizedReason: '시크릿 모드를 해제하려면 인증이 필요합니다.',
+          authMessages: const <AuthMessages>[
+            AndroidAuthMessages(
+              signInTitle: '본인 인증',
+              signInHint: '생체 인식을 사용하세요.',
+            ),
+          ],
           localizedReason: ' ',
           persistAcrossBackgrounding: true,
           biometricOnly: false,

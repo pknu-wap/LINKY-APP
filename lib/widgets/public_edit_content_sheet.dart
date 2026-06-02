@@ -54,7 +54,9 @@ class _EditContentSheetState extends State<EditContentSheet> {
     Size screenSize = MediaQuery.of(context).size;
 
     final appState = context.watch<AppState>();
-    final categories = appState.categories;
+    final selectableCategories = appState.categories
+        .where((item) => item != '즐겨찾기')
+        .toList();
     final targetItem = context.select<AppState, ContentItem?>(
       (state) => state.contentById(widget.contentID),
     );
@@ -305,7 +307,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
                         _WhiteContainer(
                           screenSize: screenSize,
                           insideWidget: DropdownWidget(
-                            itemsList: categories,
+                            itemsList: selectableCategories,
                             onCategorySelected: (value) {
                               setState(() {
                                 _selectedCategory = value;

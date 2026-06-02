@@ -378,7 +378,8 @@ class _MainScreenState extends State<MainScreen> {
                 bottom: 12,
                 child: SafeArea(
                   child: Container(
-                    height: 87,
+                    clipBehavior: Clip.hardEdge,
+                    height: 85,
                     decoration: BoxDecoration(
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(28),
@@ -404,6 +405,8 @@ class _MainScreenState extends State<MainScreen> {
                           backgroundColor: AppColors.white,
                           showSelectedLabels: false,
                           showUnselectedLabels: false,
+                          selectedFontSize: 0,
+                          unselectedFontSize: 0,
                           type: BottomNavigationBarType.fixed,
                           currentIndex: _selectedIndex,
                           onTap: _onItemTapped,

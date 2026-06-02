@@ -52,9 +52,11 @@ class _CategoryPageState extends State<CategoryPage> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return AlertDialog(
-                      backgroundColor: AppColors.white,
-                      title: Text('카테고리 이름 수정'),
+                    return DialogPopup(
+                      title: '카테고리 이름 수정',
+                      height: 160,
+                      boxType: BoxType.warning,
+                      confirmText: '확인',
                       content: Theme(
                         data: Theme.of(context).copyWith(
                           textSelectionTheme: TextSelectionThemeData(
@@ -68,117 +70,64 @@ class _CategoryPageState extends State<CategoryPage> {
                         child: TextField(
                           controller: categoryController,
                           decoration: InputDecoration(
-                            hintText: '수정할 카테고리 이름을 입력해주세요',
+                            isDense: true,
+                            contentPadding: const EdgeInsets.only(bottom: 1),
+                            hintText: '수정할 이름을 입력해주세요',
                             hintStyle: const TextStyle(
                               color: AppColors.textGrey,
-                              fontSize: 14,
                             ),
-                            filled: true,
-                            fillColor: AppColors.white,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 15,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide(
-                                color: AppColors.outlineGrey,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide(
-                                color: AppColors.outlineGrey,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
+                            focusedBorder: UnderlineInputBorder(
                               borderSide: const BorderSide(
-                                color: AppColors.mainGreen,
+                                color: AppColors.darkGreen,
                               ),
                             ),
                           ),
                         ),
                       ),
-                      contentPadding: EdgeInsets.only(
-                        top: 20,
-                        right: 20,
-                        left: 20,
-                      ),
-                      actionsPadding: EdgeInsets.only(
-                        top: 5,
-                        bottom: 10,
-                        right: 10,
-                      ),
-                      actions: [
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            foregroundColor: AppColors.mainGreen,
-                          ),
-                          onPressed: () async {
-                            final newCategoryName = categoryController.text
-                                .trim();
+                      onConfirm: () {
+                        final newCategoryName = categoryController.text.trim();
 
-                            if (newCategoryName.isEmpty ||
-                                newCategoryName == '전체' ||
-                                newCategoryName == '즐겨찾기' ||
-                                newCategoryName == '나만보기') {
-                              showCustomSnackBar(
-                                context,
-                                message: "올바르지 않은 카테고리명입니다",
-                                isError: true,
-                              );
-                              return;
-                            }
+                        if (newCategoryName.isEmpty ||
+                            newCategoryName.replaceAll(' ', '') == '전체' ||
+                            newCategoryName.replaceAll(' ', '') == '즐겨찾기' ||
+                            newCategoryName.replaceAll(' ', '') == '나만보기') {
+                          showCustomSnackBar(
+                            context,
+                            message: "기본설정 카테고리입니다",
+                            isError: true,
+                          );
+                          return false;
+                        }
 
-                            if (newCategoryName != categoryName &&
-                                context.read<AppState>().categoryNameCheck(
-                                  newCategoryName,
-                                )) {
-                              showCustomSnackBar(
-                                context,
-                                message: '이미 존재하는 카테고리명입니다.',
-                                isError: true,
-                              );
-                              return;
-                            }
+                        if (newCategoryName != categoryName &&
+                            context.read<AppState>().categoryNameCheck(
+                              newCategoryName,
+                            )) {
+                          showCustomSnackBar(
+                            context,
+                            message: '이미 존재하는 카테고리명입니다.',
+                            isError: true,
+                          );
+                          return false;
+                        }
 
-                            final success = await context
-                                .read<AppState>()
-                                .updateCategory(
-                                  oldCategoryName: categoryName,
-                                  newCategoryName: newCategoryName,
-                                );
+                        context.read<AppState>().updateCategory(
+                          oldCategoryName: categoryName,
+                          newCategoryName: newCategoryName,
+                        );
 
-                            if (!context.mounted) return;
+                        if (selectedCategory == categoryName) {
+                          setState(() {
+                            selectedCategory = newCategoryName;
+                          });
+                        }
 
-                            if (!success) {
-                              showCustomSnackBar(
-                                context,
-                                message: '카테고리명 수정을 실패했습니다.',
-                                isError: true,
-                              );
-                              return;
-                            }
-
-                            if (selectedCategory == categoryName) {
-                              setState(() {
-                                selectedCategory = newCategoryName;
-                              });
-                            }
-
-                            Navigator.pop(context);
-
-                            showCustomSnackBar(
-                              context,
-                              message: '카테고리명이 수정되었습니다.',
-                            );
-                          },
-                          child: Text(
-                            "확인",
-                          ),
-                        ),
-                      ],
+                        showCustomSnackBar(
+                          context,
+                          message: '카테고리명이 수정되었습니다.',
+                        );
+                        return true;
+                      },
                     );
                   },
                 );
@@ -204,6 +153,7 @@ class _CategoryPageState extends State<CategoryPage> {
                         context.read<AppState>().removeCategory(
                           categoryName,
                         );
+                        selectedCategory = '전체';
                         showCustomSnackBar(
                           context,
                           message: "카테고리가 삭제되었습니다.",
@@ -350,6 +300,9 @@ class _CategoryPageState extends State<CategoryPage> {
                                     bottom: 1,
                                   ),
                                   hintText: "카테고리를 입력해주세요.",
+                                  hintStyle: GoogleFonts.inter(
+                                    color: AppColors.textGrey,
+                                  ),
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: const BorderSide(
                                       color: AppColors.darkGreen,
@@ -374,8 +327,11 @@ class _CategoryPageState extends State<CategoryPage> {
                                 return false;
                               }
 
-                              if (newCategoryName == '전체' ||
-                                  newCategoryName == '즐겨찾기') {
+                              if (newCategoryName.replaceAll(' ', '') == '전체' ||
+                                  newCategoryName.replaceAll(' ', '') ==
+                                      '즐겨찾기' ||
+                                  newCategoryName.replaceAll(' ', '') ==
+                                      '나만보기') {
                                 showCustomSnackBar(
                                   context,
                                   message: '기본설정 카테고리입니다.',

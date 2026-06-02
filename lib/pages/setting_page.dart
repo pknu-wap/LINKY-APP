@@ -92,7 +92,7 @@ class SettingPageState extends State<SettingPage> {
                 ),
 
                 SettingMenu(
-                  icon: Icons.info_outline_rounded,
+                  icon: Icons.link,
                   text: 'LINKY 소개',
                   onTap: () => settingAnimation(context, IntroducePage()),
                 ),

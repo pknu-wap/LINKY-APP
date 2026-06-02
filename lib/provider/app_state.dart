@@ -633,6 +633,12 @@ class AppState extends ChangeNotifier {
       throw Exception('초기화 실패');
     }
 
+    final prefs = await SharedPreferences.getInstance();
+    lockWith = null;
+    customPw = null;
+    await prefs.setString('custom_pw', '');
+    await prefs.setString('lock_method', '');
+
     final contentIds = _contents.map((item) => item.id).toList();
     if (contentIds.isNotEmpty) {
       final cancelFutures = contentIds.map(

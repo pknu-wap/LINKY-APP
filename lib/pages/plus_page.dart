@@ -143,7 +143,9 @@ class _PlusPageState extends State<PlusPage> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final categoryList = appState.categories;
+    final categoryList = appState.categories
+        .where((item) => item != '즐겨찾기')
+        .toList();
 
     return Scaffold(
       backgroundColor: AppColors.mainBackGrey,
