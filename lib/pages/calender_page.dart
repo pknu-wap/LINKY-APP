@@ -191,7 +191,7 @@ class _CalendarPageState extends State<CalendarPage> {
           Expanded(
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 17),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: CustomScrollView(
                   slivers: [
                     SliverToBoxAdapter(

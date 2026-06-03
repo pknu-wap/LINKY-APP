@@ -396,41 +396,48 @@ class _CategoryPageState extends State<CategoryPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 15),
-              filteredItems.isEmpty
-                  ? Expanded(
-                      child: Center(
+              Expanded(
+                child: filteredItems.isEmpty
+                    ? Center(
                         child: Text(
-                          "\n링크를 추가해주세요!",
+                          "링크를 추가해주세요!",
                           style: GoogleFonts.inter(
                             color: AppColors.textGrey,
                             fontSize: 20,
                           ),
                         ),
+                      )
+                    : Column(
+                        children: [
+                          const SizedBox(height: 15),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: filteredItems.length,
+                              itemBuilder: (context, index) {
+                                final item = filteredItems[index];
+                                return Column(
+                                  children: [
+                                    ContentsBox(
+                                      contentID: item.id,
+                                      currentCategory: selectedCategory,
+                                      onActionDone: () async {
+                                        await context
+                                            .read<AppState>()
+                                            .removeContent(
+                                              id: item.id,
+                                            );
+                                      },
+                                    ),
+                                    const SizedBox(height: 13),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    )
-                  : Expanded(
-                      child: ListView.builder(
-                        itemCount: filteredItems.length,
-                        itemBuilder: (context, index) {
-                          final item = filteredItems[index];
-                          return Column(
-                            children: [
-                              ContentsBox(
-                                contentID: item.id,
-                                currentCategory: selectedCategory,
-                                onActionDone: () async {
-                                  await context.read<AppState>().removeContent(
-                                    id: item.id,
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 13),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
+              ),
+              const SizedBox(height: 110),
             ],
           ),
         ),

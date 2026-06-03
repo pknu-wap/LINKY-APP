@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:std/provider/app_state.dart';
@@ -123,18 +124,17 @@ class ContentsBox extends StatelessWidget {
                         GestureDetector(
                           onTap: () {
                             context.read<AppState>().toggleFavorite(targetItem);
-                            
                           },
-                          child: Image.asset(
+                          child: SvgPicture.asset(
                             targetItem.isFavorite
-                                ? 'assets/images/FavoriteIcon_Active.png'
-                                : 'assets/images/FavoriteIcon.png',
+                                ? 'assets/images/FavoriteIcon_Active.svg'
+                                : 'assets/images/FavoriteIcon.svg',
                             height: 20,
                           ),
                         ),
                         SizedBox(width: 10),
-                        Image.asset(
-                          'assets/images/CalendarIcon.png',
+                        SvgPicture.asset(
+                          'assets/images/CalendarIcon.svg',
                           width: 20,
                         ),
                         SizedBox(width: 7),

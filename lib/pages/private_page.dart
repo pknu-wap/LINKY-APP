@@ -31,22 +31,40 @@ class _PrivatePageState extends State<PrivatePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               AppBarDesign(
                 appbarText: 'Only me',
                 appbarIcon: Icons.account_circle,
               ),
-              SizedBox(height: 15),
-              SelectCategoryHome(
-                categoryCount: privateList.length.toString(),
-                categoryTitle: 'Only me',
-                backgroundColor: AppColors.mainGreen,
-                countBackgroundColor: AppColors.white,
-                textColor: AppColors.white,
+              const SizedBox(height: 13),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: SelectCategoryHome(
+                  categoryCount: privateList.length.toString(),
+                  categoryTitle: 'Only me',
+                  backgroundColor: AppColors.mainGreen,
+                  countBackgroundColor: AppColors.white,
+                  textColor: AppColors.white,
+                ),
               ),
-
-              SizedBox(height: 13),
-              Expanded(child: _contentsScroll(privateList)),
+              Expanded(
+                child: privateList.isEmpty
+                    ? Center(
+                        child: Text(
+                          "링크를 추가해주세요!",
+                          style: GoogleFonts.inter(
+                            color: AppColors.textGrey,
+                            fontSize: 20,
+                          ),
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          const SizedBox(height: 15),
+                          Expanded(child: _contentsScroll(privateList)),
+                        ],
+                      ),
+              ),
               const SizedBox(height: 110),
             ],
           ),
@@ -56,14 +74,6 @@ class _PrivatePageState extends State<PrivatePage> {
   }
 
   Widget _contentsScroll(List<ContentItem> items) {
-    if (items.isEmpty) {
-      return Center(
-        child: Text(
-          "\n일정을 추가해주세요!",
-          style: GoogleFonts.inter(color: AppColors.textGrey, fontSize: 20),
-        ),
-      );
-    }
     return ListView.builder(
       itemCount: items.length,
       itemBuilder: (context, index) {

@@ -457,12 +457,12 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                             BottomNavigationBarItem(
                               icon: _buildCommonItem(
-                                Icons.calendar_today_rounded,
+                                Icons.calendar_today_outlined,
                                 '리마인더',
                                 false,
                               ),
                               activeIcon: _buildCommonItem(
-                                Icons.calendar_today_rounded,
+                                Icons.calendar_today_outlined,
                                 '리마인더',
                                 true,
                               ),

@@ -112,6 +112,7 @@ class _IntroducePageState extends State<IntroducePage> {
                       IntroduceWidget(
                         screenSize: screenSize,
                         who: '김태범',
+                        role: 'FE',
                         imageLoc: tb,
                         color: AppColors.mainBlue,
                       ),
@@ -119,6 +120,7 @@ class _IntroducePageState extends State<IntroducePage> {
                       IntroduceWidget(
                         screenSize: screenSize,
                         who: '구민준',
+                        role: 'FE',
                         imageLoc: mj,
                         color: AppColors.mainBlue,
                       ),
@@ -126,6 +128,7 @@ class _IntroducePageState extends State<IntroducePage> {
                       IntroduceWidget(
                         screenSize: screenSize,
                         who: '안지예',
+                        role: 'FE',
                         imageLoc: jy,
                         color: AppColors.mainBlue,
                       ),
@@ -133,6 +136,7 @@ class _IntroducePageState extends State<IntroducePage> {
                       IntroduceWidget(
                         screenSize: screenSize,
                         who: '윤재원',
+                        role: 'FE',
                         imageLoc: jw,
                         color: AppColors.mainBlue,
                       ),
@@ -140,6 +144,7 @@ class _IntroducePageState extends State<IntroducePage> {
                       IntroduceWidget(
                         screenSize: screenSize,
                         who: '송시연',
+                        role: 'BE',
                         imageLoc: sy,
                         color: AppColors.mainYellow,
                       ),
@@ -147,6 +152,7 @@ class _IntroducePageState extends State<IntroducePage> {
                       IntroduceWidget(
                         screenSize: screenSize,
                         who: '이대연',
+                        role: 'BE',
                         imageLoc: dy,
                         color: AppColors.mainYellow,
                       ),
@@ -154,6 +160,7 @@ class _IntroducePageState extends State<IntroducePage> {
                       IntroduceWidget(
                         screenSize: screenSize,
                         who: '조희승',
+                        role: 'Design',
                         imageLoc: hs,
                         color: AppColors.mainRed,
                       ),
@@ -177,12 +184,14 @@ class IntroduceWidget extends StatelessWidget {
     required this.who,
     required this.imageLoc,
     required this.color,
+    required this.role,
   });
 
   final Size screenSize;
   final String who;
   final String imageLoc;
   final Color color;
+  final String role;
 
   @override
   Widget build(BuildContext context) {
@@ -200,12 +209,26 @@ class IntroduceWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              who,
-              style: GoogleFonts.inter(
-                fontSize: 21,
-                fontWeight: FontWeight.w500,
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  who,
+                  style: GoogleFonts.inter(
+                    fontSize: 21,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(width: 3),
+                Text(
+                  role,
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textGrey,
+                  ),
+                ),
+              ],
             ),
             Container(
               decoration: BoxDecoration(

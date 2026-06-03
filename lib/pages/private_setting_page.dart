@@ -153,7 +153,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
                       child: SizedBox(
                         width: double.infinity,
                         child: Text(
-                          '나만보기 기능 잠금 방식을을 선택해주세요.',
+                          '나만보기 기능 잠금 방식을 선택해주세요.',
                           style: GoogleFonts.inter(
                             fontSize: 14,
                             color: AppColors.textGrey,
