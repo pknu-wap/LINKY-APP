@@ -20,7 +20,6 @@ class ShareSaveWorker(
         const val KEY_SHARED_TEXT = "shared_text"
 
         private const val TAG = "ShareSaveWorker"
-        private const val SERVER_URL = "http://3.34.52.216:8080/links"
         private const val PREF_KEY_DEVICE_UUID = "flutter.device_uuid"
     }
 
@@ -95,7 +94,7 @@ class ShareSaveWorker(
                 put("categories", JSONArray())
             }
 
-            val requestUrl = URL(SERVER_URL)
+            val requestUrl = URL("${BuildConfig.BASE_URL}/links")
             connection = requestUrl.openConnection() as HttpURLConnection
             connection.requestMethod = "POST"
             connection.setRequestProperty("Content-Type", "application/json")
