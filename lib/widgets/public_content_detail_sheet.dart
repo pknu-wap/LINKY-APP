@@ -320,10 +320,16 @@ class ContentDetailSheet extends StatelessWidget {
                     const SizedBox(height: 10),
                     Text('요약', style: GoogleFonts.inter(fontSize: 20)),
                     const SizedBox(height: 10),
-                    Text(
-                      summaryText,
-                      style: GoogleFonts.inter(fontSize: 16),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Text(
+                          summaryText,
+                          style: GoogleFonts.inter(fontSize: 16),
+                        ),
+                      ),
                     ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),

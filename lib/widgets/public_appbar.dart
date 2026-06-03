@@ -22,7 +22,7 @@ class AppBarDesign extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 6),
           child: SizedBox(
-            height: 34.43,
+            // height: 34.43,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [

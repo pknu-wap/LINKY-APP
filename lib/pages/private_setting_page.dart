@@ -503,7 +503,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
       builder: (context) {
         return DialogPopup(
           title: '기존 비밀번호 확인',
-          height: 160,
+          // height: 160,
           content: Theme(
             data: Theme.of(context).copyWith(
               textSelectionTheme: TextSelectionThemeData(

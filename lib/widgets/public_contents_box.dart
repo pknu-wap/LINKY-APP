@@ -21,6 +21,7 @@ class ContentsBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
     final targetItem = context.select<AppState, ContentItem?>(
       (state) => state.contentById(contentID),
     );
@@ -31,7 +32,7 @@ class ContentsBox extends StatelessWidget {
 
     return InkWell(
       child: Container(
-        width: 375,
+        width: screenSize.width * 0.9,
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(23),
@@ -53,7 +54,7 @@ class ContentsBox extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 9),
               child: Container(
-                width: 357,
+                width: double.infinity,
                 height: 53,
                 decoration: BoxDecoration(
                   color: AppColors.mainGreen,
@@ -90,7 +91,7 @@ class ContentsBox extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: SizedBox(
-                height: 17,
+                // height: 17,
                 child: Text(
                   urlText,
                   overflow: TextOverflow.ellipsis,

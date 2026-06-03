@@ -54,7 +54,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   builder: (BuildContext context) {
                     return DialogPopup(
                       title: '카테고리 이름 수정',
-                      height: 160,
+                      // height: 160,
                       boxType: BoxType.warning,
                       confirmText: '확인',
                       content: Theme(
@@ -280,7 +280,7 @@ class _CategoryPageState extends State<CategoryPage> {
                         builder: (context) {
                           return DialogPopup(
                             title: "카테고리 추가",
-                            height: 160,
+                            // height: 160,
                             content: Theme(
                               data: Theme.of(context).copyWith(
                                 textSelectionTheme: TextSelectionThemeData(

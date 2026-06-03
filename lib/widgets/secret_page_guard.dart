@@ -154,7 +154,7 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapper>
                         ),
                         const SizedBox(height: 21),
                         SizedBox(
-                          width: 293,
+                          width: screenSize.width * 0.9,
                           height: 44,
                           child: Theme(
                             data: Theme.of(context).copyWith(
@@ -166,36 +166,41 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapper>
                                 selectionHandleColor: AppColors.mainGreen,
                               ),
                             ),
-                            child: TextField(
-                              textAlign: TextAlign.center,
-                              textAlignVertical: TextAlignVertical.center,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.zero,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: AppColors.outlineGrey,
-                                    width: 1,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: AppColors.outlineGrey,
-                                    width: 1,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: AppColors.mainGreen,
-                                    width: 1.5,
-                                  ),
-                                ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 25,
                               ),
-                              style: TextStyle(fontSize: 16),
-                              controller: pwController,
+                              child: TextField(
+                                textAlign: TextAlign.center,
+                                textAlignVertical: TextAlignVertical.center,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.zero,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: AppColors.outlineGrey,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: AppColors.outlineGrey,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: AppColors.mainGreen,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                ),
+                                style: TextStyle(fontSize: 16),
+                                controller: pwController,
+                              ),
                             ),
                           ),
                         ),
@@ -273,10 +278,24 @@ class _SecretGuardWrapperState extends State<SecretGuardWrapper>
               child: Container(
                 color: AppColors.black.withValues(alpha: 0.1),
                 child: Center(
-                  child: Icon(
-                    Icons.lock,
-                    size: 100,
-                    color: AppColors.bottNavTextGrey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.lock,
+                        size: 100,
+                        color: AppColors.bottNavTextGrey,
+                      ),
+                      const SizedBox(height: 7),
+                      Text(
+                        '설정에서 잠금방식을\n먼저 설정해주세요!',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                   //     child: Container(
                   //       width: screenSize.width * 0.65,

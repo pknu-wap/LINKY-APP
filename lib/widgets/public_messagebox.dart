@@ -9,7 +9,6 @@ class DialogPopup extends StatelessWidget {
   final bool Function() onConfirm;
   final BoxType boxType;
   final Widget? content;
-  final double height;
 
   const DialogPopup({
     super.key,
@@ -18,7 +17,6 @@ class DialogPopup extends StatelessWidget {
     required this.confirmText,
     required this.boxType,
     this.content,
-    this.height = 141,
   });
 
   @override
@@ -27,77 +25,80 @@ class DialogPopup extends StatelessWidget {
       backgroundColor: AppColors.transparent,
       child: Container(
         width: 326,
-        height: height,
         decoration: BoxDecoration(
           color: AppColors.white,
           border: Border.all(color: AppColors.black, width: 1),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      textAlign: TextAlign.center,
-                      title,
-                      style: GoogleFonts.inter(fontSize: 20),
-                    ),
-                    if (content != null) ...[
-                      const SizedBox(height: 12),
-                      content!,
-                    ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(fontSize: 20),
+                  ),
+                  if (content != null) ...[
+                    const SizedBox(height: 12),
+                    content!,
                   ],
-                ),
+                ],
               ),
             ),
-
             const Divider(
               height: 1,
               thickness: 0.38,
               color: AppColors.black,
             ),
-
             if (boxType == BoxType.warning)
               SizedBox(
                 height: 52,
                 child: Row(
                   children: [
                     Expanded(
-                      child: InkWell(
+                      child: GestureDetector(
                         onTap: () => Navigator.pop(context),
-                        child: Center(
-                          child: Text(
-                            '취소',
-                            style: GoogleFonts.inter(
-                              color: AppColors.mainBlue,
-                              fontSize: 20,
+                        child: Container(
+                          color: Colors.transparent,
+                          child: Center(
+                            child: Text(
+                              '취소',
+                              style: GoogleFonts.inter(
+                                color: AppColors.mainBlue,
+                                fontSize: 20,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    VerticalDivider(
+                    const VerticalDivider(
                       thickness: 0.38,
                       width: 1,
+                      color: AppColors.black,
                     ),
                     Expanded(
-                      child: InkWell(
+                      child: GestureDetector(
                         onTap: () {
                           final shouldClose = onConfirm();
                           if (shouldClose) {
                             Navigator.pop(context);
                           }
                         },
-                        child: Center(
-                          child: Text(
-                            confirmText,
-                            style: GoogleFonts.inter(
-                              color: AppColors.mainRed,
-                              fontSize: 20,
+                        child: Container(
+                          color: Colors.transparent,
+                          child: Center(
+                            child: Text(
+                              confirmText,
+                              style: GoogleFonts.inter(
+                                color: AppColors.mainRed,
+                                fontSize: 20,
+                              ),
                             ),
                           ),
                         ),
@@ -109,14 +110,17 @@ class DialogPopup extends StatelessWidget {
             if (boxType == BoxType.alert)
               SizedBox(
                 height: 52,
-                child: InkWell(
+                child: GestureDetector(
                   onTap: () => Navigator.pop(context),
-                  child: Center(
-                    child: Text(
-                      '확인',
-                      style: GoogleFonts.inter(
-                        color: AppColors.mainBlue,
-                        fontSize: 20,
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Center(
+                      child: Text(
+                        '확인',
+                        style: GoogleFonts.inter(
+                          color: AppColors.mainBlue,
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                   ),

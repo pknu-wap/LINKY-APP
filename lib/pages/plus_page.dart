@@ -158,7 +158,7 @@ class _PlusPageState extends State<PlusPage> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               return Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: CustomScrollView(
                   slivers: [
                     SliverToBoxAdapter(
@@ -425,6 +425,7 @@ class _PlusPageState extends State<PlusPage> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 120),
                         ],
                       ),
                     ),

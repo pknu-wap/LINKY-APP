@@ -240,7 +240,7 @@ class _CalendarPageState extends State<CalendarPage> {
                               ),
                               const SizedBox(width: 25),
                               Container(
-                                width: 87,
+                                // width: 87,
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
@@ -275,7 +275,7 @@ class _CalendarPageState extends State<CalendarPage> {
                               ),
                               const SizedBox(width: 8),
                               Container(
-                                width: 87,
+                                // width: 87,
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
@@ -397,7 +397,7 @@ class _CalendarPageState extends State<CalendarPage> {
                         );
                       },
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                    const SliverToBoxAdapter(child: SizedBox(height: 110)),
                   ],
                 ),
               ),

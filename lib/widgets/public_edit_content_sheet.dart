@@ -18,7 +18,6 @@ class EditContentSheet extends StatefulWidget {
 
 class _EditContentSheetState extends State<EditContentSheet> {
   late TextEditingController _titleController;
-  late TextEditingController _summaryController;
   late TextEditingController _dateController;
   late FocusNode titleFocusNode;
   late FocusNode urlFocusNode;
@@ -33,7 +32,6 @@ class _EditContentSheetState extends State<EditContentSheet> {
   void initState() {
     super.initState();
     _titleController = TextEditingController();
-    _summaryController = TextEditingController();
     _dateController = TextEditingController();
     titleFocusNode = FocusNode();
     urlFocusNode = FocusNode();
@@ -42,7 +40,6 @@ class _EditContentSheetState extends State<EditContentSheet> {
   @override
   void dispose() {
     _titleController.dispose();
-    _summaryController.dispose();
     titleFocusNode.dispose();
     urlFocusNode.dispose();
     _dateController.dispose();
@@ -72,7 +69,6 @@ class _EditContentSheetState extends State<EditContentSheet> {
       _titleController.text = titleText;
       _dateController.text = datetimeText;
       _selectedCategory = targetItem.category;
-      _summaryController.text = summaryText;
       _isPrivate = targetItem.isPrivate;
 
       _isInitialized = true;
@@ -95,344 +91,346 @@ class _EditContentSheetState extends State<EditContentSheet> {
               ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(height: 15),
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 15),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _circleButton(
-                      Icons.close_rounded,
-                      AppColors.mainRed,
-                      () => Navigator.pop(context),
-                    ),
-                    _circleButton(
-                      Icons.check_rounded,
-                      AppColors.mainGreen,
-                      () async {
-                        if (_titleController.text.isEmpty) {
-                          showCustomSnackBar(
-                            context,
-                            message: '제목을 입력해주세요.',
-                            isError: true,
-                          );
-                          return;
-                        }
-                        try {
-                          await context.read<AppState>().updateContent(
-                            id: widget.contentID,
-                            newTitle: _titleController.text,
-                            url: urlText,
-                            newTime: _dateController.text,
-                            newIsPrivate: _isPrivate,
-                            newCategory: _selectedCategory,
-                          );
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _circleButton(
+                        Icons.close_rounded,
+                        AppColors.mainRed,
+                        () => Navigator.pop(context),
+                      ),
+                      _circleButton(
+                        Icons.check_rounded,
+                        AppColors.mainGreen,
+                        () async {
+                          if (_titleController.text.isEmpty) {
+                            showCustomSnackBar(
+                              context,
+                              message: '제목을 입력해주세요.',
+                              isError: true,
+                            );
+                            return;
+                          }
+                          try {
+                            await context.read<AppState>().updateContent(
+                              id: widget.contentID,
+                              newTitle: _titleController.text,
+                              url: urlText,
+                              newTime: _dateController.text,
+                              newIsPrivate: _isPrivate,
+                              newCategory: _selectedCategory,
+                            );
 
-                          if (!context.mounted) return;
-                          Navigator.pop(context);
-                        } catch (e) {
-                          if (!context.mounted) return;
-                          showCustomSnackBar(
-                            context,
-                            message: '수정 내용을 저장하지 못했어요.',
-                            isError: true,
-                          );
-                        }
-                      },
-                    ),
-                  ],
-                ),
+                            if (!context.mounted) return;
+                            Navigator.pop(context);
+                          } catch (e) {
+                            if (!context.mounted) return;
+                            showCustomSnackBar(
+                              context,
+                              message: '수정 내용을 저장하지 못했어요.',
+                              isError: true,
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
 
-                SizedBox(height: 15),
+                  SizedBox(height: 15),
 
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _WhiteContainer(
-                          screenSize: screenSize,
-                          insideWidget: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Theme(
-                                      data: Theme.of(context).copyWith(
-                                        textSelectionTheme:
-                                            TextSelectionThemeData(
-                                              cursorColor: AppColors.mainGreen,
-                                              selectionColor: AppColors
-                                                  .mainGreen
-                                                  .withValues(
-                                                    alpha: 0.3,
-                                                  ),
-                                              selectionHandleColor:
-                                                  AppColors.mainGreen,
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _WhiteContainer(
+                            screenSize: screenSize,
+                            insideWidget: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Theme(
+                                        data: Theme.of(context).copyWith(
+                                          textSelectionTheme:
+                                              TextSelectionThemeData(
+                                                cursorColor:
+                                                    AppColors.mainGreen,
+                                                selectionColor: AppColors
+                                                    .mainGreen
+                                                    .withValues(
+                                                      alpha: 0.3,
+                                                    ),
+                                                selectionHandleColor:
+                                                    AppColors.mainGreen,
+                                              ),
+                                        ),
+                                        child: TextField(
+                                          controller: _titleController,
+                                          focusNode: titleFocusNode,
+                                          decoration: InputDecoration(
+                                            hintText: '제목 수정',
+                                            border: InputBorder.none,
+                                            isDense: true,
+                                            hintStyle: GoogleFonts.inter(
+                                              color: AppColors.textGrey,
                                             ),
+                                          ),
+                                        ),
                                       ),
-                                      child: TextField(
-                                        controller: _titleController,
-                                        focusNode: titleFocusNode,
-                                        decoration: InputDecoration(
-                                          hintText: '제목 수정',
-                                          border: InputBorder.none,
-                                          isDense: true,
-                                          hintStyle: GoogleFonts.inter(
-                                            color: AppColors.textGrey,
+                                    ),
+                                    InkWell(
+                                      onTap: () => _titleController.text = '',
+                                      child: Icon(
+                                        Icons.cancel_outlined,
+                                        color: AppColors.textGrey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Divider(),
+                                Theme(
+                                  data: Theme.of(context).copyWith(
+                                    textSelectionTheme: TextSelectionThemeData(
+                                      cursorColor: AppColors.mainGreen,
+                                      selectionColor: AppColors.mainGreen
+                                          .withValues(
+                                            alpha: 0.3,
+                                          ),
+                                      selectionHandleColor: AppColors.mainGreen,
+                                    ),
+                                  ),
+                                  child: SizedBox(
+                                    height: 25,
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: SelectableText(
+                                          urlText,
+                                          maxLines: 1,
+                                          style: GoogleFonts.inter(
+                                            color: AppColors.black,
+                                            fontSize: 16,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                  InkWell(
-                                    onTap: () => _titleController.text = '',
-                                    child: Icon(
-                                      Icons.cancel_outlined,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 15),
+
+                          _WhiteContainer(
+                            screenSize: screenSize,
+                            insideWidget: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  _dateController.text.isEmpty ||
+                                          _dateController.text == 'null'
+                                      ? '날짜 수정'
+                                      : _dateController.text,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 16,
+                                    color:
+                                        _dateController.text.isEmpty ||
+                                            _dateController.text == 'null'
+                                        ? AppColors.textGrey
+                                        : AppColors.black,
+                                  ),
+                                ),
+                                Transform.translate(
+                                  offset: const Offset(-3, 25),
+                                  child: Container(
+                                    key: _calendarAnchorKey,
+                                  ),
+                                ),
+
+                                Builder(
+                                  builder: (buttonContext) {
+                                    return GestureDetector(
+                                      behavior:
+                                          HitTestBehavior.opaque, // 빈 공간 터치 방지용
+                                      onTap: () {
+                                        final anchorContext =
+                                            _calendarAnchorKey.currentContext;
+
+                                        if (anchorContext != null) {
+                                          DateTime? parsedDate =
+                                              DateTime.tryParse(
+                                                _dateController.text,
+                                              );
+                                          showLinkyCalendarPicker(
+                                            anchorContext,
+                                            initialDate:
+                                                parsedDate ?? DateTime.now(),
+                                            onChanged: (date) {
+                                              setState(() {
+                                                _dateController.text =
+                                                    DateFormat(
+                                                      'yyyy-MM-dd HH:mm',
+                                                    ).format(date);
+                                              });
+                                            },
+                                          );
+                                        }
+                                      },
+                                      child: Icon(
+                                        Icons.calendar_today_outlined,
+                                        color: AppColors.textGrey,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 15),
+
+                          _WhiteContainer(
+                            screenSize: screenSize,
+                            insideWidget: DropdownWidget(
+                              itemsList: selectableCategories,
+                              onCategorySelected: (value) {
+                                setState(() {
+                                  _selectedCategory = value;
+                                });
+                              },
+                              menuWidget: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      _selectedCategory ?? categoryText,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 16,
+                                        color: categoryText == "카테고리 추가"
+                                            ? AppColors.textGrey
+                                            : AppColors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  Transform.scale(
+                                    scale: 1.3,
+                                    child: const Icon(
+                                      Icons.arrow_drop_down_outlined,
                                       color: AppColors.textGrey,
                                     ),
                                   ),
                                 ],
                               ),
-                              Divider(),
-                              Theme(
-                                data: Theme.of(context).copyWith(
-                                  textSelectionTheme: TextSelectionThemeData(
-                                    cursorColor: AppColors.mainGreen,
-                                    selectionColor: AppColors.mainGreen
-                                        .withValues(
-                                          alpha: 0.3,
-                                        ),
-                                    selectionHandleColor: AppColors.mainGreen,
-                                  ),
-                                ),
-                                child: SizedBox(
-                                  height: 25,
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: SelectableText(
-                                        urlText,
-                                        maxLines: 1,
-                                        style: GoogleFonts.inter(
-                                          color: AppColors.black,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
 
-                        const SizedBox(height: 15),
+                          const SizedBox(height: 15),
 
-                        _WhiteContainer(
-                          screenSize: screenSize,
-                          insideWidget: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                _dateController.text.isEmpty ||
-                                        _dateController.text == 'null'
-                                    ? '날짜 수정'
-                                    : _dateController.text,
-                                style: GoogleFonts.inter(
-                                  fontSize: 16,
-                                  color:
-                                      _dateController.text.isEmpty ||
-                                          _dateController.text == 'null'
-                                      ? AppColors.textGrey
-                                      : AppColors.black,
-                                ),
-                              ),
-                              Transform.translate(
-                                offset: const Offset(-3, 25),
-                                child: Container(
-                                  key: _calendarAnchorKey,
-                                ),
-                              ),
-
-                              Builder(
-                                builder: (buttonContext) {
-                                  return GestureDetector(
-                                    behavior:
-                                        HitTestBehavior.opaque, // 빈 공간 터치 방지용
-                                    onTap: () {
-                                      final anchorContext =
-                                          _calendarAnchorKey.currentContext;
-
-                                      if (anchorContext != null) {
-                                        DateTime? parsedDate =
-                                            DateTime.tryParse(
-                                              _dateController.text,
-                                            );
-                                        showLinkyCalendarPicker(
-                                          anchorContext,
-                                          initialDate:
-                                              parsedDate ?? DateTime.now(),
-                                          onChanged: (date) {
-                                            setState(() {
-                                              _dateController.text = DateFormat(
-                                                'yyyy-MM-dd HH:mm',
-                                              ).format(date);
-                                            });
-                                          },
-                                        );
-                                      }
-                                    },
-                                    // child: Image.asset(
-                                    //   'assets/images/CalendarIcon.png',
-                                    // ),
-                                    child: Icon(
-                                      Icons.calendar_today_outlined,
-                                      color: AppColors.textGrey,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 15),
-
-                        _WhiteContainer(
-                          screenSize: screenSize,
-                          insideWidget: DropdownWidget(
-                            itemsList: selectableCategories,
-                            onCategorySelected: (value) {
-                              setState(() {
-                                _selectedCategory = value;
-                              });
-                            },
-                            menuWidget: Row(
+                          _WhiteContainer(
+                            screenSize: screenSize,
+                            insideWidget: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    _selectedCategory ?? categoryText,
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16,
-                                      color: categoryText == "카테고리 추가"
-                                          ? AppColors.textGrey
-                                          : AppColors.black,
-                                    ),
-                                  ),
+                                Text(
+                                  '나만보기',
+                                  style: GoogleFonts.inter(fontSize: 16),
                                 ),
-                                Transform.scale(
-                                  scale: 1.3,
-                                  child: const Icon(
-                                    Icons.arrow_drop_down_outlined,
-                                    color: AppColors.textGrey,
+                                SizedBox(
+                                  height: 30,
+                                  width: 40,
+                                  child: Transform.scale(
+                                    scale: 0.8,
+                                    child: Switch(
+                                      value: _isPrivate,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      activeThumbColor: AppColors.white,
+                                      activeTrackColor: AppColors.textGrey,
+                                      inactiveThumbColor: AppColors.textGrey,
+                                      inactiveTrackColor: AppColors.white,
+                                      trackOutlineColor:
+                                          WidgetStateProperty.resolveWith<
+                                            Color?
+                                          >(
+                                            (states) {
+                                              return AppColors.textGrey;
+                                            },
+                                          ),
+                                      trackOutlineWidth:
+                                          WidgetStateProperty.resolveWith<
+                                            double?
+                                          >(
+                                            (states) {
+                                              return 1.5;
+                                            },
+                                          ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _isPrivate = value;
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ),
 
-                        const SizedBox(height: 15),
+                          const SizedBox(height: 15),
 
-                        _WhiteContainer(
-                          screenSize: screenSize,
-                          insideWidget: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '나만보기',
-                                style: GoogleFonts.inter(fontSize: 16),
-                              ),
-                              SizedBox(
-                                height: 30,
-                                width: 40,
-                                child: Transform.scale(
-                                  scale: 0.8,
-                                  child: Switch(
-                                    value: _isPrivate,
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    activeThumbColor: AppColors.white,
-                                    activeTrackColor: AppColors.textGrey,
-                                    inactiveThumbColor: AppColors.textGrey,
-                                    inactiveTrackColor: AppColors.white,
-                                    trackOutlineColor:
-                                        WidgetStateProperty.resolveWith<Color?>(
-                                          (states) {
-                                            return AppColors.textGrey;
-                                          },
-                                        ),
-                                    trackOutlineWidth:
-                                        WidgetStateProperty.resolveWith<
-                                          double?
-                                        >(
-                                          (states) {
-                                            return 1.5;
-                                          },
-                                        ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _isPrivate = value;
-                                      });
-                                    },
+                          _WhiteContainer(
+                            screenSize: screenSize,
+                            insideWidget: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '요약',
+                                  style: TextStyle(
+                                    color: AppColors.textGrey,
+                                    fontSize: 16,
                                   ),
                                 ),
-                              ),
-                            ],
+                                SizedBox(height: 3),
+                                Theme(
+                                  data: Theme.of(context).copyWith(
+                                    textSelectionTheme: TextSelectionThemeData(
+                                      cursorColor: AppColors.mainGreen,
+                                      selectionColor: AppColors.mainGreen
+                                          .withValues(
+                                            alpha: 0.3,
+                                          ),
+                                      selectionHandleColor: AppColors.mainGreen,
+                                    ),
+                                  ),
+                                  child: SelectableText(
+                                    summaryText,
+                                    style: GoogleFonts.inter(
+                                      color: AppColors.black,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
 
-                        const SizedBox(height: 15),
-
-                        _WhiteContainer(
-                          screenSize: screenSize,
-                          insideWidget: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '요약',
-                                style: TextStyle(
-                                  color: AppColors.textGrey,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              SizedBox(height: 3),
-                              Theme(
-                                data: Theme.of(context).copyWith(
-                                  textSelectionTheme: TextSelectionThemeData(
-                                    cursorColor: AppColors.mainGreen,
-                                    selectionColor: AppColors.mainGreen
-                                        .withValues(
-                                          alpha: 0.3,
-                                        ),
-                                    selectionHandleColor: AppColors.mainGreen,
-                                  ),
-                                ),
-                                child: TextField(
-                                  controller: _summaryController,
-                                  readOnly: true,
-                                  maxLines: 13,
-                                  style: TextStyle(fontSize: 15),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    isDense: true,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                          const SizedBox(height: 25),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -441,7 +439,7 @@ class _EditContentSheetState extends State<EditContentSheet> {
   }
 
   Widget _circleButton(IconData icon, Color color, VoidCallback onTap) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 55,
