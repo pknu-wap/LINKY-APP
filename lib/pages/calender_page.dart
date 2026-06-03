@@ -63,12 +63,13 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
-  void _updatePage(int contentID) {
+  Future<void> _updatePage(int contentID) async {
     if (_selectedDay == null) return;
 
-    context.read<AppState>().removeEvent(_selectedDay!, contentID);
+    await context.read<AppState>().removeEvent(_selectedDay!, contentID);
 
-    // 변경된 일정을 화면(ValueNotifier)에 갱신
+    if (!mounted) return;
+
     _selectedEvents.value = context.read<AppState>().getEventsForDay(
       _selectedDay!,
     );

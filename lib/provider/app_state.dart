@@ -698,6 +698,12 @@ class AppState extends ChangeNotifier {
 
     if (!success) return;
 
+    item.time = null;
+
+    final dateKey = DateTime(day.year, day.month, day.day);
+    kEvents[dateKey]?.removeWhere((event) => event.contentID == contentID);
+    kEvents.removeWhere((date, eventList) => eventList.isEmpty);
+
     await AlarmService.cancelEventAlarm(contentID);
 
     notifyListeners();
