@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth_android/local_auth_android.dart';
 import 'package:std/main.dart';
@@ -37,8 +38,7 @@ class LocalAuthService {
     //   return false;
     // }
     catch (e) {
-      print("예상치 못한 에러 발생! 타입: ${e.runtimeType}");
-      print("에러 내용: $e");
+      debugPrint("에러 내용: $e");
       return false;
     }
   }

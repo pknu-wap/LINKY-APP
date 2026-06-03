@@ -1,4 +1,5 @@
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:std/main.dart';
 
@@ -37,7 +38,6 @@ class AlarmService {
         wakeup: true,
         rescheduleOnReboot: true,
       );
-      print('30분 전 알람 예약: $title at $earlyTime');
     }
 
     if (scheduledTime.isAfter(now)) {
@@ -49,7 +49,6 @@ class AlarmService {
         wakeup: true,
         rescheduleOnReboot: true,
       );
-      print('정시 알람 예약: $title at $scheduledTime');
     }
   }
 
@@ -63,13 +62,13 @@ class AlarmService {
       );
 
       if (earlyCanceled != true && exactCanceled != true) {
-        print(
+        debugPrint(
           'Alarm cancellation may have failed for contentID=$contentID: '
           'early=$earlyCanceled exact=$exactCanceled',
         );
       }
     } catch (e) {
-      print('알람 취소 에러: $e');
+      debugPrint('알람 취소 에러: $e');
     }
   }
 

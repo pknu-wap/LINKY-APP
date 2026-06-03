@@ -72,7 +72,6 @@ class _IntroducePageState extends State<IntroducePage> {
                           ),
                         ),
                         onTap: () {
-                          print('눌림');
                           Navigator.pop(context);
                         },
                       ),

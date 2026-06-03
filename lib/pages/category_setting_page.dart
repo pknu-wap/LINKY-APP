@@ -96,7 +96,6 @@ class _CategorySettingPageState extends State<CategorySettingPage> {
                           ),
                         ),
                         onTap: () {
-                          print('눌림');
                           Navigator.pop(context);
                         },
                       ),

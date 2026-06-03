@@ -22,10 +22,20 @@ import 'package:std/snackbar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'constants.dart';
 import 'package:std/splash.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-const String baseUrl = "http://3.34.52.216:8080";
-final serverUrl = Uri.parse("$baseUrl/links");
+
+String get baseUrl {
+  final value = dotenv.env['BASE_URL'];
+  if (value == null || value.isEmpty) {
+    throw StateError('BASE_URL is missing in .env');
+  }
+  return value;
+}
+
+Uri get serverUrl => Uri.parse('$baseUrl/links');
+
 
 enum LockWith { customPw, localAuth }
 
@@ -64,6 +74,8 @@ void alarmCallback(int id) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
 
   await AndroidAlarmManager.initialize();
 
@@ -143,13 +155,13 @@ class _MainScreenState extends State<MainScreen> {
             setState(() {
               list = value;
             });
-            print(
+            debugPrint(
               "Shared: getMediaStream ${value.map((f) => f.value).join(",")}",
             );
             _handleSharedFiles(value);
           },
           onError: (err) {
-            print("getIntentDataStream error: $err");
+            debugPrint("getIntentDataStream error: $err");
           },
         );
 
@@ -175,14 +187,12 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _handleSharedFiles(List<SharedFile> value) async {
     try {
       if (value.isEmpty) {
-        print('-------공유된 데이터 없음------');
         return;
       }
 
       final String sharedData = value.map((f) => f.value).join(",");
 
       if (sharedData.isEmpty) {
-        print('---------내용 없음----------');
         return;
       }
 
@@ -200,7 +210,6 @@ class _MainScreenState extends State<MainScreen> {
       }
 
       if (sharedLink.isEmpty) {
-        print('-----URL을 찾을 수 없음------');
         return;
       }
 
@@ -257,10 +266,13 @@ class _MainScreenState extends State<MainScreen> {
         }
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          print('url: $sharedLink\ntitle: $sharedContentTitle');
+          debugPrint('url: $sharedLink\ntitle: $sharedContentTitle');
           showCustomSnackBar(context, message: '공유된 링크가 성공적으로 DB에 저장되었습니다!');
           if (mounted) {
             await context.read<AppState>().loadContentsFromDb();
+
+            if(!mounted) return;
+
             context.read<AppState>().startSummaryPolling();
           }
 
@@ -273,7 +285,6 @@ class _MainScreenState extends State<MainScreen> {
         if (Navigator.canPop(context)) {
           Navigator.pop(context);
         }
-        print("외부 공유 링크 서버 저장 실패: $e");
 
         String errorMessage = e.toString().replaceAll('Exception: ', '');
         if (e is TimeoutException) {
@@ -289,7 +300,7 @@ class _MainScreenState extends State<MainScreen> {
         }
       }
     } catch (e) {
-      print("공유 데이터 처리 중 치명적 에러 발생: $e");
+      debugPrint("공유 데이터 처리 중 치명적 에러 발생: $e");
     }
   }
 
@@ -298,7 +309,7 @@ class _MainScreenState extends State<MainScreen> {
       final value = await FlutterSharingIntent.instance.getInitialSharing();
       await _handleSharedFiles(value);
     } catch (e) {
-      print("공유 데이터 처리 중 에러 발생: $e");
+      debugPrint("공유 데이터 처리 중 에러 발생: $e");
     }
   }
 
@@ -316,6 +327,8 @@ class _MainScreenState extends State<MainScreen> {
           });
 
           await context.read<AppState>().loadContentsFromDb();
+
+          if(!mounted) return;
           context.read<AppState>().startSummaryPolling();
         },
       ),

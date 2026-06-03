@@ -125,7 +125,6 @@ class SettingPageState extends State<SettingPage> {
                             boxType: BoxType.warning,
                             onConfirm: () {
                               _onResetConfirm();
-                              print('초기화 완료');
                               return true;
                             },
                             confirmText: '초기화',

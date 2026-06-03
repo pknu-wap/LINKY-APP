@@ -30,7 +30,6 @@ void addEventToMap(int contentID, String title, DateTime selectedDate) {
     (existingEvents) => [...existingEvents, newEvent],
     ifAbsent: () => [newEvent],
   );
-  print('데이터 추가 완료: $dateKey - ${newEvent.title}');
 }
 
 class PlusPage extends StatefulWidget {
@@ -124,8 +123,6 @@ class _PlusPageState extends State<PlusPage> {
       if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context); // 로딩창 닫기
       }
-
-      print("[PlusPage 저장 에러 로그]: $e");
 
       String errorMessage = e.toString().replaceAll('Exception: ', '');
       if (e is TimeoutException) {

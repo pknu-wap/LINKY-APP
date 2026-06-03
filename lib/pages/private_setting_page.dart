@@ -167,23 +167,27 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
                         if (lockWith == LockWith.localAuth) {
                           localAuthChecked =
                               await LocalAuthService.authenticate();
+
+                          if (!mounted) return;
+
                           if (localAuthChecked) {
                             localAuthChecked = false;
                             setState(() {
                               _localLockWith = LockWith.customPw;
                             });
-                            showCustomSnackBar(
-                              context,
-                              message: '잠금방식이 변경되었습니다',
-                            );
+
                             if (customPw != null) {
                               final prefs =
                                   await SharedPreferences.getInstance();
+
+                              if (!mounted) return;
                               lockWith = LockWith.customPw;
                               await prefs.setString(
                                 'lock_method',
                                 'customPw',
                               );
+                              if (!context.mounted) return;
+
                               showCustomSnackBar(
                                 context,
                                 message: '잠금방식이 변경되었습니다',
@@ -317,17 +321,17 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
                                     'lock_method',
                                     'customPw',
                                   );
+                                  if (!context.mounted) return;
 
                                   setState(() {
                                     _isPwEnabled = false;
-                                    FocusScope.of(context).unfocus();
                                   });
-                                  if (mounted) {
-                                    showCustomSnackBar(
-                                      context,
-                                      message: "비밀번호가 설정되었습니다.",
-                                    );
-                                  }
+                                  FocusScope.of(context).unfocus();
+
+                                  showCustomSnackBar(
+                                    context,
+                                    message: "비밀번호가 설정되었습니다.",
+                                  );
                                 }
                               } else {
                                 await checkCurrentPassword(context);
@@ -475,11 +479,16 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
         'lock_method',
         'localAuth',
       );
+
+      if (!mounted) return;
+
       showCustomSnackBar(
         context,
         message: isFirst ? '잠금방식이 설정되었습니다' : '잠금방식이 변경되었습니다',
       );
     } else {
+      if (!mounted) return;
+
       showCustomSnackBar(
         context,
         message: '기기에 보안방식이 설정되어 있지 않습니다.',

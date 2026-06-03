@@ -1,5 +1,6 @@
 // db_service.dart
 import 'dart:convert';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:std/main.dart';
 
@@ -61,7 +62,7 @@ class DbService {
       );
       return response.statusCode == 200;
     } catch (e) {
-      print("초기화 통신 에러: $e");
+      debugPrint("초기화 통신 에러: $e");
       return false;
     }
   }
@@ -152,15 +153,12 @@ class LinkResponse {
         throw Exception('서버 응답 오류: 상태 코드 ${response.statusCode}');
       }
     } catch (e) {
-      print('데이터 통신 에러: $e');
       throw Exception('데이터를 가져오는데 실패했습니다.');
     }
   }
 }
 
 Future<void> deleteLink({required int id, required String deviceUuid}) async {
-  print("백엔드 서버로 삭제 요청 시도 id: $id");
-
   final Uri url = Uri.parse("$baseUrl/links/$id");
 
   try {
@@ -170,12 +168,11 @@ Future<void> deleteLink({required int id, required String deviceUuid}) async {
     );
 
     if (response.statusCode == 200) {
-      print("서버 삭제 완료 응답: ${response.body}");
+      debugPrint("서버 삭제 완료 응답: ${response.body}");
     } else {
-      print("서버 삭제 실패 상태코드: ${response.statusCode}");
-      print("실패 원인: ${response.body}");
+      debugPrint("실패 원인: ${response.body}");
     }
   } catch (e) {
-    print("네트워크 통신 에러: $e");
+    debugPrint("네트워크 통신 에러: $e");
   }
 }

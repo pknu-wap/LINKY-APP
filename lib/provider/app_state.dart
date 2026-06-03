@@ -196,9 +196,8 @@ class AppState extends ChangeNotifier {
       } else {
         throw Exception("서버 조회 실패 코드: ${response.statusCode}");
       }
-    } catch (e, stackTrace) {
-      print("로드 에러 발생: $e");
-      print(stackTrace);
+    } catch (e) {
+      debugPrint("로드 에러 발생: $e");
     } finally {
       isLoadingContents = false;
     }
@@ -393,7 +392,6 @@ class AppState extends ChangeNotifier {
 
     try {
       final serverUrl = Uri.parse("$baseUrl/links");
-      print("[서버 요청 전송] 주소: $serverUrl");
 
       // 서버에 POST 요청
       final response = await http
@@ -418,9 +416,6 @@ class AppState extends ChangeNotifier {
             }),
           )
           .timeout(const Duration(seconds: 5));
-
-      print("[서버 응답 수신] 상태 코드: ${response.statusCode}");
-      print("[서버 응답 본문]: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         int nextId = 1;
@@ -481,7 +476,6 @@ class AppState extends ChangeNotifier {
         throw HttpException('서버가 요청을 거부했습니다. 코드: ${response.statusCode}');
       }
     } catch (e) {
-      print("[AppState 저장 에러 로그]: $e");
       rethrow;
     }
   }
@@ -531,7 +525,6 @@ class AppState extends ChangeNotifier {
       );
 
       if (!success) {
-        print("콘텐츠 업데이트 실패: 서버 오류");
         return;
       }
 
@@ -616,9 +609,6 @@ class AppState extends ChangeNotifier {
         "clearSelectedDate": clearSelectedDate,
       }),
     );
-
-    print("콘텐츠 수정 상태코드: ${response.statusCode}");
-    print("콘텐츠 수정 응답: ${response.body}");
 
     return response.statusCode == 200;
   }
