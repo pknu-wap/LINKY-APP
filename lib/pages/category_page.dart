@@ -69,6 +69,7 @@ class _CategoryPageState extends State<CategoryPage> {
                         ),
                         child: TextField(
                           controller: categoryController,
+                          maxLength: 20,
                           decoration: InputDecoration(
                             isDense: true,
                             contentPadding: const EdgeInsets.only(bottom: 1),
@@ -86,6 +87,15 @@ class _CategoryPageState extends State<CategoryPage> {
                       ),
                       onConfirm: () {
                         final newCategoryName = categoryController.text.trim();
+
+                        if (newCategoryName.length > 20) {
+                          showCustomSnackBar(
+                            context,
+                            message: '카테고리명은 20자 이하로 입력해주세요.',
+                            isError: true,
+                          );
+                          return false;
+                        }
 
                         if (newCategoryName.isEmpty ||
                             newCategoryName.replaceAll(' ', '') == '전체' ||
@@ -294,6 +304,7 @@ class _CategoryPageState extends State<CategoryPage> {
                               ),
                               child: TextField(
                                 controller: categoryController,
+                                maxLength: 20,
                                 decoration: InputDecoration(
                                   isDense: true,
                                   contentPadding: const EdgeInsets.only(
@@ -317,6 +328,15 @@ class _CategoryPageState extends State<CategoryPage> {
                             onConfirm: () {
                               final newCategoryName = categoryController.text
                                   .trim();
+
+                              if (newCategoryName.length > 20) {
+                                showCustomSnackBar(
+                                  context,
+                                  message: '카테고리명은 20자 이하로 입력해주세요.',
+                                  isError: true,
+                                );
+                                return false;
+                              }
 
                               if (newCategoryName.isEmpty) {
                                 showCustomSnackBar(
