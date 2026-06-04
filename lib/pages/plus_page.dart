@@ -124,11 +124,6 @@ class _PlusPageState extends State<PlusPage> {
         Navigator.pop(context); // 로딩창 닫기
       }
 
-      String errorMessage = e.toString().replaceAll('Exception: ', '');
-      if (e is TimeoutException) {
-        errorMessage = "서버 연결 시간이 초과되었습니다.";
-      }
-
       showCustomSnackBar(
         context,
         message: '저장 실패',

@@ -286,11 +286,6 @@ class _MainScreenState extends State<MainScreen> {
           Navigator.pop(context);
         }
 
-        String errorMessage = e.toString().replaceAll('Exception: ', '');
-        if (e is TimeoutException) {
-          errorMessage = "서버 연결 시간이 초과되었습니다.";
-        }
-
         if (mounted) {
           showCustomSnackBar(
             context,
