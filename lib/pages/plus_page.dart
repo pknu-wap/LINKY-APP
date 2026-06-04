@@ -131,7 +131,7 @@ class _PlusPageState extends State<PlusPage> {
 
       showCustomSnackBar(
         context,
-        message: '저장 실패: $errorMessage',
+        message: '저장 실패',
         isError: true,
       );
     }

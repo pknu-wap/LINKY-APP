@@ -294,7 +294,7 @@ class _MainScreenState extends State<MainScreen> {
         if (mounted) {
           showCustomSnackBar(
             context,
-            message: '저장 실패: $errorMessage',
+            message: '저장 실패',
             isError: true,
           );
         }
